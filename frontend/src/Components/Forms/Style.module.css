@@ -1,0 +1,176 @@
+.signupcontainer, .loginContainer{
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: auto;
+}
+
+.formcontainer{
+    width: 30%;
+    height: 70%;
+    border: 1px solid black;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border-radius: 12px;
+}
+
+.formHeader{
+   margin-top: -20px; 
+   display: flex;
+   align-items: center;
+   justify-content: center;
+   font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+   font-weight: bold;
+   font-size: 20px;
+}
+
+.fullname, .emailcontainer, .passwordcontainer, button, .formHeader{
+    width: 80%;
+    height: 10%;
+    margin-top: 40px;
+}
+
+.fullname input, .emailcontainer input, .passwordcontainer input{
+    width: 100%;
+    height: 80%;
+    outline: none;
+    border: 3px solid black;
+    border-radius: 4px;
+    font-family: 'Space Mono';
+    font-weight: 800;
+    padding: 0 10px;
+    color: rgb(110, 101, 101);
+}
+
+button{
+    background: black;
+    border-radius: 12px;
+    height: 8%;
+    color: white;
+    font-size: 1.4em;
+    font-family: 'roboto';
+    width: 84%;
+    margin-left: 14px;
+    margin-top: 60px;
+    margin-bottom: 20px;
+}
+
+.formErrors{
+    color: red;
+    margin-top: 2px;
+    font-family: 'Space Mono';
+    font-weight: 800;
+}
+
+
+
+
+/* Login Form Container */
+.navsForms{
+    font-size: 20px;
+    font-family: 'Space Mono';
+}
+
+.navsForms a{
+    text-decoration: none;
+    color: blueviolet;
+}
+
+
+/* resetContainer */
+
+.resetContainer{
+    width: 100%;
+    height: 100svh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.resetForm{
+    width: 30%;
+    height: 34vh;
+    border: 1px solid black;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    font-family: 'Space Mono';
+    border-radius: 12px;
+}
+
+.resetEmail{
+    width: 80%;
+}
+.resetEmail input{
+    width: 96%;
+    height: 60px;
+    padding: 0 2%;
+    margin-top: 20px;
+    font-family: 'Space mono';
+    font-size: 20px;
+    border-radius: 4px;
+    margin-top: 40px;
+}
+
+.resetForm button{
+    width: 80%;
+    height: 20%;
+    background: palevioletred;
+    margin-top: 20px;
+}
+
+
+
+/* verifyContainer */
+
+.verifyContainer{
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+}
+
+.verifyContainer h2{
+    font-size: 1.6em;
+    font-family: 'Space Mono';
+    font-weight: 700;
+    color:blueviolet;
+}
+
+
+.inputContainer{
+    width: 20%;
+    height: 20%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+}
+
+.inputContainer input{
+    width: 90%;
+    height: 30%;
+    padding: 0 5%;
+    font-size: 30px;
+    font-family: 'Space Mono';
+    font-weight: 800;
+    color: blueviolet;
+    border-radius: 5px;
+}
+
+.inputContainer button{
+    height: 30%;
+    width: 100%;
+    margin: 0;
+}
+
+
+
