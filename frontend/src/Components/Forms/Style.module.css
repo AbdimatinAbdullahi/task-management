@@ -135,6 +135,7 @@ button{
     align-items: center;
     justify-content: center;
     flex-direction: column;
+    font-family: 'Space Mono';
 }
 
 .verifyContainer h2{
@@ -172,5 +173,7 @@ button{
     margin: 0;
 }
 
-
-
+.verifyContainer h4{
+    color: gray;
+    cursor: pointer;
+}

@@ -1,56 +1,33 @@
-import React, { useState } from 'react'
-import  {Link, useNavigate} from 'react-router-dom'
+import  {Link, useNavigate, useLocation} from 'react-router-dom'
 import { useForm } from 'react-hook-form'
+import React, { useState } from 'react'
 import axios from 'axios'
 
 import styles from '../Forms/Style.module.css'
+import { useAuth } from '../../Contexts/AuthContext'
 
 function Login() {
 
   const navigate = useNavigate()
+  const location = useLocation()
   const {register, handleSubmit, formState: {errors}} = useForm()
-  const [serverErrors, setserverErrors] = useState('')
+  const [serverErrors, setServerErrors] = useState('')
   const [loading, setLoading] = useState(false)
-
+  const {login, errorMesage} = useAuth()
 
 
 
   const onSubmit = async (data) =>{
-    setserverErrors("")
-    try {
       setLoading(true)
-
-      const response = await axios.post('http://127.0.0.1:5000/auth/login', data)
-      console.log('Response from Server', response)
-
-
-      if (response.status == 200 & response.data.verified === true){
-        navigate('/projects')
-      }
-
-      else if (response.status == 200 & response.data.verified === false){
-        navigate('/verify-email', { state: { "email" : data.email }})
-      }
-
+      login(data.email, data.password)
+      setServerErrors(errorMesage)
       setLoading(false)
-      
-
-
-
-    } catch (error) {
-      const errorMessage = error.response?.data?.error || "Something Went wrong"
-      setserverErrors(error.response.data.error)
-      setLoading(false)
-    }
   }
-
-
 
 
   return (
     <div className={styles.loginContainer}>
       <form className={styles.formcontainer} onSubmit={handleSubmit(onSubmit)}>
-        
         <div className={styles.formHeader}>
           <h2>Sign In</h2>
         </div>

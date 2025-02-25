@@ -8,6 +8,8 @@ import Login from './Components/Forms/Login'
 import Signup from './Components/Forms/Signup'
 import ResetPassword from './Components/Forms/ResetPassword'
 import VerifyPage from './Components/Forms/VerifyPage'
+import Projects from './Components/ProjectPage/Projects'
+import { AuthProvider } from './Contexts/AuthContext'
 
 
 
@@ -15,7 +17,8 @@ import VerifyPage from './Components/Forms/VerifyPage'
 
 function App() {
   return (
-    <Router>       
+    <Router>    
+      <AuthProvider> 
       <Routes>
 
         {/* Routes */}
@@ -23,10 +26,11 @@ function App() {
         <Route path='/login' element={<Login/>}/>
         <Route path='/signup' element={<Signup/>}/>
         <Route path='/reset-password' element={<ResetPassword/>}/>
-        <Route path='/verify-email' element={<VerifyPage/>}/>
-    
+        <Route path='/verify-email' element={<VerifyPage/>}/> 
+        <Route path='/projects' element={<Projects/>} />   
     
       </Routes>
+      </AuthProvider>  
     </Router>
   )
 }
