@@ -1,0 +1,45 @@
+.container{
+    width: 100%;
+    height: 100svh;
+    font-size: 20px;
+}
+
+.navcontainer{
+    width: 100%;
+    height: 10vh;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.logo{
+    font-family: space mono;
+    font-size: 26px;
+    font-weight: 700;
+    margin-left: 10px;
+    color: blueviolet;
+}
+
+.navbuttons{
+    margin-right: 2%;
+    width: 20%;
+    height: 100%;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+.navbuttons button{
+    width: 40%;
+    height: 60%;
+    font-family: 'Space Mono';
+    font-weight: 700;
+    font-size: 20px;
+    outline: none;
+    background: black;
+    color: white;
+    border-radius: 10px;
+    cursor: pointer;
+}
