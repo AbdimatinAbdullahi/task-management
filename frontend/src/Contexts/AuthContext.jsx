@@ -18,7 +18,7 @@ export const AuthProvider = ({children})=>{
             const response = await axios.post("http://127.0.0.1:5000/auth/login", {email, password})
             localStorage.setItem("token", response.data.token)
             setUser({"firstname": response.data.fullname, "email" : response.data.email})
-            navigate('/projects')
+            navigate('/task')
         } catch (error) {
             console.error('Login failed : ',error)
             console.log(error.response.data.error)

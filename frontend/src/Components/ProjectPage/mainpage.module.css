@@ -1,0 +1,193 @@
+
+
+:root{
+    --font-source-three: 'Source Sans 3';
+    --font-spline-sans: "Spline Sans Mono";
+    --box-shadow-auto: 20px 20px 60px #d9d9d9, -20px -20px 60px #ffffff;
+    
+}
+
+
+
+
+.mainContainer{
+    width: 100%;
+    height: 100vh;
+    background-color: white;
+    overflow: hidden;
+    display: flex;
+}
+
+
+/* Bar container header */
+.barContainer{
+    width: 14%;
+    height: 100vh;
+    box-shadow: var(--box-shadow-auto);
+    margin-left: 1%;
+    margin-top: 1%;
+    padding-top: 1%;
+    border-radius: 5px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-family: var(--font-source-three);
+}
+
+.barContainerHeader h2{
+    font-size: 40px;
+}
+
+.taskFeatures{
+    margin-top: 10%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 30px;
+    width: 100%;
+}
+
+.featureDashboard, .featureProjects,.createProject{
+    width: 90%;
+    height: 40px;
+    border: 1px solid rgba(0, 0, 0, 0.4);
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    flex-direction: row;
+    border-radius: 4px;
+    font-family: var(--font-spline-sans);
+    cursor: pointer;
+}
+
+.featureProjects{
+    height: auto;
+    align-items: start;
+    flex-direction: column;
+    align-items: center;
+    justify-content: start;
+    padding: 20px 0;
+    /* padding-left: 2%; */
+}
+
+
+.projectTasks{
+    width: 100%;
+    height: 40px;
+    margin-top: 20px;
+     color: black;
+     display: flex;
+     flex-direction: column;
+     align-items: start;
+     justify-content: space-evenly;
+     gap: 30%;
+}
+
+.projectTasks div{
+    margin-left: 10px;
+}
+
+
+.active{
+    background: rgb(243, 185, 225);
+}
+
+
+.createProject:hover{
+    background: rgb(243, 185, 225);;
+}
+
+
+
+.DashboardAndProjectsHolder{
+    width: 83%;
+    border: 1px solid red;
+    margin-left: 1%;
+    margin-top: 1%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-spline-sans);
+    font-size: large;
+}
+
+
+
+/* Create Modal */
+
+.modalOverlay{
+    width: 100vw;
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+}
+
+.modalContainer{
+    width: 40%;
+    height: 40%;
+    background-color: white;
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-evenly;
+}
+
+.modalHeader{
+    font-size: 30px;
+    font-family: var(--font-spline-sans);
+    font-weight: 700;
+}
+
+.projectName{
+    width: 80%;
+    height: 60px ;
+}
+.projectName input{
+    width: 100%;
+    height: 100%;
+    outline: none;
+    border: none;
+    border-bottom: 1px solid black;
+    font-family: var(--font-spline-sans);
+    padding-left: 4%;
+    font-size: 20px;
+}
+
+.buttons{
+    width: 80%;
+    display: flex;
+    align-items: center;
+    justify-content: space-evenly;    
+}
+
+.createButton, .closeButton{
+    width: 50%;
+    height: 50px;
+    display: flex;
+    margin-left: 10px;
+    align-items: center;
+    justify-content: space-evenly;
+    background:rgba(175, 43, 193, 0.251);
+    font-family: var(--font-spline-sans);
+    font-size: 20px;
+    font-weight: 700;
+    border-radius: 12px;
+    cursor: pointer;
+}
+
+
+.error{
+    color: red;
+    font-family: var(--font-spline-sans);
+    font-size: 18px;
+    margin-top: 10px;
+}

@@ -9,6 +9,8 @@ import Signup from './Components/Forms/Signup'
 import ResetPassword from './Components/Forms/ResetPassword'
 import VerifyPage from './Components/Forms/VerifyPage'
 import Projects from './Components/ProjectPage/Projects'
+import MainPage from './Components/ProjectPage/MainPage'
+
 import { AuthProvider } from './Contexts/AuthContext'
 
 
@@ -27,7 +29,7 @@ function App() {
         <Route path='/signup' element={<Signup/>}/>
         <Route path='/reset-password' element={<ResetPassword/>}/>
         <Route path='/verify-email' element={<VerifyPage/>}/> 
-        <Route path='/projects' element={<Projects/>} />   
+        <Route path='/task' element={<MainPage/>} />   
     
       </Routes>
       </AuthProvider>  
