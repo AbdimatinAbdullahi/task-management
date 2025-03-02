@@ -1,6 +1,7 @@
-from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import ForeignKey, DateTime, Column, Boolean, String, Integer
+from mongoengine import Document, StringField, ListField, EmbeddedDocument, EmbeddedDocumentField, DateTimeField, IntField, connect
 from sqlalchemy.orm import relationship
+from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime, timedelta
 import bcrypt 
 db = SQLAlchemy() # Creating instance of a db
@@ -38,3 +39,22 @@ class Verification(db.Model):
         self.user_id = user_id
         self.code = code
         self.expires_at = datetime.utcnow() + timedelta(minutes=10)
+
+
+
+# Projects Managment on MongoDB
+connect("projects", host="mongodb://127.0.0.1:27017/")
+class Task(EmbeddedDocument):
+    task_name= StringField()
+    status = StringField(default='To-do')
+    created_at =  DateTimeField(default=datetime.utcnow())
+    due_date = DateTimeField()
+    started_at = DateTimeField()
+    task_notes = StringField()
+
+class Project(Document):
+    name = StringField(required=True)
+    user_id = IntField(required=True)
+    description= StringField()
+    created_at = DateTimeField(default=datetime.utcnow())
+    tasks = ListField(EmbeddedDocumentField(Task))

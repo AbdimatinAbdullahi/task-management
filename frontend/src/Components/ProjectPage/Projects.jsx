@@ -1,4 +1,5 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
+import axios from 'axios'
 import style from './project.module.css'
 
 
@@ -8,7 +9,7 @@ function Projects({project}) {
 
 
   return (
-    <div className={style.projectContainer}  >
+    <div className={style.projectContainer}>
 
     {/* 😂 Given names to this div containers is harder than even the Coding */}
       <div className={style.projectsAddsOn}>
@@ -21,12 +22,15 @@ function Projects({project}) {
 
     {/* 🎉 Features for this project - (Kanban View) => Later will isolate it!*/} 
       <div className={style.projectViewContainer}>
+
         <div className={style.projectView}>
-          Project View Container
+          <div className={style.projectViewController}></div>
         </div>
+
         <div className={style.projectDisplay}>
-          Project Displays
+         {project.name}
         </div>
+
       </div>
 
 

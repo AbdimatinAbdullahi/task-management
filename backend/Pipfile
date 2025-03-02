@@ -12,6 +12,7 @@ flask-mail = "*"
 flask-cors = "*"
 flask-jwt-extended = "*"
 pyjwt = "*"
+mongoengine = "*"
 
 [dev-packages]
 
