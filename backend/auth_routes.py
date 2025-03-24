@@ -12,6 +12,7 @@ auth_bp = Blueprint("auth", __name__)
 
 
 
+
 # Function to generate verification code
 def generate_code():
     characters = string.digits

@@ -1,0 +1,250 @@
+:root{      
+    --box-shadow: 2px 2px 100px 0.5px rgba(0, 0, 0, 0.15);
+}
+
+.kanbanContainer{
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: row;
+    align-items: start;
+    justify-content: center;
+    gap: 1%;
+}
+
+.taskBoard{
+    width: 25%;
+    height: 98%;
+    overflow-y: scroll;
+}
+
+.taskBoard::-webkit-scrollbar{
+    display: none;
+}
+
+.addItem{
+    width: 98%;
+    height: 6%;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: space-evenly;
+    font-size: 20px;
+    font-weight: 700;
+    cursor: pointer;
+    margin-bottom: 10px;
+}
+
+
+.taskItem{
+    width: 95%;
+    height: 30%;
+    border: 1px solid green; 
+    padding-left: 3%;
+    border-radius: 4px;
+    margin-bottom: 10px;
+}
+
+.taskProject{
+    width: 70%;
+    height: 15%;
+    background: rgb(240, 186, 247);
+    border-radius: 15px;
+    margin-top: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.taskName{
+    margin-top: 23px;
+    font-weight: 700;
+    font-size: 20px;
+}
+
+.taskNote{
+    font-size: 14px;
+    color: #919191;
+    width: 70%;
+    font-size: 18px;
+    margin-top: 12px;
+    height: 22%;
+    overflow: hidden;
+}
+
+.taskProperty{
+    width: 90%;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 12px;
+    height: 20%;
+    
+}
+
+.taskDates{
+    border-radius: 30px;
+    width: 50%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: start;
+    font-size: 13px;
+    font-weight: 900;
+    color: #848483;
+    box-shadow: var(--box-shadow);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.taskPriority{
+    width: 40%;
+    height: 100%;
+    border-radius: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: space-evenly;
+    box-shadow: var(--box-shadow);
+    color: #848383;
+    font-weight: 900;
+
+}
+
+/* Modal Create Task */
+.overlay{
+    width: 100vw;
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.modalContainer{
+    width: 40%;
+    height:60%;
+    background-color: white;
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-evenly;
+}
+
+.inputContainer, .selectCategory, .taskDescription, .datePicker, .buttons{
+    width: 90%;
+}
+
+.inputContainer, .selectCategory{
+    height: 10%;
+}
+.inputContainer input, .selectCategory select, .taskDescription textarea{
+    width: 100%;
+    height: 100%;
+    text-indent: 1%;
+    border: none;
+    border: 3px solid #AF2BC1;
+    outline: none;
+    font-family: var(--font-spline-sans);
+    font-size: 20px;
+    font-weight: 500;
+    border-radius: 4px;
+    color: rgb(137, 133, 133);
+}
+.taskDescription{
+    height: 30%;
+}
+
+.datePicker{
+    width: 90%;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.startDate, .endDate{
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+.startDate{
+    margin-right: 10px;
+}
+.startDate input, .endDate input{
+    width: 100%;
+    height: 40px;
+    text-indent: 1%;
+    font-family: var(--font-spline-sans);
+    font-size: 18px;
+    font-weight: 700;
+    border-radius: 12px;
+    color: gray;
+}
+
+.buttons{
+    height: 10%;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.createButton, .closeButton{
+    width: 40%;
+    height: 100%;
+    background-color: rgba(175, 43, 193, 0.11);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+}
+
+.error{
+    color: red;
+    font-size: 20px;
+}
+
+
+
+/* Task Modal */
+.modalOverlay{
+    width: 100vw;
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+}
+
+.modalTaskContainer{
+    position: relative;
+    width: 40%;
+    height:60%;
+    background-color: white;
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-evenly;
+}
+
+.close{
+    position: absolute;
+    top: 10px;
+    right: 10px;
+}

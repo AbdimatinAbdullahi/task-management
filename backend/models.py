@@ -51,6 +51,7 @@ class Task(EmbeddedDocument):
     due_date = DateTimeField()
     started_at = DateTimeField()
     task_notes = StringField()
+    priority = StringField()
 
 class Project(Document):
     name = StringField(required=True)

@@ -64,11 +64,12 @@ export const AuthProvider = ({children})=>{
         })
         .then(response => {
             setUser({ firstname: response.data.fullname, email: response.data.email });
-            console.log("Response:", response.data);
+            navigate('/task')
         })
         .catch(error => {
             console.error("Error:", error.response?.data || error);
             setErrorMesage(error.response?.data?.message || "Authentication failed");
+            navigate('/')
         });
         
     }, []);
