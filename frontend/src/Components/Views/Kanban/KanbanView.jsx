@@ -1,11 +1,15 @@
 import React, { useEffect, useState } from 'react'
+
+
+import {DndProvider,  useDrop} from 'react-dnd'
 import {HTML5Backend} from 'react-dnd-html5-backend'
-import {DndProvider, useDrag, useDrop} from 'react-dnd'
-import {Plus, Flag, X} from 'lucide-react'
+
 
 
 import style from '../Kanban/kanban.module.css'
 import CreateTaskModal from './CreateTaskModal';
+import TaskItem from './TaskItem'
+
 import axios from 'axios'
 
 
@@ -80,123 +84,6 @@ const DropZone = ({status, tasks, projectId, projectName})=>{
 
     </div>
   )
-}
-
-
-
-
-
-
-const TaskItem = ({task, projectName})=>{
-
-  const [taskModalOpen, setTaskModalOpen] = useState(false)
-
-  const [{isDragging}, drag] = useDrag(()=>({
-      type: "TASK",
-      item: {taskName: task.task_name},
-      collect: (monitor)=>({
-        isDragging: !!monitor.isDragging()
-      }),
-  }));
-
-
-    const formattedDate = (dateObj) => {
-      if (!dateObj || !dateObj.$date) {
-          return "";
-      }
-  
-      const date = new Date(dateObj.$date);
-      return isNaN(date.getTime()) ? "INVALID FORMAT" : date.toLocaleDateString();
-  };
-  
-
-    const getPriorityColor = (priority)=>{
-      switch(priority.toLowerCase()){
-        case 'normal':
-          return "#11c229";
-        case 'medium':
-          return '#e9e613';
-        case "high":
-          return 'red';
-        default:
-          return "gray";
-      }
-    }
-
-
-    const handleTaskClick = () =>{
-      setTaskModalOpen(true)
-    }
-
-    const handleModalClose = ()=>{
-      setTaskModalOpen(false)
-    }
-
-
-    return (
-      <div ref={drag} className={style.taskItem} onClick={handleTaskClick} >
-        {taskModalOpen && <TaskModal onClose={handleModalClose} task={task} formattedDate={formattedDate} />}
-        <div className={style.taskProject}>
-          {projectName}
-        </div>
-        
-
-        <div className={style.taskName}>
-          {task.task_name}
-        </div>
-
-        <div className={style.taskNote}>
-          {task.task_notes}
-        </div>
-
-      <div className={style.taskProperty}>
-          <div className={style.taskDates}>{formattedDate(task.started_at)}- {formattedDate(task.due_date)}</div>
-          <div className={style.taskPriority}> <Flag color={getPriorityColor(task.priority)} absoluteStrokeWidth /> {task.priority} </div>
-      </div>
-
-      </div>
-    )
-
-}
-
-
-
-function TaskModal({ onClose, task, formattedDate }) {
-
-
-  const handleModalClick = (e) => {
-    e.stopPropagation(); // Prevent click from reaching parent elements
-  };
-
-  const handleOverlayClick = () => {
-    onClose(); // Close when clicking outside the modal
-  };
-
-  useEffect(()=>{
-    console.log(task)
-  },[])
-
-  const [taskName, setTaskName] = useState(task.task_name)
-  const [taskDescription, setTaskDescription] = useState(task.task_notes)
-  const [status, setStatus] = useState(task.status)
-
-  return (
-    <div className={style.modalOverlay} onClick={handleOverlayClick}>
-      <div className={style.modalTaskContainer} onClick={handleModalClick}>
-        <X color='purple' size={40} strokeWidth={5.75} className={style.close} onClick={(e) => onClose()} />
-        <input type="text" value={task.task_name} onChange={(e) => setTaskName(e.target.value)}  className={style.modalTaskName} />
-        <input type="text" value={task.task_notes} onChange={(e)=> setTaskDescription(e.target.value)} className={style.task_description} />
-
-      <div className={style.taskModalPrir}>
-        <div className={style.status} > {task.status} </div>
-        <div className={style.assigne}> Coming soon! </div>
-        <div className={style.dates}> {formattedDate(task.started_at)} - {formattedDate(task.due_date)} </div>
-
-      </div>
-
-      </div>
-    </div>
-  );
 }
 
 
