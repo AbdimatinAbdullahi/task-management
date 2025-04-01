@@ -1,11 +1,11 @@
 from sqlalchemy import ForeignKey, DateTime, Column, Boolean, String, Integer
-from mongoengine import Document, StringField, ListField, EmbeddedDocument, EmbeddedDocumentField, DateTimeField, IntField, connect
+from mongoengine import Document, StringField, ListField, EmbeddedDocument, EmbeddedDocumentField, DateTimeField, IntField, connect, ObjectIdField
 from sqlalchemy.orm import relationship
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime, timedelta
 import bcrypt 
 db = SQLAlchemy() # Creating instance of a db
-
+from bson import ObjectId
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -45,6 +45,7 @@ class Verification(db.Model):
 # Projects Managment on MongoDB
 connect("projects", host="mongodb://127.0.0.1:27017/")
 class Task(EmbeddedDocument):
+    _id = ObjectIdField(default=ObjectId, primary_key=True)
     task_name= StringField()
     status = StringField(default='To-do')
     created_at =  DateTimeField(default=datetime.utcnow())

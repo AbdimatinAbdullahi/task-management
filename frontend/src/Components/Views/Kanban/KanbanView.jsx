@@ -1,6 +1,4 @@
 import React, { useEffect, useState } from 'react'
-
-
 import {DndProvider,  useDrop} from 'react-dnd'
 import {HTML5Backend} from 'react-dnd-html5-backend'
 
@@ -30,6 +28,7 @@ function KanbanView({projectId}) {
           .catch((error)=> ( console.error("Error fetching project", error)))
           .finally(()=>  setLoading(false))
     }, [projectId])
+
 
 
     if (loading) return <p>Loading...</p>;
@@ -66,6 +65,7 @@ function KanbanView({projectId}) {
 
 
 const DropZone = ({status, tasks, projectId, projectName})=>{
+  
   const [{isOver}, drop] = useDrop(()=>({
     accept: "TASK",
     drop: (item) => console.log(`Task ${item.task_name} moved to ${status}`),
