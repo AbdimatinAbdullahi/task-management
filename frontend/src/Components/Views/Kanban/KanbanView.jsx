@@ -80,7 +80,7 @@ const DropZone = ({status, tasks, projectId, projectName})=>{
 
       <div className={style.addItem}>{status} </div>
 
-      {tasks.map((task)=>(<TaskItem task={task} projectName={projectName}/>))}
+      {tasks.map((task)=>(<TaskItem task={task} projectName={projectName} projectId={projectId}/>))}
 
     </div>
   )

@@ -1,6 +1,7 @@
 from flask import Blueprint, current_app, jsonify, json, request
 from models import Task, Project
 from bson import ObjectId
+from datetime import datetime
 
 project_bp = Blueprint("project", __name__, url_prefix='/api')
 
@@ -62,6 +63,29 @@ def updateTaskName(taskId):
     try:
         data = request.get_json()
         task_name = data.get("task_name")
+        project_id = data.get("projectId")
+
+        task_id = ObjectId(taskId)
+        projectid = ObjectId(project_id)
+
+        # Finding the project
+        project = Project.objects(id=projectid).first() # Finding the project with the project id
+
+        updated =False
+        for task in project.tasks:
+            if task._id == task_id:
+                task.task_name = task_name
+                if not task.started_at:
+                    task.started_at = None  # Avoid empty string issues
+                updated = True
+                break
+        
+        if not updated:
+            print("Not updated")
+            return jsonify({"message": "The update not successfull"}), 500
+
+        project.save()
+
         print(f"Updating the task with task id {taskId} and task name {task_name}")
         return jsonify({"message": "success"}), 200
     except Exception as e:
@@ -75,8 +99,32 @@ def updateTaskName(taskId):
 def updateTaskStatus(taskId):
     try:
         data = request.get_json()
-        print(f"New task status : {data.get("status")}")
-        return jsonify({"message": "Update Successfull"}), 200
+        projectId = data.get("projectId")
+        newStatus = data.get("status")
+
+        
+        task_id = ObjectId(taskId)
+        project_id = ObjectId(projectId)
+        
+        project = Project.objects(id=project_id).first()
+
+        updated = False
+
+        for task in project.tasks:
+            if task._id == task_id:
+                task.status = newStatus
+                updated = True
+                break
+
+        if not updated:
+            print("Not updated")
+            return jsonify({"message": "The update not successfull"}), 500
+
+        project.save()
+
+        print("The Status update successfull")
+        return jsonify({"message": "Update successfull"}), 200
+
     except Exception as e:
         print(f"Error while updating task status {str(e)}")
         return jsonify({"message" : "Error while updating task status"}), 500
@@ -88,7 +136,26 @@ def updateTaskStatus(taskId):
 def updateTaskDates(taskId):
     try:
         data = request.get_json()
-        print(f"Updating task with start_date : {data.get("start_date")} and End date : {data.get("due_date")} " )
+
+        print(data)
+
+        task_id = ObjectId(taskId)
+        projectId = data["payload"]["projectId"]
+        print(projectId)
+        project_Id = ObjectId(projectId)
+
+
+        project = Project.objects(id=project_Id).first()
+        print(project)
+        updated = False
+
+        for task in project.tasks:
+            if task._id == task_id:
+                task.due_date = datetime.strptime(data["payload"]["due_date"], "%Y-%m-%d") if data["payload"]["due_date"] else None
+                updated = True
+
+
+        print(f"Updating task with start_date : {data["payload"]["started_at"]} and End date : {data["payload"]["due_date"]}" )
         return jsonify({"message": "Update Successfull"}), 200
     except Exception as e:
         print(f"Error while updating task dates {str(e)}")
@@ -101,11 +168,28 @@ def updateTaskDates(taskId):
 def updateTaskPriority(taskId):
     try:
         data = request.get_json()
+
+        task_id = ObjectId(taskId)
+        project_id = data.get("projectId")
+        projectId = ObjectId(project_id)
+
+        project = Project.objects(id=projectId).first()
+
+        updated = False
+
+        for task in project.tasks:
+            if task._id == task_id:
+                task.priority = data.get("priority")
+                updated = True
+                break
+
+        project.save()
+
         print(f"New task priority : {data.get("priority")}")
         return jsonify({"message": "Update Successfull"}), 200
     except Exception as e:
         print(f"Error while updating task priority {str(e)}")
-        return jsonify({"message" : "Error while updating task priority"})
+        return jsonify({"message" : "Error while updating task priority"}), 500
 
 
 

@@ -3,6 +3,9 @@ from mongoengine import Document, StringField, ListField, EmbeddedDocument, Embe
 from sqlalchemy.orm import relationship
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime, timedelta
+
+
+
 import bcrypt 
 db = SQLAlchemy() # Creating instance of a db
 from bson import ObjectId
@@ -49,8 +52,8 @@ class Task(EmbeddedDocument):
     task_name= StringField()
     status = StringField(default='To-do')
     created_at =  DateTimeField(default=datetime.utcnow())
-    due_date = DateTimeField()
-    started_at = DateTimeField()
+    due_date = DateTimeField(default=None)
+    started_at = DateTimeField(default=None)
     task_notes = StringField()
     priority = StringField()
 

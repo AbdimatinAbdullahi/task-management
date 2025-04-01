@@ -8,7 +8,7 @@ import style from '../Kanban/kanban.module.css'
 import TaskModal from './TaskModal'
 
 
-const TaskItem = ({task, projectName})=>{
+const TaskItem = ({task, projectName, projectId})=>{
 
   const [taskModalOpen, setTaskModalOpen] = useState(false)
 
@@ -62,6 +62,7 @@ const TaskItem = ({task, projectName})=>{
           task={task} 
           formattedDate={formattedDate}
           projectName={projectName}
+          projectId={projectId}
           />
         }
 
