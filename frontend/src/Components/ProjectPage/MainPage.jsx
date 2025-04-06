@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from 'react'
-import style from './mainpage.module.css'
+// import style from '../../Style/mainpage.module.css'
+import style from '../../Styles/mainpage.module.css'
 import { LayoutDashboard, FolderPlus, BadgePlus, BookmarkX } from  'lucide-react'
 
 
 import Projects from './Projects'
-import Dashboard from '../Dashboard/Dashboard'
+import Dashboard from '../Forms/Dashboard/Dashboard'
 import axios from 'axios'
 
-const user_id = 9
+const user_id = 8
 
 
 function MainPage() {
@@ -15,6 +16,8 @@ function MainPage() {
     const [projects, setProjects] = useState([])
     const [activeComponent, setActiveComponent] = useState('dashboard')
     const [activeProject, setActiveProject] = useState(null)
+
+
     const [createModal, setCreateModal] = useState(false)
     const [loading, setLoading] = useState(false)
 
@@ -26,6 +29,7 @@ function MainPage() {
         const response = axios.get(`http://127.0.0.1:5000/api/projects/${user_id}`)
         .then((response)=>{
             setProjects(response.data.projects)
+            console.log(response.data.projects)
         })
         .catch((error)=>{
             setError(error.message)
@@ -85,23 +89,20 @@ function MainPage() {
 
 
                     <div  className={`${style.featureProjects}`} >
-
                                 {/* Header for projects */}
                                 <h4>Projects</h4>
 
                                 {
                                 projects.map((project) => (
                                     <div 
-                                        className={`${style.projectTasks} ${activeProject?._id === project._id && style.active}`} 
-                                        key={project._id.$oid || project._id} // Handle both cases (string or object)
+                                        className={`${style.projectTasks} ${activeProject?.project_id === project.project_id && style.active}`} 
+                                        key={project.id} // Handle both cases (string or object)
                                         onClick={() => handleProjectClick(project)}
                                     >
                                         <div>{project.name}</div>
                                     </div>
                                 ))
                             }
-
-
                     </div>
 
                     {/* Button to create project */}

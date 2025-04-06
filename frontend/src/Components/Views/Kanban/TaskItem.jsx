@@ -4,7 +4,8 @@ import {Flag} from 'lucide-react'
 
 
 
-import style from '../Kanban/kanban.module.css'
+import style from '../../../Styles/kanban.module.css'
+
 import TaskModal from './TaskModal'
 
 
@@ -81,7 +82,7 @@ const TaskItem = ({task, projectName, projectId})=>{
         </div>
 
       <div className={style.taskProperty}>
-          <div className={style.taskDates}>{formattedDate(task.started_at)}- {formattedDate(task.due_date)}</div>
+          <div className={style.taskDates}>{task.started_at}- {task.due_date}</div>
           <div className={style.taskPriority}> <Flag color={getPriorityColor(task.priority)} absoluteStrokeWidth /> {task.priority} </div>
       </div>
 

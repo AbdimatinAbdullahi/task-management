@@ -4,7 +4,8 @@ import {HTML5Backend} from 'react-dnd-html5-backend'
 
 
 
-import style from '../Kanban/kanban.module.css'
+import style from '../../../Styles/kanban.module.css'
+
 import CreateTaskModal from './CreateTaskModal';
 import TaskItem from './TaskItem'
 
@@ -18,11 +19,12 @@ function KanbanView({projectId}) {
   const [project, setProject] = useState(null)
 
     useEffect(()=>{
+      console.log(projectId)
       setLoading(true)
-          const response = axios.get(`http://127.0.0.1:5000/api/get_project/${projectId}`)
+          const response = axios.get(`http://127.0.0.1:5000/api/get_tasks/${projectId}`)
           .then((response) => {
             setProject(response.data.project)
-            console.log(response.data.project)
+            console.log(response.data)
           }
           )
           .catch((error)=> ( console.error("Error fetching project", error)))
@@ -42,7 +44,6 @@ function KanbanView({projectId}) {
       setIsModalOpen(false)
     }
 
-    console.log(project)
 
   return (
     <div className={style.kanbanContainer}>
@@ -50,8 +51,8 @@ function KanbanView({projectId}) {
       {isModalOpen && <CreateTaskModal onclose={handleCloseModal}  />}
 
       <DndProvider backend={HTML5Backend} >
-        {["To-do", "In Progress", "In Review", "Complete"].map((status)=>(
-          <DropZone key={status} status={status} projectId={projectId} tasks={project.tasks.filter((task)=> task.status === status)} projectName={project.name} />
+        {["To-do", "In Progress", "In Review", "Complete"].map((status, index)=>(
+          <DropZone key={status} status={status} projectId={projectId} tasks={project.filter((task)=> task.status === status)} projectName={project[0].project_name} />
         ))}
       </DndProvider>
 
@@ -73,7 +74,6 @@ const DropZone = ({status, tasks, projectId, projectName})=>{
       isOver: !!monitor.isOver(),
     }),
   }));
-
 
   return (
     <div ref={drop} className={style.taskBoard} style={{ width: "25%", height: "100%", overflowY: "scroll"}}>

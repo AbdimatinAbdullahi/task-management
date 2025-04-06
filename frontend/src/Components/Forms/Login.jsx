@@ -1,11 +1,9 @@
 import  {Link, useNavigate, useLocation} from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import React, { useState } from 'react'
-import axios from 'axios'
 
-import styles from '../Forms/Style.module.css'
+import styles from '../../Styles/Style.module.css'
 import { useAuth } from '../../Contexts/AuthContext'
-
 function Login() {
 
   const navigate = useNavigate()

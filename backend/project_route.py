@@ -10,29 +10,36 @@ project_bp = Blueprint("project", __name__, url_prefix='/api')
 @project_bp.get('/projects/<user_id>')
 def get_projects(user_id):
     try:
-        projects = Project.objects(user_id=user_id)
-        projects_json = json.loads(projects.to_json())
-
-        
+        projects = Project.query.filter_by(user_id=user_id).all()
+        # project_json = [project.to_dict() for project in projects]
+        # Convert each project to a dictionary
+        projects_json = [project.to_dict() for project in projects]
+        print(projects_json)
         return jsonify({"projects": projects_json})
     
     except Exception as e:
+        print("Error occured while accessing project: ", str(e))
         return jsonify({"error": f"Errow occrs while accessing data from database: {str(e)}"}), 500
 
 
 
-@project_bp.get('/get_project/<projectId>')
+@project_bp.get('/get_tasks/<projectId>')
 def get_project_by_id(projectId):
     try:
-        project_id = ObjectId(projectId) 
-        project = Project.objects.get(id=project_id)  
-        project_json = json.loads(project.to_json())
-        return jsonify({"message": "Success fetching the project", "project" : project_json}), 200
+        # Fetch all tasks for the given projectId
+        tasks = Task.objects(project_id=projectId)
+        print(projectId)
+        if not tasks:
+            print(f"No tasks found for project with ID {projectId}")
+            return jsonify({"message": f"No tasks found for project with ID {projectId}"}), 404
+
+        # Convert tasks to JSON (no need to use json.loads here)
+        tasks_json = tasks.to_json()
+        # Return the response
+        return jsonify({"message": "Success fetching the project", "project": json.loads(tasks_json)}), 200
     except Exception as e:
         print(f"Error: {str(e)}")
-        return jsonify({"message": f"Error while getting the project with {projectId}"}), 500
-
-
+        return jsonify({"message": f"Error while getting the project with ID {projectId}"}), 500
 
 @project_bp.route("/create-new-project", methods=["POST"])
 def create_new_project():
@@ -62,31 +69,20 @@ def create_new_task():
 def updateTaskName(taskId):
     try:
         data = request.get_json()
-        task_name = data.get("task_name")
-        project_id = data.get("projectId")
-
+        new_task_name = data.get("task_name")
+        print("Id of task: ", taskId)
         task_id = ObjectId(taskId)
-        projectid = ObjectId(project_id)
 
         # Finding the project
-        project = Project.objects(id=projectid).first() # Finding the project with the project id
+        task = Task.objects(_id=task_id).first() # Finding the project with the project id
 
-        updated =False
-        for task in project.tasks:
-            if task._id == task_id:
-                task.task_name = task_name
-                if not task.started_at:
-                    task.started_at = None  # Avoid empty string issues
-                updated = True
-                break
+        if not task:
+            print("Task is not received")
         
-        if not updated:
-            print("Not updated")
-            return jsonify({"message": "The update not successfull"}), 500
-
-        project.save()
-
-        print(f"Updating the task with task id {taskId} and task name {task_name}")
+        task.task_name = new_task_name
+        task.save()
+        
+        print(f"Updating the task with task id {taskId} and task name {new_task_name}")
         return jsonify({"message": "success"}), 200
     except Exception as e:
         print(f"Error updating the task name {str(e)}")
@@ -99,31 +95,21 @@ def updateTaskName(taskId):
 def updateTaskStatus(taskId):
     try:
         data = request.get_json()
-        projectId = data.get("projectId")
         newStatus = data.get("status")
 
         
         task_id = ObjectId(taskId)
-        project_id = ObjectId(projectId)
         
-        project = Project.objects(id=project_id).first()
+        task = Task.objects(_id=task_id).first()
 
-        updated = False
-
-        for task in project.tasks:
-            if task._id == task_id:
-                task.status = newStatus
-                updated = True
-                break
-
-        if not updated:
-            print("Not updated")
-            return jsonify({"message": "The update not successfull"}), 500
-
-        project.save()
-
-        print("The Status update successfull")
-        return jsonify({"message": "Update successfull"}), 200
+        if task:
+            task.status = newStatus
+            task.save()
+            print("The Status update successfull")
+            return jsonify({"message": "Update successfull"}), 200
+        else:
+            print("Task not there")
+            return jsonify({"error": "Task not there"}), 404
 
     except Exception as e:
         print(f"Error while updating task status {str(e)}")
@@ -136,27 +122,25 @@ def updateTaskStatus(taskId):
 def updateTaskDates(taskId):
     try:
         data = request.get_json()
-
         print(data)
+        newStartDate = data.get("newStartDate")
+        newDueDate = data.get("newDueDate")
 
         task_id = ObjectId(taskId)
-        projectId = data["payload"]["projectId"]
-        print(projectId)
-        project_Id = ObjectId(projectId)
 
+        task = Task.objects(_id=task_id).first()
 
-        project = Project.objects(id=project_Id).first()
-        print(project)
-        updated = False
-
-        for task in project.tasks:
-            if task._id == task_id:
-                task.due_date = datetime.strptime(data["payload"]["due_date"], "%Y-%m-%d") if data["payload"]["due_date"] else None
-                updated = True
-
-
-        print(f"Updating task with start_date : {data["payload"]["started_at"]} and End date : {data["payload"]["due_date"]}" )
-        return jsonify({"message": "Update Successfull"}), 200
+        if task:
+            print(taskId)
+            task.due_date = newDueDate
+            task.started_at = newStartDate
+            task.save()
+            print("Task dates update successful")
+            return jsonify({"message": "Task date update successful"}), 200
+        else:
+            print("Task not found")
+            return jsonify({"error": "Task not found"}), 404
+    
     except Exception as e:
         print(f"Error while updating task dates {str(e)}")
         return jsonify({"message" : "Error while updating task dates"}), 500
@@ -170,23 +154,19 @@ def updateTaskPriority(taskId):
         data = request.get_json()
 
         task_id = ObjectId(taskId)
-        project_id = data.get("projectId")
-        projectId = ObjectId(project_id)
 
-        project = Project.objects(id=projectId).first()
+        task = Task.objects(_id=task_id).first()
+        
+        # If task exists make and update
+        if task:
+            task.priority = data.get("priority")
+            task.save()
+            print(f"New task priority : {data.get("priority")}")
+            return jsonify({"message": "Update Successfull"}), 200
+        else:
+            print("Priority update not successfull")
+            return jsonify({"error" : "Something went wrong"}), 404
 
-        updated = False
-
-        for task in project.tasks:
-            if task._id == task_id:
-                task.priority = data.get("priority")
-                updated = True
-                break
-
-        project.save()
-
-        print(f"New task priority : {data.get("priority")}")
-        return jsonify({"message": "Update Successfull"}), 200
     except Exception as e:
         print(f"Error while updating task priority {str(e)}")
         return jsonify({"message" : "Error while updating task priority"}), 500
@@ -200,8 +180,20 @@ def updateTaskPriority(taskId):
 def UpdateTaskDescription(taskId):
     try:
         data = request.get_json()
-        print(f"New task description : {data.get("description")}")
-        return jsonify({"message": "Update Successfull"}), 200
+        
+        task_id = ObjectId(taskId)
+
+        task = Task.objects(_id=task_id).first()
+
+        if task:
+            task.task_notes = data.get("description")
+            task.save()
+            print("Task description update successful")
+            return jsonify({"message": "update successful"}), 200
+        else:
+            print("Updating description not succesful")
+            return jsonify({"error", "Something went wrong"}), 400
+
     except Exception as e:
         print(f"Error while updating task description {str(e)}")
         return jsonify({"message" : "Error while updating task description"})

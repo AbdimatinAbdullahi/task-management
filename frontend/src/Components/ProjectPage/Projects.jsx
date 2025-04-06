@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import axios from 'axios'
-import style from './project.module.css'
+import style from '../../Styles/project.module.css'
 import {Calendar, SquareKanban} from 'lucide-react'
 import KanbanView from '../Views/Kanban/KanbanView'
 import CalenderView from '../Views/CalenderView/CalenderView'
@@ -30,7 +30,7 @@ function Projects({project}) {
 
       <div className={style.projectViewContainer}>
         <div className={style.projectDisplay}>
-         {selectedView === "Kanban" && <KanbanView projectId={project._id.$oid} />}
+         {selectedView === "Kanban" && <KanbanView projectId={project.project_id} />}
          {selectedView === "Calender" && <CalenderView project={project} />}
         </div>
 

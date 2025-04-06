@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import axios from 'axios'
-import styles from './Style.module.css'
+import styles from '../../Styles/style.module.css'
 
 function VerifyPage() {
 

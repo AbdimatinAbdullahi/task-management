@@ -1,5 +1,6 @@
 import React, {useState, useEffect} from "react";
-import style from './kanban.module.css'
+import style from '../../../Styles/kanban.module.css'
+
 
 
 import {X, FlagTriangleRight, Badge, Users, Calendar, Turtle} from 'lucide-react'
@@ -17,28 +18,20 @@ function TaskModal({ onClose, task, formattedDate, projectName, projectId }) {
       onClose(); // Close when clicking outside the modal
     };
   
-
+    const [loading, setLoading] = useState(false)
     const [taskName, setTaskName] = useState(task.task_name)
     const [taskDescription, setTaskDescription] = useState(task.task_notes)
     const [status, setStatus] = useState(task.status)
-    const [startDate, setStartDate] = useState(
-        task.started_at ? new Date(task.started_at.$date).toISOString().split("T")[0] : ""
-      );
-    const [dueDate, setDueDate] = useState(
-        task.due_date ? new Date(task.due_date.$date).toISOString().split("T")[0] : ""
-      );
-
-    const [loading, setLoading] = useState(false)
+    const [startDate, setStartDate] = useState(task.started_at);
+    const [dueDate, setDueDate] = useState(task.due_date);
     const [error, setError] = useState("")
     const [priority, setPriority] = useState(task.priority)
 
     const updateTaskName = async () => {
         if (taskName.trim() === "" || taskName === task.task_name) return // prevent empty updates
-        
         setLoading(true)
-
         try {
-            const response = await axios.put(`http://127.0.0.1:5000/api/update_task_name/${task._id.$oid}`, {task_name: taskName, projectId: projectId});
+            const response = await axios.put(`http://127.0.0.1:5000/api/update_task_name/${task._id.$oid}`, {task_name: taskName});
 
             if(response.status === 200){
                 onClose()
@@ -62,7 +55,6 @@ function TaskModal({ onClose, task, formattedDate, projectName, projectId }) {
             if(response.status === 200){
                 onClose()
             }
-
         } catch (error) {
             setError("Update Failed")
             console.error("Error while updating status", error)
@@ -74,27 +66,15 @@ function TaskModal({ onClose, task, formattedDate, projectName, projectId }) {
 
 
     const updateTaskDates = async(e)=>{
-
-
-      if ((!startDate || startDate === (task.started_at ? new Date(task.started_at.$date).toISOString().split("T")[0] : "")) &&
-      (!dueDate || dueDate === (task.due_date ? new Date(task.due_date.$date).toISOString().split("T")[0] : ""))) {
-      return;
-      }
-
-      const payload = {
-        startDate: startDate || null,
-        dueDate: dueDate || null,
-        projectId: projectId
-      }
-
+      
       setLoading(true)
       try {
-        const response = await axios.put(`http://127.0.0.1:5000/api/update_task_dates/${task._id.$oid}`, {payload})
+        const response = await axios.put(`http://127.0.0.1:5000/api/update_task_dates/${task._id.$oid}`, {newStartDate: startDate, newDueDate: dueDate})
         if(response.status === 200){
           onClose()
         }
       } catch (error) {
-        
+        console.log(error)
       } finally {
         setLoading(false)
       }
@@ -117,6 +97,21 @@ function TaskModal({ onClose, task, formattedDate, projectName, projectId }) {
       }
     }
 
+    const updateTaskNotes = async ()=>{
+      if (task.task_notes === taskDescription) return
+      setLoading(true)
+      try {
+        const response = await axios.put(`http://127.0.0.1:5000/api/update_task_description/${task._id.$oid}`, {description: taskDescription})
+        if(response.status === 200){
+          onClose()
+        }
+      } catch (error) {
+        console.log(error) 
+      } finally{
+        setLoading(false)
+      }
+    }
+
 
 
   
@@ -131,7 +126,7 @@ function TaskModal({ onClose, task, formattedDate, projectName, projectId }) {
             </div>
   
             <div className={style.modalTaskDescription}>
-              <input type="text" value={taskDescription} onChange={(e)=> setTaskDescription(e.target.value)} className={style.task_description} />
+              <input type="text" value={taskDescription} onChange={(e)=> setTaskDescription(e.target.value)} className={style.task_description} onBlur={updateTaskNotes}/>
             </div>
   
         <div className={style.taskModalPrir}>

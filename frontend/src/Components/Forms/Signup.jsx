@@ -2,7 +2,9 @@ import React, {useState} from 'react'
 import { useForm } from 'react-hook-form'
 import {useNavigate, Link} from 'react-router-dom'
 
-import styles from '../Forms/Style.module.css'
+// import styles from '../../Styles/Style.module.css'
+// import styles from '../../Styles/Style.module.css'
+import styles from '../.././Styles/Style.module.css'
 import { useAuth } from '../../Contexts/AuthContext'
 
 function Signup() {

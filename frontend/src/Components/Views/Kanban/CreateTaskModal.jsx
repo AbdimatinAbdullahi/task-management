@@ -1,5 +1,7 @@
 import React, {useState, } from "react"
-import style from '../Kanban/kanban.module.css'
+// import style from '../Kanban/kanban.module.css'
+import style from '../../../Styles/kanban.module.css'
+
 import {CheckCheck, CircleX} from 'lucide-react'
 function CreateTaskModal({onclose}){
 

@@ -44,22 +44,38 @@ class Verification(db.Model):
         self.expires_at = datetime.utcnow() + timedelta(minutes=10)
 
 
+class Project(db.Model):
+    project_id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, ForeignKey("user.id"), nullable=False)
+    description = db.Column(db.String)
+    name = db.Column(db.String(20), nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow())
+    finished_at = db.Column(db.DateTime)
 
-# Projects Managment on MongoDB
-connect("projects", host="mongodb://127.0.0.1:27017/")
-class Task(EmbeddedDocument):
+    def to_dict(self):
+        return {
+            "project_id": self.project_id,
+            "user_id": self.user_id,
+            "name": self.name,
+            "description": self.description,
+            "created_at": self.created_at.isoformat() if self.created_at else None,
+            "finished_at": self.finished_at.isoformat() if self.finished_at else None
+        }
+
+
+# Tasks Managment on MongoDB
+connect("projectTasks", host="mongodb://127.0.0.1:27017/")
+class Task(Document):
+    meta = {
+        "collection" : "tasks"
+    }
     _id = ObjectIdField(default=ObjectId, primary_key=True)
+    project_id = IntField()
     task_name= StringField()
     status = StringField(default='To-do')
     created_at =  DateTimeField(default=datetime.utcnow())
-    due_date = DateTimeField(default=None)
-    started_at = DateTimeField(default=None)
+    due_date = StringField(default=None)
+    started_at = StringField(default=None)
     task_notes = StringField()
     priority = StringField()
-
-class Project(Document):
-    name = StringField(required=True)
-    user_id = IntField(required=True)
-    description= StringField()
-    created_at = DateTimeField(default=datetime.utcnow())
-    tasks = ListField(EmbeddedDocumentField(Task))
+    project_name = StringField()

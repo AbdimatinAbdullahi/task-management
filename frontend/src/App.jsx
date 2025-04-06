@@ -8,7 +8,6 @@ import Login from './Components/Forms/Login'
 import Signup from './Components/Forms/Signup'
 import ResetPassword from './Components/Forms/ResetPassword'
 import VerifyPage from './Components/Forms/VerifyPage'
-import Projects from './Components/ProjectPage/Projects'
 import MainPage from './Components/ProjectPage/MainPage'
 
 import { AuthProvider } from './Contexts/AuthContext'
