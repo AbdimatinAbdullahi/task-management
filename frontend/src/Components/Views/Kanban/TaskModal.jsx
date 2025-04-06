@@ -8,7 +8,7 @@ import axios from "axios";
 
 
 
-function TaskModal({ onClose, task, formattedDate, projectName, projectId }) {
+function TaskModal({ onClose, task, formattedDate, projectName, projectId, updateTaskStatus }) {
 
     const handleModalClick = (e) => {
       e.stopPropagation(); // Prevent click from reaching parent elements
@@ -43,25 +43,6 @@ function TaskModal({ onClose, task, formattedDate, projectName, projectId }) {
         } finally {
             setLoading(false)
         }
-    }
-
-
-    const updateTaskStatus = async (e) => {
-        if(task.status === status) return
-
-        setLoading(true)
-        try {
-            const response = await axios.put(`http://127.0.0.1:5000/api/update_task_status/${task._id.$oid}`, {status: status,  projectId: projectId});
-            if(response.status === 200){
-                onClose()
-            }
-        } catch (error) {
-            setError("Update Failed")
-            console.error("Error while updating status", error)
-        } finally {
-            setLoading(false)
-        }
-
     }
 
 
@@ -137,7 +118,7 @@ function TaskModal({ onClose, task, formattedDate, projectName, projectId }) {
             <div className={style.icons}> <Badge color='gray' size={40} /> </div>
             <div className={style.headerName}> <h3>Status</h3>   </div>
             <div className={style.status}>
-                   <select className={style.status}  value={status} onChange={(e) => setStatus(e.target.value)} onBlur={updateTaskStatus} >
+                   <select className={style.status}  value={status} onChange={(e) => setStatus(e.target.value)} onBlur={() => updateTaskStatus(task, status, task._id.$oid, onClose)} >
                         {["To-do", "In Progress", "In Review", "Complete"].map((option) => (  <option key={option} value={option}> {option} </option>))}
                     </select>
                 </div>

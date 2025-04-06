@@ -9,13 +9,13 @@ import style from '../../../Styles/kanban.module.css'
 import TaskModal from './TaskModal'
 
 
-const TaskItem = ({task, projectName, projectId})=>{
+const TaskItem = ({task, projectName, projectId, updateTaskStatus})=>{
 
   const [taskModalOpen, setTaskModalOpen] = useState(false)
 
   const [{isDragging}, drag] = useDrag(()=>({
       type: "TASK",
-      item: {taskName: task.task_name},
+      item: {...task},
       collect: (monitor)=>({
         isDragging: !!monitor.isDragging()
       }),
@@ -64,6 +64,7 @@ const TaskItem = ({task, projectName, projectId})=>{
           formattedDate={formattedDate}
           projectName={projectName}
           projectId={projectId}
+          updateTaskStatus={updateTaskStatus}
           />
         }
 

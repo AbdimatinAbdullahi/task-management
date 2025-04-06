@@ -28,7 +28,6 @@ def get_project_by_id(projectId):
     try:
         # Fetch all tasks for the given projectId
         tasks = Task.objects(project_id=projectId)
-        print(projectId)
         if not tasks:
             print(f"No tasks found for project with ID {projectId}")
             return jsonify({"message": f"No tasks found for project with ID {projectId}"}), 404
@@ -99,6 +98,7 @@ def updateTaskStatus(taskId):
 
         
         task_id = ObjectId(taskId)
+        print(task_id)
         
         task = Task.objects(_id=task_id).first()
 

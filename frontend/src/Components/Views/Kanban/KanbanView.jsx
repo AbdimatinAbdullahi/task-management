@@ -67,20 +67,36 @@ function KanbanView({projectId}) {
 
 const DropZone = ({status, tasks, projectId, projectName})=>{
   
+  const updateTaskStatus = async (task, newTaskStatus, taskId, onClose) => {
+    if(task.status === newTaskStatus) return
+    try {
+        const response = await axios.put(`http://127.0.0.1:5000/api/update_task_status/${taskId}`, {status: newTaskStatus});
+        if(response.status === 200){
+            onClose()
+        }
+    } catch (error) {
+        console.error("Error while updating status", error)
+    }
+  }
+
   const [{isOver}, drop] = useDrop(()=>({
     accept: "TASK",
-    drop: (item) => console.log(`Task ${item.task_name} moved to ${status}`),
+    drop: (item) => {
+      updateTaskStatus(item, status, item._id.$oid)
+      },
     collect: (monitor) => ({
       isOver: !!monitor.isOver(),
     }),
   }));
+
+  
 
   return (
     <div ref={drop} className={style.taskBoard} style={{ width: "25%", height: "100%", overflowY: "scroll"}}>
 
       <div className={style.addItem}>{status} </div>
 
-      {tasks.map((task)=>(<TaskItem task={task} projectName={projectName} projectId={projectId}/>))}
+      {tasks.map((task)=>(<TaskItem task={task} projectName={projectName} projectId={projectId} updateTaskStatus={updateTaskStatus} />))}
 
     </div>
   )
