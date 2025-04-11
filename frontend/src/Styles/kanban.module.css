@@ -16,6 +16,7 @@
     width: 25%;
     height: 98%;
     overflow-y: scroll;
+    padding-left: 10px;
 }
 
 .taskBoard::-webkit-scrollbar{
@@ -39,11 +40,22 @@
 .taskItem{
     width: 95%;
     height: 30%;
-    border: 1px solid green; 
+    border: 3px solid;
     padding-left: 3%;
     border-radius: 4px;
     margin-bottom: 10px;
 }
+
+
+.draggingState {
+    color: gray;
+    transform: perspective(600px) rotateX(10deg) rotateY(5deg) skewY(2deg);
+    transition: transform 0.2s ease;
+    border: 3px solid gray;
+    cursor: move;
+    /* opacity: 0.5; */
+  }
+  
 
 .taskProject{
     width: 70%;
@@ -379,21 +391,39 @@
 
 
 .toDo {
-    background-color: rgb(255, 166, 166);
+    background-color: rgb(255, 226, 226);
   }
   
   .inProgress {
-    background-color: rgb(96, 238, 106);
+    background-color: rgb(206, 255, 209);
   }
   
   .inReview {
-    background-color: rgb(255, 159, 233);
+    background-color: rgb(70, 172, 209);
   }
   
   .complete {
-    background-color: green;
+    background-color: rgba(10, 47, 10, 0.1);
   }
   
+
+
+  .toDoBorder {
+    border: 3px solid rgba(255, 166, 166);
+  }
+  
+  .inProgressBorder {
+    border: 3px solid rgb(96, 238, 106);
+  }
+  
+  .inReviewBorder {
+    border: 3px solid rgb(255, 159, 233);
+  }
+  
+  .completeBorder {
+    border: 3px solid green;
+  }
+   
   
 
   .medium{
@@ -406,4 +436,24 @@
 
   .normal{
     background-color: rgb(10, 220, 17);
+  }
+
+
+  .createTask{
+    width: 100%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+
+  .deleteTask{
+    margin-top: 40px;
+    width: 90%;
+    border:  1px solid red;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: space-evenly;
   }

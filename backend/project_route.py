@@ -35,7 +35,7 @@ def get_project_by_id(projectId):
         # Convert tasks to JSON (no need to use json.loads here)
         tasks_json = tasks.to_json()
         # Return the response
-        return jsonify({"message": "Success fetching the project", "project": json.loads(tasks_json)}), 200
+        return jsonify({"message": "Success fetching the project", "tasks": json.loads(tasks_json)}), 200
     except Exception as e:
         print(f"Error: {str(e)}")
         return jsonify({"message": f"Error while getting the project with ID {projectId}"}), 500
@@ -198,3 +198,56 @@ def UpdateTaskDescription(taskId):
         print(f"Error while updating task description {str(e)}")
         return jsonify({"message" : "Error while updating task description"})
    
+
+@project_bp.route('/create_task', methods=["POST"])
+def create_task():
+    try:
+        data = request.get_json()
+        print(data)
+        taskName = data.get("taskName")
+        taskNotes = data.get("taskNotes")
+        priority = data.get("priority")
+        startDate = data.get("startDate")
+        dueDate = data.get("dueDate")
+        status = data.get("status")
+        projectId = data.get("projectId")
+        projectName = data.get("projectName")
+
+        try:
+            task = Task(
+                project_id=projectId,
+                project_name=projectName,
+                task_name=taskName,
+                task_notes=taskNotes,
+                priority=priority,
+                due_date=dueDate,
+                started_at=startDate,
+                status=status,
+            )
+            task.save()
+            task_json = task.to_json()
+            return jsonify({"message": "Tasked Added!", "task": json.loads(task_json)}), 200
+        except Exception as e:
+            print(f"Error occured: {str(e)}")
+            return jsonify({"error" : "Task addition falied!"}), 500
+        # return jsonify({"message" : "Error occured", "task": data}), 200
+
+    except Exception as e:
+        print(f"Error while adding task {str(e)}")
+        return jsonify({"error" : "Error occured"}), 500
+    
+
+@project_bp.route('/delete_task/<taskId>', methods=["PUT"])
+def delete_project(taskId):
+    try:
+        task_id = ObjectId(taskId)
+        print("Task id:", task_id)
+        try:
+            task = Task.objects(_id=task_id).first()
+            task.delete()
+            return jsonify({"message": "Deleted successful"}), 200
+        except Exception as e:
+            return jsonify({"error" : "Something went wrong"}), 500
+    except Exception as e:
+        print(f"Error while delete task: ", str(e))
+        return jsonify({"error" : "Error deleting task"}), 500
