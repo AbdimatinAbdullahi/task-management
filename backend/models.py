@@ -62,6 +62,23 @@ class Project(db.Model):
             "finished_at": self.finished_at.isoformat() if self.finished_at else None
         }
 
+class Invitations(db.Model):
+    _id = db.Column(db.Integer, primary_key=True)
+    email_address = db.Column(db.String(100), nullable=False, unique=True)
+    project_id = db.Column(db.Integer,  ForeignKey("project.project_id"), nullable=False,)
+    username = db.Column(db.String(100), nullable=False)
+    status = db.Column(db.Boolean,nullable=False)
+    token = db.Column(db.String(1000), nullable=False)
+    
+    def to_dict(self):
+        return {
+            "projectId" : self.project_id,
+            "username": self.username,
+            "email": self.email_address,
+            "id": self._id,
+            "status": self.status,
+        }
+
 
 # Tasks Managment on MongoDB
 connect("projectTasks", host="mongodb://127.0.0.1:27017/")
@@ -79,3 +96,4 @@ class Task(Document):
     task_notes = StringField()
     priority = StringField()
     project_name = StringField()
+    assigned_users = ListField(StringField(), max_length=5)

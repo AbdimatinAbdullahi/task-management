@@ -16,15 +16,13 @@ function MainPage() {
     const [projects, setProjects] = useState([])
     const [activeComponent, setActiveComponent] = useState('dashboard')
     const [activeProject, setActiveProject] = useState(null)
-
+    const [projectAssigness, setProjectAssigness] = useState([])
 
     const [createModal, setCreateModal] = useState(false)
     const [loading, setLoading] = useState(false)
 
 
     useEffect(()=>{
-
-
         setLoading(true)
         const response = axios.get(`http://127.0.0.1:5000/api/projects/${user_id}`)
         .then((response)=>{
@@ -45,12 +43,25 @@ function MainPage() {
 
     }
 
-
     const handleProjectClick = (project)=>{
         setActiveProject(project)
         setActiveComponent("projects")
-    }
+        
+        const fetchUsers = async ()=>{
+          const res = await axios.get(`http://127.0.0.1:5000/api/fetch_assigness/${project.project_id}`)
+          if(res.status === 200){
+            setProjectAssigness(res.data.assigness)
+          }
+          else{
+            alert("Something went wrong while fetching the assigness!")
+          }
+        }
 
+
+        
+
+        fetchUsers()
+    }
 
     // If the component is changed to dashboard, the activeProject is set to null for purpose of styling
     useEffect(() => {
@@ -114,7 +125,23 @@ function MainPage() {
 
             </div>
 
+            {/* This Part Man */}
+            {
+                activeProject && (
+                    <>
+                    <h2>Hello {activeProject.name}</h2>
+                    {
+                        
+                        projectAssigness.map((assigness)=>(
+                            <h2>{assigness.email}</h2>
+                        ))
+                    }
+                    </>
+                )
+            }
+
         </div>
+
 
 
         {/* Container to hold projects and Dashboard dynamicaly */}
