@@ -1,12 +1,15 @@
 import React, { useState, useEffect } from 'react'
 // import style from '../../Style/mainpage.module.css'
 import style from '../../Styles/mainpage.module.css'
-import { LayoutDashboard, FolderPlus, BadgePlus, BookmarkX } from  'lucide-react'
+import { LayoutDashboard, FolderPlus, BadgePlus, BookmarkX, Trash2, Plus } from  'lucide-react'
 
 
 import Projects from './Projects'
 import Dashboard from '../Forms/Dashboard/Dashboard'
 import axios from 'axios'
+import DeleteProjectModal from '../Modals/DeleteProjectModal'
+import InviteModal from '../Modals/InviteModal'
+import UserDetailModal from '../Modals/UserDetailModal'
 
 const user_id = 8
 
@@ -17,9 +20,12 @@ function MainPage() {
     const [activeComponent, setActiveComponent] = useState('dashboard')
     const [activeProject, setActiveProject] = useState(null)
     const [projectAssigness, setProjectAssigness] = useState([])
-
+    const [completeStatus, setcompleteStatus] = useState(0)
     const [createModal, setCreateModal] = useState(false)
     const [loading, setLoading] = useState(false)
+    const [deleteProjectModalOpen, setDeleteProjectModalOpen] = useState(false)
+    const [inviteUserModalOpen, setInviteUserModalOpen] = useState(false)
+    const [invitedUserModal, setInvitedUserModal] = useState(false)
 
 
     useEffect(()=>{
@@ -27,7 +33,6 @@ function MainPage() {
         const response = axios.get(`http://127.0.0.1:5000/api/projects/${user_id}`)
         .then((response)=>{
             setProjects(response.data.projects)
-            console.log(response.data.projects)
         })
         .catch((error)=>{
             setError(error.message)
@@ -36,6 +41,7 @@ function MainPage() {
             setLoading(false)
         )
     }, [])
+
 
     // Function to toggle between Projects and Dasboard Component
     const handleItemClick = (component) =>{
@@ -57,10 +63,19 @@ function MainPage() {
           }
         }
 
-
-        
+    const projectProgres = async ()=>{
+        try {
+            const response = await axios.get(`http://127.0.0.1:5000/api/project_progress/${project.project_id}`)
+            if(response.status == 200){
+                setcompleteStatus(response.data.percentComplete)
+            }
+        } catch (error) {
+            console.error(error)
+        }
+    }
 
         fetchUsers()
+        projectProgres()
     }
 
     // If the component is changed to dashboard, the activeProject is set to null for purpose of styling
@@ -93,7 +108,7 @@ function MainPage() {
 
             {/* Simplify features container */}
             <div className={style.taskFeatures}>
-                    <div  className={`${style.featureDashboard} ${activeComponent == "dashboard" && style.active}`}   onClick={() => handleItemClick("dashboard")} >
+                    <div className={`${style.featureDashboard} ${activeComponent == "dashboard" && style.active}`}   onClick={() => handleItemClick("dashboard")} >
                         <LayoutDashboard color='#e68fde' />
                         Dashboard
                     </div>
@@ -102,7 +117,6 @@ function MainPage() {
                     <div  className={`${style.featureProjects}`} >
                                 {/* Header for projects */}
                                 <h4>Projects</h4>
-
                                 {
                                 projects.map((project) => (
                                     <div 
@@ -128,15 +142,43 @@ function MainPage() {
             {/* This Part Man */}
             {
                 activeProject && (
-                    <>
-                    <h2>Hello {activeProject.name}</h2>
-                    {
-                        
-                        projectAssigness.map((assigness)=>(
-                            <h2>{assigness.email}</h2>
-                        ))
-                    }
-                    </>
+                <div className={style.projectBar}>
+
+                    <div className={style.projectBarHeader}>
+                        <div className={style.projectSatusTracker}>
+                            <div className={style.projectTrack}>
+                                <div className={style.InnerProjectTrack} style={{ width: `${completeStatus}%` }} />
+                            </div>
+                            <div className={style.projectStatusText}>
+                                { completeStatus }% Complete
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div className={style.assigness}>
+                        {projectAssigness.map((assignee) => (
+                             <div className={style.assigneeContainer} onClick={()=> setInvitedUserModal(true)} > 
+                                <div className={style.assigneeIcon}> {assignee.email?.charAt().toUpperCase()} </div> 
+                                <div className={style.assigneeEmail}>{assignee.email}</div>
+                            </div>                         
+                        ))}
+
+                        {
+                            invitedUserModal && <UserDetailModal onClose={()=> setInvitedUserModal(false)} />
+                        }
+
+                        {
+                            projectAssigness.length < 5 && ( <div className={`${style.assigneeContainer} ${style.inviteUser} `  } onClick={()=> setInviteUserModalOpen(true)} > Invite User <Plus size={40} strokeWidth={4} color='gray' /> </div> )
+                        }
+                        {inviteUserModalOpen && <InviteModal onClose={()=> setInviteUserModalOpen(false)} project_id={activeProject.project_id} />}
+                    </div>
+
+                    <div className={style.deleteProjectContainer} onClick={()=> setDeleteProjectModalOpen(true)} > Delete </div>
+
+                        { deleteProjectModalOpen && <DeleteProjectModal projectId={activeProject.project_id} projectName={activeProject.name} onClose={()=> setDeleteProjectModalOpen(false)}/> }
+
+                </div>
                 )
             }
 

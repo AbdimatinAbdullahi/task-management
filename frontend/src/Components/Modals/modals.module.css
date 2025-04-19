@@ -1,0 +1,330 @@
+:root{
+    --splie-sans: "Spline sans mono"
+}
+
+.overlay{
+    width: 100vw;
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+}
+
+.modalContainer{
+    width: 35%;
+    height: 35%;
+    background-color: white;
+    border-radius: 31px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.modalDeleteHeader{
+    margin-top: 40px;
+    color: #AF2BC1;
+    font-family: var(--splie-sans);
+    font-weight: 700;
+    font-size: 30px;
+    margin-top: 40px;
+}
+
+.deleteWarning{
+    color: #6B7280;
+    width: 70%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    margin-top: 30px;
+}
+
+.warningHeader{
+    font-size: 20px;
+    color: red;
+}
+.warningText{
+    width: 100%;
+    text-align: center;
+}
+
+.actionButton{
+    width: 80%;
+    height: 40%;
+    display: flex;
+    align-items: center;
+    justify-content: space-evenly;
+}
+
+.actionButton button{
+    width: 40%;
+    height: 40%;
+    border-radius: 30px;
+    background: #AF2BC1;
+    font-size: 30px;
+    font-weight: 800;
+    border: none;
+    outline: none;
+}
+
+/* Modal Invite users styles */
+.modalInviteContainer{
+    width: 30%;
+    height: 60%;
+    background-color: white;
+    border-radius: 23px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    /* justify-content: center; */
+    position: relative;
+}
+
+.inviteHeader{
+    margin-top: 43px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-around;
+    width: 80%;
+    height: 20%;
+}
+.headerOne{
+    font-size: 30px;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.headerTwo{
+    font-size: 32px;
+    color: #AF2BC1;
+    font-weight: bolder;
+    font-family: var(--splie-sans);
+}
+
+.invitesInputs{
+    width: 90%;
+    height: 30%;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    flex-direction: column;
+    margin-top: 50px;
+    
+}
+
+.invitesInputs input{
+    width: 96%;
+    min-height: 60px;
+    border-radius: 4px;
+    border: 2.5px solid #d1c8c8;
+    padding-left: 4%;
+    font-size: 20px;
+    font-weight: 600;
+}
+
+.invitesInputs input::placeholder{
+    color: rgba(0, 0, 0, 0.25);
+    font-size: 15px;
+}
+
+.invitesInputs input:focus{
+    border: 2.5px solid #AF2BC1;
+    outline: none;
+}
+
+.invitesDiv{
+    width: 90%;
+    margin-top: 20px;
+    display: flex;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+.inviteOkay {
+    height:60px;
+    width: 40%;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 12px;
+    font-size: 24px;
+    font-weight: bolder;
+    text-transform: uppercase;
+    background-color: #AF2BC1;
+}
+
+
+.cancleInvite{
+    height:55px;
+    width: 40%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    font-weight: bolder;
+    text-transform: uppercase;
+    color: #848383;
+    border-radius: 12px;
+    background-color: rgba(175, 43, 193, 0.11);
+}
+
+#cancel{
+    color: #848383;
+    background-color: rgba(175, 43, 193, 0.11);
+}
+
+.invitesWarning{
+    position: absolute;
+    bottom: 0;
+    margin-bottom: 20px;
+    width: 50%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: #6B7280;
+    text-align: center;
+}
+
+
+
+/* User Details (Information) Modal */
+
+.userDetailContainer{
+    width: 40%;
+    aspect-ratio: 1/1;
+    background-color: white;
+    border-radius: 31px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    /* justify-content: center; */
+    position: relative; 
+}
+
+.infoIcon{
+    position: absolute;
+    top: 18px;
+    left: 18px;   
+}
+
+.closeIcon{
+    position: absolute;
+    top: 18px;
+    right: 18px;
+}
+
+.userInfo{
+    width: 90%;
+    display: grid;
+    grid-template-columns: 1fr 2fr 3fr 0.5fr;
+    align-items: center;
+    justify-content: space-around;
+    margin-top: 4pc;
+}
+
+
+.avatarInfo{
+    width: 40px;
+    aspect-ratio: 1/1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius:50%;
+    background-color: #f4f0f0;
+}
+
+.userNamesInfo, .emailInfo, .totalAssignedTask{
+    color: gray;
+    font-size: 20px;
+    font-weight: 700;
+}
+
+.deleteUser{
+    background: #AF2BC1;
+    font-family: var(--splie-sans);
+    text-transform: uppercase;
+    position: absolute;
+    bottom: 10px;
+    height: 60px;
+    width: 95%;
+    border-radius: 30px;
+    outline: none;
+    border: none;
+}
+
+.taskItems{
+    width: 95%;
+    height: 50%;
+    border: 1px solid #6B7280;
+    border-radius: 12px;
+    margin-top: 2%;
+    margin-top: 6%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.taskItemsTwo{
+    display: grid;
+    grid-template-columns: 2.4fr 1.6fr 2fr 0.5fr auto;
+    grid-template-rows: 1;
+    height: 50px;
+    background-color: rgba(175, 43, 193, 0.11);
+    margin-bottom: 20px;
+    margin-top: 10px;
+    border-radius: 4px;
+    border: none;
+    width: 98%;
+    align-items: center;
+    transition: background-color 0.2s ease;
+    white-space: nowrap;
+    overflow: hidden;
+    &:hover{
+        box-shadow:0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+}
+
+.dates{
+    display: flex;
+    align-items: center;
+    justify-content: space-evenly;
+}
+
+ .taskName, .dates{
+    display: flex;
+    overflow: hidden;
+    align-items: center;
+    margin-left: 4px;
+    font-size: 16px;
+    font-weight: 700;
+    color: #848383;
+}
+
+.projectName{
+    color: #AF2BC1;
+    font-size: 16px;
+    font-weight: 700;
+    font-family: var(--splie-sans);
+    margin-left: 5px;
+}
+
+.userDelete{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    &:hover{
+        transform: scale(1.5) translateX(-2px);
+        color: red;
+    }
+}

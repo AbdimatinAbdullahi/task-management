@@ -19,8 +19,6 @@ def generate_code():
     return ''.join(random.choice(characters) for i in range(6))
 
 
-
-
 @auth_bp.route('/signup', methods=["POST"])
 def register_user():
     data = request.get_json()

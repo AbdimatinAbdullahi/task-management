@@ -6,33 +6,45 @@ import CreateTaskModal from './CreateTaskModal';
 import TaskItem from './TaskItem';
 import axios from 'axios';
 
+
+
+
 function KanbanView({ projectId }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [project, setProject] = useState(null);
+  const [tasks, setTasks] = useState([]); // ← renamed
+  const [error, setError] = useState("");
 
   useEffect(() => {
     setLoading(true);
+    setError("")
     axios.get(`http://127.0.0.1:5000/api/get_tasks/${projectId}`)
       .then((response) => {
-        setProject(response.data.tasks);
-        console.log(response.data);
+        if (response.status === 200) {
+          setTasks(response.data.tasks); // ← renamed
+          console.log(response.data.tasks);
+        } else if (response.status === 404) {
+          setTasks([])
+          setError(response?.message || "No tasks Found!");
+        } else {
+          setTasks([])
+          setError("Something went wrong!");
+        }
       })
-      .catch((error) => console.error("Error fetching project", error))
+      .catch((error) => {
+        setTasks([]); // ← Also clear on request failure
+        console.error("Error fetching tasks", error);
+        setError(error.response.data.message || "No tasks Found");
+      })
       .finally(() => setLoading(false));
-
   }, [projectId]);
 
 
-  useEffect(() => {
-    if (project) {
-      console.log( project);
-    }
-  }, [project]);
-  
 
   if (loading) return <p>Loading...</p>;
-  if (!project) return <p>No project found.</p>;
+  if (error !== "") return <p>{error}</p>;
+  if (!tasks || tasks.length === 0) return <p>No tasks found.</p>; // ← renamed
+
 
   const handleModalOpen = () => {
     setIsModalOpen(true);
@@ -42,32 +54,35 @@ function KanbanView({ projectId }) {
     setIsModalOpen(false);
   };
 
-  const updateTask = (updateTask)=>{
-    setProject(prevProject => prevProject.map((task)=>(task._id.$oid === updateTask._id.$oid ? updateTask : task)))
-  }
+  const updateTask = (updateTask) => {
+    setTasks(prevTasks =>
+      prevTasks.map((task) =>
+        task._id.$oid === updateTask._id.$oid ? updateTask : task
+      )
+    );
+  };
 
   const addNewTask = (newTask) => {
-    setProject((prevProject) => [...prevProject, newTask]);
-  }
+    setTasks((prevTasks) => [...prevTasks, newTask]); // ← renamed
+  };
 
-  const removeDeletedTaskFromUI = (removedTask_id) =>{
-    setProject( prevProject => prevProject.filter((task)=>(
-      task._id.$oid !== removedTask_id
-    )))
-  }
-  
+  const removeDeletedTaskFromUI = (removedTask_id) => {
+    setTasks(prevTasks =>
+      prevTasks.filter((task) => task._id.$oid !== removedTask_id)
+    );
+  };
 
   return (
     <div className={style.kanbanContainer}>
       {isModalOpen && <CreateTaskModal onClose={handleCloseModal} projectId={projectId} />}
       <DndProvider backend={HTML5Backend}>
-        {["To-do", "In Progress", "In Review", "Complete"].map((status, index) => (
-          <DropZone 
-            key={status} 
-            status={status} 
-            projectId={projectId} 
-            tasks={project.filter((task) => task.status === status)} 
-            projectName={project[0].project_name} 
+        {["To-do", "In Progress", "In Review", "Complete"].map((status) => (
+          <DropZone
+            key={status}
+            status={status}
+            projectId={projectId}
+            tasks={tasks.filter((task) => task.status === status)} // ← renamed
+            projectName={tasks[0]?.project_name} // ← renamed
             updateTask={updateTask}
             addNewTask={addNewTask}
             removeDeletedTaskFromUI={removeDeletedTaskFromUI}
@@ -77,6 +92,7 @@ function KanbanView({ projectId }) {
     </div>
   );
 }
+
 
 const DropZone = ({ status, tasks, projectId, projectName, updateTask, addNewTask, removeDeletedTaskFromUI }) => {
  

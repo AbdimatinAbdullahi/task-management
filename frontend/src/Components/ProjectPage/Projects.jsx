@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react'
-import axios from 'axios'
 import style from '../../Styles/project.module.css'
 import {Calendar, SquareKanban} from 'lucide-react'
 import KanbanView from '../Views/Kanban/KanbanView'

@@ -40,6 +40,7 @@ def get_project_by_id(projectId):
         print(f"Error: {str(e)}")
         return jsonify({"message": f"Error while getting the project with ID {projectId}"}), 500
 
+
 @project_bp.route("/create-new-project", methods=["POST"])
 def create_new_project():
     try:
