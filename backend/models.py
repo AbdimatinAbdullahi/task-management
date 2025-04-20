@@ -64,7 +64,7 @@ class Project(db.Model):
 
 class Invitations(db.Model):
     _id = db.Column(db.Integer, primary_key=True)
-    email_address = db.Column(db.String(100), nullable=False, unique=True)
+    email_address = db.Column(db.String(100), nullable=False)
     project_id = db.Column(db.Integer,  ForeignKey("project.project_id"), nullable=False,)
     username = db.Column(db.String(100), nullable=False)
     status = db.Column(db.Boolean,nullable=False)

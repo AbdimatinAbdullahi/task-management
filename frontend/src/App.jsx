@@ -9,11 +9,10 @@ import Signup from './Components/Forms/Signup'
 import ResetPassword from './Components/Forms/ResetPassword'
 import VerifyPage from './Components/Forms/VerifyPage'
 import MainPage from './Components/ProjectPage/MainPage'
+import Invitation from './Components/Forms/Invitation'
+import UserKanban from './Components/Views/Kanban/UserKanban'
 
 import { AuthProvider } from './Contexts/AuthContext'
-
-
-
 
 
 function App() {
@@ -21,7 +20,6 @@ function App() {
     <Router>    
       <AuthProvider> 
       <Routes>
-
         {/* Routes */}
         <Route path='/' element={<LandingPage/>}/ >
         <Route path='/login' element={<Login/>}/>
@@ -29,7 +27,8 @@ function App() {
         <Route path='/reset-password' element={<ResetPassword/>}/>
         <Route path='/verify-email' element={<VerifyPage/>}/> 
         <Route path='/task' element={<MainPage/>} />   
-    
+        <Route path='/invitation' element={<Invitation/>} />
+        <Route path='user' element={<UserKanban />} />
       </Routes>
       </AuthProvider>  
     </Router>

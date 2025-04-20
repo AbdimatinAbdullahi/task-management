@@ -104,4 +104,5 @@ Postgres was chosen for authentication and user/role management because of its:
 ## 🙌 Author
 
 Built by [**YOU**] — a software engineering student growing fast 🚀 and building serious tools from scratch.
-#Planned finished Day: 26th April, 2025
+
+# Planned finished Day: 26th April, 2025

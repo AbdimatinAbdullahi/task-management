@@ -28,7 +28,7 @@ def sendInvitationEmail(email, code, projectName, user_id):
     recipient = email
     sender = "abdimatinhassan@gmail.com"
 
-    link = f"http://127.0.0.1:5000/accept_invitation?user_id={user_id}&code={code}"
+    link = f"http://localhost:5173/invitation?user_id={user_id}&code={code}&email={email}"
     body = f"Click this link to accept the invitation: {link}"
 
     msg = Message(
