@@ -69,8 +69,8 @@ Postgres was chosen for authentication and user/role management because of its:
 
 | Area                    | Tech Used                          |
 |-------------------------|------------------------------------|
-| Backend API             | Node.js + Express                  |
-| Authentication          | JWT, Bcrypt, Nodemailer            |
+| Backend API             | Python + Flask                     |
+| Authentication          | JWT, Bcrypt, flaskmain             |
 | Database (Users, Auth)  | PostgreSQL                         |
 | Database (Tasks)        | MongoDB                            |
 | Frontend                | React (Kanban board)               |
