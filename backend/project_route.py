@@ -1,10 +1,30 @@
 from flask import Blueprint, current_app, jsonify, json, request
-from models import Task, Project
+from models import Task, Project, Workspace, db
 from bson import ObjectId
 from datetime import datetime
 
 project_bp = Blueprint("project", __name__, url_prefix='/api')
 
+
+
+
+@project_bp.route('/create-workspace', methods=["POST"])
+def create_workspace():
+    try:
+        data = request.get_json()
+        owner_id = data.get("owner_id")
+        name = data.get("name")
+        workspace = Workspace.query.filter_by(owner_id=owner_id).first()
+        if workspace:
+            return jsonify({"error" : "Workspace already exist"}), 401
+        
+        new_workspace = Workspace(name=name, owner_id=owner_id)
+        db.session.add(new_workspace)
+        db.session.commit()
+        return jsonify({"message" : "Workspace create successfully"}), 200
+    except Exception as e:
+        print(f"Something went wrong while creating workspace: {str(e)}")
+        return jsonify({"error" : "Something went wrong"}), 500
 
 
 @project_bp.get('/projects/<user_id>')

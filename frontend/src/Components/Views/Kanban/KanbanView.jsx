@@ -2,8 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { DndProvider, useDrop } from 'react-dnd';
 import { HTML5Backend, getEmptyImage } from 'react-dnd-html5-backend';
 import style from '../../../Styles/kanban.module.css';
-import CreateTaskModal from './CreateTaskModal';
-import TaskItem from './TaskItem';
+import CreateTaskModal from '../../Modals/CreateTaskModal';
+import TaskItem from '../../ProjectPage/TaskItem';
 import axios from 'axios';
 
 
@@ -122,9 +122,7 @@ const DropZone = ({ status, tasks, projectId, projectName, updateTask, addNewTas
 
   const [createTaskModal, setCreateTaskModal] = useState(false)
 
-  
-
-  return (
+return (
     <div ref={drop} className={style.taskBoard} >
       <div className={style.addItem}>{status}</div>
       {tasks.map((task) => (

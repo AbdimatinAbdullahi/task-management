@@ -1,284 +1,211 @@
-import React, { useState, useEffect } from 'react'
-// import style from '../../Style/mainpage.module.css'
+import React, { useEffect, useState } from 'react'
+import { House, Mail, BadgePlus, UserPlus, Plus } from 'lucide-react'
 import style from '../../Styles/mainpage.module.css'
-import { LayoutDashboard, FolderPlus, BadgePlus, BookmarkX, Trash2, Plus } from  'lucide-react'
-
-
-import Projects from './Projects'
-import Dashboard from '../Forms/Dashboard/Dashboard'
+import { useSearchParams } from 'react-router-dom'
+import { HTML5Backend } from 'react-dnd-html5-backend'
+import { DndProvider, useDrag, useDrop } from 'react-dnd'
+import { getProjectTasks, getUserWorkspace, getWorkspaceMembers, getWorkspaceProjects, projects, tasks } from '../../SampleAPI/projectandTasks'
 import axios from 'axios'
-import DeleteProjectModal from '../Modals/DeleteProjectModal'
-import InviteModal from '../Modals/InviteModal'
-import UserDetailModal from '../Modals/UserDetailModal'
-
-const user_id = 8
-
+import { div } from 'framer-motion/client'
 
 function MainPage() {
+  const [searchParams] = useSearchParams()
+  const user_id = searchParams.get("id")
 
-    const [projects, setProjects] = useState([])
-    const [activeComponent, setActiveComponent] = useState('dashboard')
-    const [activeProject, setActiveProject] = useState(null)
-    const [projectAssigness, setProjectAssigness] = useState([])
-    const [completeStatus, setcompleteStatus] = useState(0)
-    const [createModal, setCreateModal] = useState(false)
-    const [loading, setLoading] = useState(false)
-    const [deleteProjectModalOpen, setDeleteProjectModalOpen] = useState(false)
-    const [inviteUserModalOpen, setInviteUserModalOpen] = useState(false)
-    const [invitedUserModal, setInvitedUserModal] = useState(false)
+  const [workspace, setWorkspace] = useState(null)
+  const [projects, setProjects] = useState([])
+  const [selectedProject, setSelectedProject] = useState(null)
 
-
-    useEffect(()=>{
-        setLoading(true)
-        const response = axios.get(`http://127.0.0.1:5000/api/projects/${user_id}`)
-        .then((response)=>{
-            setProjects(response.data.projects)
-        })
-        .catch((error)=>{
-            setError(error.message)
-        })
-        .finally(
-            setLoading(false)
-        )
-    }, [])
-
-
-    // Function to toggle between Projects and Dasboard Component
-    const handleItemClick = (component) =>{
-        setActiveComponent(component)
-
-    }
-
-    const handleProjectClick = (project)=>{
-        setActiveProject(project)
-        setActiveComponent("projects")
-        
-        const fetchUsers = async ()=>{
-          const res = await axios.get(`http://127.0.0.1:5000/api/fetch_assigness/${project.project_id}`)
-          if(res.status === 200){
-            setProjectAssigness(res.data.assigness)
-          }
-          else{
-            alert("Something went wrong while fetching the assigness!")
-          }
-        }
-
-    const projectProgres = async ()=>{
+  useEffect(() => {
+    const fetchWorkspaceData = async () => {
+      if (user_id) {
         try {
-            const response = await axios.get(`http://127.0.0.1:5000/api/project_progress/${project.project_id}`)
-            if(response.status == 200){
-                setcompleteStatus(response.data.percentComplete)
+          const wsRes = await getUserWorkspace(user_id)
+          setWorkspace(wsRes)
+
+          if (wsRes) {
+            const wsProjects = await getWorkspaceProjects(wsRes.id)
+            setProjects(wsProjects)
+
+            // Set the first project as the selected one by default
+            if (wsProjects && wsProjects.length > 0) {
+              setSelectedProject(wsProjects[0])
             }
+          }
         } catch (error) {
-            console.error(error)
+          console.error("Error fetching workspace or projects:", error)
         }
+      }
     }
 
-        fetchUsers()
-        projectProgres()
-    }
-
-    // If the component is changed to dashboard, the activeProject is set to null for purpose of styling
-    useEffect(() => {
-        if (activeComponent === "dashboard") {
-            setActiveProject(null);
-        }
-    }, [activeComponent]); 
-
-
-
-    const handleCreateProject = ()=>{
-            setCreateModal(true)
-    }
-
-    const closeModal = ()=>{
-        setCreateModal(false)
-    }
-
+    fetchWorkspaceData()
+  }, [user_id])
 
 
   return (
-    <div className={style.mainContainer} >
+    <div className={style.mainPageContainer}>
+      <div className={style.leftBar}>
+        <Bar projects={projects} workspace={workspace} setSelectedProject={setSelectedProject} />
+      </div>
 
-        {/* Container for bar */}
-        <div className={style.barContainer}>
-            <div className={style.barContainerHeader}>
-                <h2>Simplify</h2>
-            </div>
-
-            {/* Simplify features container */}
-            <div className={style.taskFeatures}>
-                    <div className={`${style.featureDashboard} ${activeComponent == "dashboard" && style.active}`}   onClick={() => handleItemClick("dashboard")} >
-                        <LayoutDashboard color='#e68fde' />
-                        Dashboard
-                    </div>
-
-
-                    <div  className={`${style.featureProjects}`} >
-                                {/* Header for projects */}
-                                <h4>Projects</h4>
-                                {
-                                projects.map((project) => (
-                                    <div 
-                                        className={`${style.projectTasks} ${activeProject?.project_id === project.project_id && style.active}`} 
-                                        key={project.id} // Handle both cases (string or object)
-                                        onClick={() => handleProjectClick(project)}
-                                    >
-                                        <div>{project.name}</div>
-                                    </div>
-                                ))
-                            }
-                    </div>
-
-                    {/* Button to create project */}
-                    <div className={style.createProject}  onClick={handleCreateProject}  >                    
-                            <BadgePlus color="#e68fde" />
-                            Create Project
-                    </div>
-
-
-            </div>
-
-            {/* This Part Man */}
-            {
-                activeProject && (
-                <div className={style.projectBar}>
-
-                    <div className={style.projectBarHeader}>
-                        <div className={style.projectSatusTracker}>
-                            <div className={style.projectTrack}>
-                                <div className={style.InnerProjectTrack} style={{ width: `${completeStatus}%` }} />
-                            </div>
-                            <div className={style.projectStatusText}>
-                                { completeStatus }% Complete
-                            </div>
-                        </div>
-
-                    </div>
-
-                    <div className={style.assigness}>
-                        {projectAssigness.map((assignee) => (
-                             <div className={style.assigneeContainer} onClick={()=> setInvitedUserModal(true)} > 
-                                <div className={style.assigneeIcon}> {assignee.email?.charAt().toUpperCase()} </div> 
-                                <div className={style.assigneeEmail}>{assignee.email}</div>
-                            </div>                         
-                        ))}
-
-                        {
-                            invitedUserModal && <UserDetailModal onClose={()=> setInvitedUserModal(false)} />
-                        }
-
-                        {
-                            projectAssigness.length < 5 && ( <div className={`${style.assigneeContainer} ${style.inviteUser} `  } onClick={()=> setInviteUserModalOpen(true)} > Invite User <Plus size={40} strokeWidth={4} color='gray' /> </div> )
-                        }
-                        {inviteUserModalOpen && <InviteModal onClose={()=> setInviteUserModalOpen(false)} project_id={activeProject.project_id} />}
-                    </div>
-
-                    <div className={style.deleteProjectContainer} onClick={()=> setDeleteProjectModalOpen(true)} > Delete </div>
-
-                        { deleteProjectModalOpen && <DeleteProjectModal projectId={activeProject.project_id} projectName={activeProject.name} onClose={()=> setDeleteProjectModalOpen(false)}/> }
-
-                </div>
-                )
-            }
-
-        </div>
-
-
-
-        {/* Container to hold projects and Dashboard dynamicaly */}
-        <div className={style.DashboardAndProjectsHolder}>
-            {activeComponent == "projects" ? <Projects project={activeProject}/> : <Dashboard/> }
-        </div>
-
-
-
-    {
-        createModal && <CreateProjectModal onClose={closeModal} projectLength={projects.length} user_id={user_id} />
-    }
-
+      <div className={style.mainBarContainer}>
+        <ProjectContainer selectedProject={selectedProject} workspace={workspace}/>
+      </div>
     </div>
   )
-
-
-
 }
 
+function Bar({ projects, workspace, setSelectedProject }) {
+  return (
+    <div className={style.barContainer}>
+      <div className={style.logoContainer}>
+        <div className={style.logo}></div>
+        <div className={style.companyName}>SIMPLIFY</div>
+      </div>
 
+      <div className={style.companyDashboard}>
+        <div className={style.workspaceName}>
+          {workspace ? workspace.name : "Loading Workspace..."}
+        </div>
 
-function CreateProjectModal({ onClose, projectLength, user_id}) {
+        <div className={style.workspaceItems}>
+          <div className={style.dashboard}>
+            <House size={34} /> Dashboard
+          </div>
+          <div className={style.inbox}>
+            <Mail size={34} /> Inbox
+          </div>
+        </div>
 
-    const [projectName, setProjectName] = useState('')
-    const [errorMessage, seterrorMessage] = useState('')
+        <div className={style.projectsItems}>
+          <div className={style.headerName}>Projects</div>
+          {projects && projects.length > 0 ? (
+            projects.map((project) => (
+              <div
+                key={project.id}
+                className={style.project}
+                onClick={() => setSelectedProject(project)} // Click to select project
+              >
+                {project.name}
+              </div>
+            ))
+          ) : (
+            <div>No projects available</div>
+          )}
+          <div className={style.createProject}>
+            <BadgePlus /> Create Project
+          </div>
+          <div className={style.deleteProject}>Delete Project</div>
+        </div>
+      </div>
+    </div>
+  )
+}
 
-
-    const handleCreate = (projectName)=>{
-        if(projectName === ''){
-            seterrorMessage("Provide the project name")
-            return
+function ProjectContainer({ selectedProject, workspace }) {
+  const [tasks, setTasks] = useState([])
+  useEffect(() => {
+    const fetchTasks = async ()=>{
+      try {
+        const tskRes = await getProjectTasks(selectedProject.id)
+        if(tskRes){
+          setTasks(tskRes)
         }
 
-        if(projectLength == 3){
-            seterrorMessage("You can only create a maximum of 3 projects")
-            return
-        }
-
-        axios.post('http://127.0.0.1:5000/api/create-new-project', {"name": projectName, "user_id": user_id})
-        .then(response => console.log(response.data))
-        .catch(error => console.log(error))
-        .finally(() => onClose())
+      } catch (error) {
         
+      }
     }
-
-
-    const handleChange = (e)=>{
-        seterrorMessage("")
-        setProjectName(e.target.value)
-    }
+    fetchTasks()
+  }, [selectedProject])
 
   return (
-    <div className={style.modalOverlay}>
-        <div className={style.modalContainer}>
-
-            {/* Header */}
-            <div className={style.modalHeader}>
-                Create Project
+    <div className={style.projectManager}>
+      {selectedProject ? (
+        <>
+            <div className={style.projectDetails}>
+              <div className={style.projectHeader}> {workspace.name} / {selectedProject.name} </div>
+              <div className={style.projectDescription}> {selectedProject.description} </div>
+              <div className={style.projectAddsOn}>
+                <div className={style.projectStartDate}> Created On: <strong style={{color: "black"}}>May 26, 2025</strong> </div>
+                <div className={style.projectStatus}> status: <div className={style.status}>In Progress</div> </div>
+              </div>
+              <div className={style.inviteUserToWorkspace}> <UserPlus /> Invite </div>
             </div>
 
-            {/* Project name */}
-            <div className={style.projectName}>
-                <input type="text" placeholder='Enter project name' value={projectName} onChange={(e)=> handleChange(e)} />
-                {errorMessage && <div className={style.error} >{errorMessage}</div>}  
+            <div className={style.taskView}>
+            <div className={style.kanbanBoard}>
+                <DndProvider backend={HTML5Backend}>
+                  {
+                    ["To-do", "In Progress", "Done"].map((status)=>(
+                      <DropZone  
+                        key={status}
+                        status={status}
+                        projectId={selectedProject.id}
+                        tasks={tasks.filter((task) => task.status === status)}
+                      />
+                    ))
+                  }
+                </DndProvider>
+              </div>
             </div>
-
-
-            <div className={style.buttons}>
-                <div className={style.createButton} onClick={()=> handleCreate(projectName)} > Create <FolderPlus size={32} color="#af2bc1f3" /> </div>
-                <div className={style.closeButton} onClick={onClose} > close <BookmarkX size={32} color="#af2bc1f3" /> </div>
-            </div>
-
-
-        </div>
+        </>
+      ) : (
+        <p>No project selected.</p>
+      )}
     </div>
   )
 }
 
 
+function DropZone({status, tasks, projectId}){
 
+  const [{isOver}, drop] = useDrop(()=>({
+    accept: "TASK",
+    drop: (item)=>{
+        console.log(item)
+    },
+    collect: (monitor)=>({
+      isOver: !!monitor.isOver()
+    }),
+  }))
 
+  useEffect(()=>{
+    console.log(tasks)
+  },[])
+  
+  return (
+    <div ref={drop} className={style.taskBoard}>
+      <div className={style.taskBoardsHeader}>
+          {status}
+          <Plus size={32} color='gray' cursor="pointer"/>
+      </div>
+      {tasks.map((task)=> (
+        <TaskItem 
+          key={task.id}
+          task={task}
+          projectId={task.project_id}
+        />
+      ))}
+    </div>
+  )
+}
 
+function TaskItem({ task, projectId }){
 
+  const [{isDragging}, drag] = useDrag(()=>({
+    type: "TASK",
+    item: {...tasks},
+    collect: (monitor)=>({
+      isDragging: !!monitor.isDragging()
+    })
+  }));
 
-
-
-
-
-
-
-
-
-
-
-
+  return(
+    <div className={style.taskItems} key={drag} >
+          {task.name}
+    </div>
+  )
+}
 
 export default MainPage

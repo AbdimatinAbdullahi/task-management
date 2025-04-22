@@ -3,7 +3,7 @@ import { useDrag } from "react-dnd";
 import { Flag } from 'lucide-react';
 import {getEmptyImage} from 'react-dnd-html5-backend'
 import style from '../../../Styles/kanban.module.css';
-import TaskModal from './TaskModal';
+import TaskModal from '../Modals/TaskModal';
 
 const TaskItem = ({ task, projectName, projectId, updateTaskStatus, updateTask, removeDeletedTaskFromUI }) => {
   const [taskModalOpen, setTaskModalOpen] = useState(false);

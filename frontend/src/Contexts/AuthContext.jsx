@@ -11,14 +11,20 @@ export const AuthProvider = ({children})=>{
     const [user, setUser] = useState(null)
     const [errorMesage, setErrorMesage] = useState('')
 
-
     const login = async (email, password) =>{
+        setErrorMesage("")
         try {
             console.log("Email and password: ", email, password)
             const response = await axios.post("http://127.0.0.1:5000/auth/login", {email, password})
-            localStorage.setItem("token", response.data.token)
-            setUser({"firstname": response.data.fullname, "email" : response.data.email})
-            navigate('/task')
+            if (response.data.has_workspace === false) {
+                navigate(`/create-workspace?owner_id=${response.data.owner_id}`);
+            } else {
+                setUser({
+                    firstname: response.data.fullname,
+                    email: response.data.email,
+                });
+                navigate(`/workspace?id=${response.data.id}`);
+            }            
         } catch (error) {
             console.error('Login failed : ',error)
             console.log(error.response.data.error)
@@ -36,10 +42,11 @@ export const AuthProvider = ({children})=>{
 
     
     const signup = async (fullname, email, password)=>{
+        setErrorMesage("")
         try {
             const response = await axios.post("http://127.0.0.1:5000/auth/signup", {fullname, email, password})
             if (response.status == 200){
-                navigate('/verify-email', {state: {email}})
+                navigate(`/create-workspace?owner_id=${response.data.owner_id}`);
             }
         } catch (error) {
             console.error(error)
@@ -49,6 +56,7 @@ export const AuthProvider = ({children})=>{
 
 
     useEffect(() => {
+        setErrorMesage("")
         const token = localStorage.getItem("token");
         console.log("Token from localStorage:", token);  // Debugging
     

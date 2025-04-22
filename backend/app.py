@@ -7,7 +7,7 @@ from flask_mail import Mail
 from flask_cors import CORS
 from mongoengine import connect
 from project_route import project_bp
-from users import users_bp
+# from users import users_bp
 
 app = Flask(__name__)
 
@@ -21,7 +21,7 @@ mail = Mail(app)
 # Auth routes
 app.register_blueprint(auth_bp, url_prefix='/auth')
 app.register_blueprint(project_bp)
-app.register_blueprint(users_bp)
+# app.register_blueprint(users_bp)
 
 with app.app_context():
     db.create_all()

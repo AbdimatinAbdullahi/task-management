@@ -6,11 +6,8 @@ import {BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import LandingPage from './Components/LandingPage/LandingPage'
 import Login from './Components/Forms/Login'
 import Signup from './Components/Forms/Signup'
-import ResetPassword from './Components/Forms/ResetPassword'
-import VerifyPage from './Components/Forms/VerifyPage'
 import MainPage from './Components/ProjectPage/MainPage'
-import Invitation from './Components/Forms/Invitation'
-import UserKanban from './Components/Views/Kanban/UserKanban'
+import CreateWorkspace from './Components/Forms/CreateWorkspace'
 
 import { AuthProvider } from './Contexts/AuthContext'
 
@@ -24,11 +21,8 @@ function App() {
         <Route path='/' element={<LandingPage/>}/ >
         <Route path='/login' element={<Login/>}/>
         <Route path='/signup' element={<Signup/>}/>
-        <Route path='/reset-password' element={<ResetPassword/>}/>
-        <Route path='/verify-email' element={<VerifyPage/>}/> 
-        <Route path='/task' element={<MainPage/>} />   
-        <Route path='/invitation' element={<Invitation/>} />
-        <Route path='user' element={<UserKanban />} />
+        <Route path='/workspace' element={<MainPage/>} />   
+        <Route path='/create-workspace' element={<CreateWorkspace/>} />
       </Routes>
       </AuthProvider>  
     </Router>
