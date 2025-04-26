@@ -1,5 +1,6 @@
 :root{      
     --box-shadow: 2px 2px 100px 0.5px rgba(0, 0, 0, 0.15);
+    --font-sansation: "Sansation"
 }
 
 .kanbanContainer{
@@ -456,4 +457,143 @@
     display: flex;
     align-items: center;
     justify-content: space-evenly;
+  }
+
+
+
+  .closeIcon{
+    position: absolute;
+    top: 4px;
+    right: 4px;
+  }
+
+  .taskNameAndStatus{
+    width: 90%;
+    height: 10%;
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 2em;
+  }
+
+  .taskNameAndStatus input{
+    width: 60%;
+    font-size: 30px;
+    font-family: var(--font-spline-sans);
+    font-weight: 700;
+    border: none;
+    outline: none;
+  }
+
+  .taskNameAndStatus select{
+    width: 200px;
+    height: 45px;
+    border: 2px solid green;
+    background-color: rgb(73, 142, 73);
+    color: white;
+    font-size: 20px;
+    font-weight: 700;
+    border-radius: 5px;
+    border: none;
+    box-sizing: border-box;
+    padding-left: 1em;
+    font-family: var(--font-spline-sans);
+    &:focus{
+        outline: none;
+    }
+  }
+
+  .dateDetailBox{
+    border: 2px solid black;
+    width: 90%;
+    height: 30%;
+    margin-top: 3em;
+    display: flex;
+    flex-direction: column;
+    border-radius: 12px;
+
+  }
+  .detailHeader{
+    border-bottom: 2px solid black;
+    height: 50px;
+    font-family: var(--font-spline-sans);
+    font-size: 20px;
+    color: gray;
+    text-transform: uppercase;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    box-sizing: border-box;
+    padding-left: 1em;
+    margin-bottom: 0.4em;
+  }
+  .boxDetails{
+    box-sizing: border-box;
+    width: 100%;
+    height: calc(100% - 50px);
+    /* border: 3px solid purple; */
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  .creationHeader, .statHeader, .startHeader, .dueHeader{
+    font-family: var(--font-sansation );
+    font-size: 20px;
+    font-weight: 700;
+    color: black;
+    box-sizing: border-box;
+  }
+  .creationHeader, .creationDateH{
+    padding-left: 1em;
+  }
+  .creationDateH, .statD, .startD, .dueD{
+    margin-top: 2em;
+    font-size: 20px;
+    font-weight: 900;
+    color: gray;
+    font-family: var(--font-sansation);
+  }
+
+  .descriptionContainer{
+    width: 90%;
+    height: 15%;
+    margin-top: 2em;
+  }
+  .descriptionContainer h2{
+    font-family: var(--font-sansation);
+  }
+  .descriptionContainer textarea{
+    margin-top: 1em;
+    resize: none;
+    width: 100%;
+    height: 100%;
+    font-family: var(--font-spline-sans);
+    font-weight: 700;
+    font-size: 14px;
+    color: gray;
+    padding: 1px 1px;
+    border: none;
+    &:focus{
+      border: none;
+      outline: none;
+    }
+  }
+
+  .assignesContainer{
+    width: 90%;
+    height: 10%;
+    display: flex;
+    align-items: center;
+  }
+  .assignedMember{
+    height: 100%;
+    aspect-ratio: 1/1;
+    border: 1px solid white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 50%;
+    margin-right: -20px;
+    background-color: #848483;
   }

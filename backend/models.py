@@ -38,9 +38,9 @@ class Project(db.Model):
     __tablename__ = 'projects'
     id = db.Column(db.String, primary_key=True, default=lambda: str(uuid.uuid4()))
     name = db.Column(db.String(100), nullable=False)
-    description = db.Column(db.Text)
     workspace_id = db.Column(db.String, db.ForeignKey("workspaces.id"), nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    description = db.Column(db.Text)
     workspace = db.relationship("Workspace", backref="projects")
 
 

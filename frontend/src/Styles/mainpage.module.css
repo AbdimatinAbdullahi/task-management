@@ -3,11 +3,7 @@
     --font-spline-sans: "Spline Sans Mono";
     --box-shadow-auto: 20px 20px 60px #d9d9d9, -20px -20px 60px #ffffff;
     
-}
-
-*{
-    box-sizing: border-box;
-}  
+} 
 
 .mainPageContainer{
     width: 100%;
@@ -360,6 +356,38 @@
 }
 
 
+.membersPlusDate{
+    height: 30%;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 1em;
+}
+
+.members{
+    width: 70%;
+    height: 96%;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+.member{
+    height: 80%;
+    aspect-ratio: 1/1;
+    border-radius: 50%;
+    background-color: rgba(175, 43, 193);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: -20px;
+    z-index: 1;
+    font-family: var(--font-spline-sans);
+    font-size: 20px;
+    font-weight: 900;
+    color: gray;
+}
+
 
 
 /* Create Project Modal */
@@ -428,7 +456,7 @@
     margin-top: 1em;
     padding-top: 1em;
     padding-left: 1em;
-    font-size: 1em;
+    font-size: 1.6em;
     border-radius: 4px;
     &:focus{
         outline: none;
@@ -455,8 +483,10 @@
     font-family: var(--font-spline-sans);
     font-size: 20px;
     font-weight: 700;
+    cursor: pointer;
     &:hover{
         color: #ffffff;
         background: #AF2BC1;
-    }
+    };
 }
+

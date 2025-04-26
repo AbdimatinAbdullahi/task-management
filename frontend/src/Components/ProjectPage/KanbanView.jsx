@@ -233,3 +233,115 @@ function CreateTask({onClose, projectId, initialStatus, projectName, addNewTask}
 
 
 export default KanbanView;
+
+
+
+
+
+  // const updateTaskName = async () => {
+  //   if (taskName.trim() === "" || taskName === task.task_name) return; // prevent empty updates
+  //   setLoading(true);
+  //   try {
+  //     const response = await axios.put(`http://127.0.0.1:5000/api/update_task_name/${task._id.$oid}`, { task_name: taskName });
+  //     if (response.status === 200) {
+  //       const updatedTask = { ...task, task_name: taskName };
+  //       updateTask(updatedTask);
+  //     }
+  //   } catch (error) {
+  //     console.error("Error updating the task", error);
+  //     setError("Update Failed");
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
+
+  // const updateTaskDates = async () => {
+  //   setLoading(true);
+  //   try {
+  //     const response = await axios.put(`http://127.0.0.1:5000/api/update_task_dates/${task._id.$oid}`, { newStartDate: startDate, newDueDate: dueDate });
+  //     if (response.status === 200) {
+  //       const updatedTask = { ...task, started_at: startDate, due_date: dueDate };
+  //       updateTask(updatedTask);
+  //     }
+  //   } catch (error) {
+  //     console.log(error);
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
+
+  // const updateTaskPriority = async (newPriority) => {
+  //   if (task.priority === newPriority) return;
+  //   setLoading(true);
+  //   try {
+  //     const response = await axios.put(`http://127.0.0.1:5000/api/update_task_priority/${task._id.$oid}`, { priority: newPriority, projectId: projectId });
+  //     if (response.status === 200) {
+  //       const updatedTask = { ...task, priority: newPriority };
+  //       updateTask(updatedTask);
+  //     }
+  //   } catch (error) {
+  //     console.error("Error updating priority", error);
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
+
+  // const updateTaskNotes = async () => {
+  //   if (task.task_notes === taskDescription) return;
+  //   setLoading(true);
+  //   try {
+  //     const response = await axios.put(`http://127.0.0.1:5000/api/update_task_description/${task._id.$oid}`, { description: taskDescription });
+  //     if (response.status === 200) {
+  //       const updatedTask = { ...task, task_notes: taskDescription };
+  //       updateTask(updatedTask);
+  //       // onClose();
+  //       alert("Changed");
+  //     }
+  //   } catch (error) {
+  //     console.log(error);
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
+
+  // const handleDeleteTask = async()=>{
+  //   try {
+  //     const response = await axios.put(`http://127.0.0.1:5000/api/delete_task/${task._id.$oid}`)
+  //     if(response.status === 200){
+  //       console.log(response.status)
+  //       removeDeletedTaskFromUI(task._id.$oid)
+  //       onClose()
+  //     }
+  //   } catch (error) {
+  //    alert(error) 
+  //   }
+  // }
+
+  
+  // const getStatusColor = (status) => {
+  //   switch (status) {
+  //     case "To-do":
+  //       return style.toDo;
+  //     case "In Progress":
+  //       return style.inProgress;
+  //     case "In Review":
+  //       return style.inReview;
+  //     case 'Complete':
+  //       return style.complete;
+  //     default:
+  //       return "";
+  //   }
+  // };
+
+  // const getColoPriority = (priority) => {
+  //   switch (priority) {
+  //     case "Medium":
+  //       return style.medium;
+  //     case "Normal":
+  //       return style.normal;
+  //     case "High":
+  //       return style.high;
+  //     default:
+  //       return "";
+  //   }
+  // };

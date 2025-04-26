@@ -46,6 +46,10 @@ function MainPage() {
     fetchWorkspaceData()
   }, [user_id])
 
+  useEffect(()=>{
+    console.log("Workspace members: ", workspaceMembers)
+  },[workspace, workspaceMembers])
+
 
   return (
     <div className={style.mainPageContainer}>
@@ -135,11 +139,7 @@ function ProjectContainer({ selectedProject, workspace, members }) {
   
     fetchTasks()
   }, [selectedProject])
-  
 
-  useEffect(()=>{
-    console.log(tasks)
-  },[tasks])
 
   return (
     <div className={style.projectManager}>
@@ -197,18 +197,14 @@ function DropZone({status, tasks, projectId, members}){
       isOver: !!monitor.isOver()
     }),
   }))
-
-  useEffect(()=>{
-    console.log("Tasks from Drp zone ", tasks)
-  }, [tasks])
   
   return (
     <div ref={drop} className={style.taskBoard}>
       <div className={style.taskBoardsHeader}>
           {status}
           <Plus size={32} color='gray' cursor="pointer" onClick={()=> setAddTaskModalOpen(true)}/>
-            {addTaskModalOpen && <CreateTaskModal onClose={()=> setAddTaskModalOpen(false)} />}
       </div>
+      {addTaskModalOpen && <CreateTaskModal onClose={()=> setAddTaskModalOpen(false)} />}
       {tasks.map((task)=> (
         <TaskItem 
           key={task.id}
@@ -224,6 +220,8 @@ function DropZone({status, tasks, projectId, members}){
 function TaskItem({ task, projectId, members }){
 
   const [taskModalOpen, setTaskModalOpen] = useState(false)
+  const [taskMemebers, setTaskMemebers] = useState([])
+
   const [{isDragging}, drag] = useDrag(()=>({
     type: "TASK",
     item: {...tasks},
@@ -232,13 +230,20 @@ function TaskItem({ task, projectId, members }){
     })
   }));
 
-  const [memeber, setmemeber] = useState([])
+
+  useEffect(() => {
+    if (task.assigned_users) {
+      const assigned = members.filter((member) => task.assigned_users.includes(member.id));
+      setTaskMemebers(assigned);
+    }
+  }, [task, members]);
+
 
   useEffect(()=>{
-    const getMembers = async(id)=>{
-      const taskMembers = members.filter((member) => member.id === task.member)
-    }
-  },)
+    console.log("Task Memebers: ", taskMemebers)
+
+  },[taskMemebers])
+  
 
   return(
     <>
@@ -248,9 +253,18 @@ function TaskItem({ task, projectId, members }){
             <div className={style.taskName}> {task.task_name} </div>
             <div className={style.taskNote}>{task.task_notes}</div>
           </div>
-          <div className={style.membersPlusDate}></div>
+          <div className={style.membersPlusDate}>
+            <div className={style.members}>
+                {taskMemebers.map((member) => <div className={style.member} key={member.id} > 
+                  {member.email.slice(0, 2).toUpperCase()}
+                </div> )}
+            </div>
+            <div className={style.dueDate}>
+                  {task.due_date}
+            </div>
+          </div>
     </div>
-    {taskModalOpen && <TaskModal task={task} onClose={()=> setTaskModalOpen(false)} />}
+    {taskModalOpen && <TaskModal task={task} onClose={()=> setTaskModalOpen(false)} members={taskMemebers} />}
     </>
   )
 }

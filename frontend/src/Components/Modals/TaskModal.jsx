@@ -1,223 +1,87 @@
 import React, { useState, useEffect } from "react";
 // import style from '../../../Styles/kanban.module.css';
 import { X, FlagTriangleRight, Badge, Users, Calendar, Trash2 } from 'lucide-react';
-import axios from "axios";
 
 import style from '../../Styles/kanban.module.css'
-function TaskModal({ onClose, task, formattedDate, projectName, projectId, updateTaskStatus, updateTask, removeDeletedTaskFromUI }) {
-  const handleModalClick = (e) => {
-    e.stopPropagation(); // Prevent click from reaching parent elements
-  };
+function TaskModal({ onClose, task, members }) {
 
-  const handleOverlayClick = () => {
-    onClose(); // Close when clicking outside the modal
-  };
-
-  const [loading, setLoading] = useState(false);
-  const [taskName, setTaskName] = useState(task.task_name);
-  const [taskDescription, setTaskDescription] = useState(task.task_notes);
-  const [status, setStatus] = useState(task.status);
-  const [startDate, setStartDate] = useState(task.started_at);
-  const [dueDate, setDueDate] = useState(task.due_date);
-  const [error, setError] = useState("");
-  const [priority, setPriority] = useState(task.priority);
-
-  const updateTaskName = async () => {
-    if (taskName.trim() === "" || taskName === task.task_name) return; // prevent empty updates
-    setLoading(true);
-    try {
-      const response = await axios.put(`http://127.0.0.1:5000/api/update_task_name/${task._id.$oid}`, { task_name: taskName });
-      if (response.status === 200) {
-        const updatedTask = { ...task, task_name: taskName };
-        updateTask(updatedTask);
-      }
-    } catch (error) {
-      console.error("Error updating the task", error);
-      setError("Update Failed");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const updateTaskDates = async () => {
-    setLoading(true);
-    try {
-      const response = await axios.put(`http://127.0.0.1:5000/api/update_task_dates/${task._id.$oid}`, { newStartDate: startDate, newDueDate: dueDate });
-      if (response.status === 200) {
-        const updatedTask = { ...task, started_at: startDate, due_date: dueDate };
-        updateTask(updatedTask);
-      }
-    } catch (error) {
-      console.log(error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const updateTaskPriority = async (newPriority) => {
-    if (task.priority === newPriority) return;
-    setLoading(true);
-    try {
-      const response = await axios.put(`http://127.0.0.1:5000/api/update_task_priority/${task._id.$oid}`, { priority: newPriority, projectId: projectId });
-      if (response.status === 200) {
-        const updatedTask = { ...task, priority: newPriority };
-        updateTask(updatedTask);
-      }
-    } catch (error) {
-      console.error("Error updating priority", error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const updateTaskNotes = async () => {
-    if (task.task_notes === taskDescription) return;
-    setLoading(true);
-    try {
-      const response = await axios.put(`http://127.0.0.1:5000/api/update_task_description/${task._id.$oid}`, { description: taskDescription });
-      if (response.status === 200) {
-        const updatedTask = { ...task, task_notes: taskDescription };
-        updateTask(updatedTask);
-        // onClose();
-        alert("Changed");
-      }
-    } catch (error) {
-      console.log(error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleDeleteTask = async()=>{
-    try {
-      const response = await axios.put(`http://127.0.0.1:5000/api/delete_task/${task._id.$oid}`)
-      if(response.status === 200){
-        console.log(response.status)
-        removeDeletedTaskFromUI(task._id.$oid)
-        onClose()
-      }
-    } catch (error) {
-     alert(error) 
-    }
-  }
-
-  
-  const getStatusColor = (status) => {
-    switch (status) {
-      case "To-do":
-        return style.toDo;
-      case "In Progress":
-        return style.inProgress;
-      case "In Review":
-        return style.inReview;
-      case 'Complete':
-        return style.complete;
-      default:
-        return "";
-    }
-  };
-
-  const getColoPriority = (priority) => {
-    switch (priority) {
-      case "Medium":
-        return style.medium;
-      case "Normal":
-        return style.normal;
-      case "High":
-        return style.high;
-      default:
-        return "";
-    }
-  };
+  const [taskDetails, settaskDetails] = useState({
+    task_name: task.task_name,
+    status: task.status,
+    due_date: task.due_date,
+    start_date: task.started_at,
+    priority: task.priority,
+    description: task.task_notes,
+    creation_date: task.created_at
+  })
 
   return (
-    <div className={style.modalOverlay} onClick={handleOverlayClick}>
-      <div className={style.modalTaskContainer} onClick={handleModalClick}>
-        <X color='#ba3bf3' size={50} strokeWidth={3.75} className={style.close} onClick={(e) => onClose()} />
-        <div className={style.modalTaskName}>
-          <input type="text" value={taskName} onChange={(e) => setTaskName(e.target.value)} onBlur={updateTaskName} />
+    <div className={style.modalOverlay}>
+      <div className={style.modalTaskContainer}>
+
+        {/* Close Icon */}
+
+        {/* Task Name and Status Conatiner */}
+        <div className={style.taskNameAndStatus}>
+          <input type="text" value={taskDetails.task_name} onChange={(e)=> settaskDetails({...taskDetails, task_name: e.target.value})}/>
+          <div className={style.taskStatus}>
+            <select value={taskDetails.status} onChange={(e) => settaskDetails({...taskDetails, status: e.target.value})} >
+              { ["To-do", "In Progress", "Done"].map((status)=> (
+                <option value={status} key={status} > {status} </option>
+              )) }
+            </select>
+          </div>
         </div>
 
 
-        <div className={style.modalTaskDescription}>
-          <input type="text" value={taskDescription} onChange={(e) => setTaskDescription(e.target.value)} className={style.task_description} onBlur={updateTaskNotes} />
+        {/* Dates Details Box */}
+        <div className={style.dateDetailBox}>
+          <div className={style.detailHeader}>Details</div>
+          <div className={style.boxDetails}>
+            {/* Creation container */}
+            <div className={style.creationDate}>
+              <div className={style.creationHeader}> Created On</div>
+              <div className={style.creationDateH}> {taskDetails.creation_date} </div>
+            </div>
+
+              {/* Status Container */}
+            <div className={style.statusCont}>
+              <div className={style.statHeader}> Status </div>
+              <div className={style.statD}> {taskDetails.status} </div>
+            </div>
+
+            {/* Start Date */}
+            <div className={style.startDate}>
+              <div className={style.startHeader}> Start Date</div>
+              <div className={style.startD}> {taskDetails.start_date}</div>
+            </div>
+
+            {/* Due Date */}
+            <div className={style.dueDate}>
+              <div className={style.dueHeader}> Due Date</div>
+              <div className={style.dueD}> {taskDetails.due_date}</div>
+            </div>
+          </div>
         </div>
 
 
-        <div className={style.taskModalPrir}>
-
-
-          {/* Task Status Container */}
-          <div className={style.itemGrids}>
-            <div className={style.icons}> <Badge color='gray' size={40} /> </div>
-            <div className={style.headerName}> <h3>Status</h3> </div>
-            <div className={`${style.status} ${getStatusColor(status)}`}>
-              <select className={`${style.customSelect}`} value={status} onChange={(e) => {
-                e.stopPropagation(); // Add this line
-                const newStatus = e.target.value;
-                setStatus(newStatus);
-                updateTaskStatus(task, newStatus, task._id.$oid);
-              }}>
-                {["To-do", "In Progress", "In Review", "Complete"].map((option) => (
-                  <option key={option} value={option}>{option}</option>
-                ))}
-              </select>
-            </div>
-          </div>
-
-
-          {/* Assignees Container */}
-          <div className={style.itemGrids}>
-            <div className={style.icons}> <Users color='gray' size={40} /> </div>
-            <div className={style.headerName}> <h3>Assignees</h3> </div>
-            <div className={style.assignees}> Coming Soon! </div>
-          </div>
-
-
-          {/* Date Container */}
-          <div className={style.itemGrids}>
-            <div className={style.icons}> <Calendar color='gray' size={40} /> </div>
-            <div className={style.headerName}> <h3>Dates</h3> </div>
-            <div className={style.datesContainer}>
-              <input
-                type="date"
-                className={style.datePicker}
-                value={startDate}
-                onChange={(e) => setStartDate(e.target.value)}
-                onBlur={updateTaskDates}
-              />
-              -
-              <input
-                type="date"
-                className={style.datePicker}
-                value={dueDate}
-                onChange={(e) => setDueDate(e.target.value)}
-                onBlur={updateTaskDates}
-              />
-            </div>
-          </div>
-
-
-          {/* Priority Container */}
-          <div className={style.itemGrids}>
-            <div className={style.icons}> <FlagTriangleRight color='gray' size={40} /> </div>
-            <div className={style.headerName}> <h3>Priority</h3> </div>
-            <div className={style.status}>
-              <select className={`${style.customSelect} ${getColoPriority(priority)}`} value={priority} onChange={(e) => {
-                const newPriority = e.target.value;
-                setPriority(newPriority);
-                updateTaskPriority(newPriority);
-              }}>
-                {["High", "Normal", "Medium"].map((option) => (
-                  <option key={option} value={option}>{option}</option>
-                ))}
-              </select>
-            </div>
-          </div>
-
-
+        <div className={style.descriptionContainer}>
+          <h2>Description</h2>
+          <textarea type="text" value={taskDetails.description} onChange={(e) =>  settaskDetails({...taskDetails, description: e.target.value})} />
         </div>
-        <div className={style.deleteTask} onClick={handleDeleteTask} > <Trash2 color="red" size={32} /> Delete Task  </div>
+
+        <div className={style.assignesContainer}>
+            {members.map((member)=> (
+              <div className={style.assignedMember}>
+                {member.email.slice(0, 2).toUpperCase()}
+              </div>
+            ))}
+        </div>
+
+        <div className={style.deleteTask} onClick={onClose} >
+          Delete Task
+        </div>
+
       </div>
     </div>
   );
