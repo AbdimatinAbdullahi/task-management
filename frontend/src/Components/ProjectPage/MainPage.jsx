@@ -5,9 +5,13 @@ import { useSearchParams } from 'react-router-dom'
 import { HTML5Backend } from 'react-dnd-html5-backend'
 import { DndProvider, useDrag, useDrop } from 'react-dnd'
 import { getProjectTasks, getUserWorkspace, getWorkspaceMembers, getWorkspaceProjects, projects, tasks } from '../../SampleAPI/projectandTasks'
-import axios from 'axios'
-import { div } from 'framer-motion/client'
 
+
+import CreateProjectModal from '../Modals/CreateProjectModal'
+import CreateTaskModal from '../Modals/CreateTaskModal' //Add Task Modal
+import DeleteProjectModal from '../Modals/DeleteProjectModal'
+import InviteModal from '../Modals/InviteModal'
+import TaskModal from '../Modals/TaskModal'
 function MainPage() {
   const [searchParams] = useSearchParams()
   const user_id = searchParams.get("id")
@@ -15,6 +19,7 @@ function MainPage() {
   const [workspace, setWorkspace] = useState(null)
   const [projects, setProjects] = useState([])
   const [selectedProject, setSelectedProject] = useState(null)
+  const [workspaceMembers, setWorkspaceMembers] = useState([])
 
   useEffect(() => {
     const fetchWorkspaceData = async () => {
@@ -25,8 +30,9 @@ function MainPage() {
 
           if (wsRes) {
             const wsProjects = await getWorkspaceProjects(wsRes.id)
+            const wsMembers = await getWorkspaceMembers(wsRes.id)
+            setWorkspaceMembers(wsMembers)
             setProjects(wsProjects)
-
             // Set the first project as the selected one by default
             if (wsProjects && wsProjects.length > 0) {
               setSelectedProject(wsProjects[0])
@@ -37,7 +43,6 @@ function MainPage() {
         }
       }
     }
-
     fetchWorkspaceData()
   }, [user_id])
 
@@ -49,13 +54,16 @@ function MainPage() {
       </div>
 
       <div className={style.mainBarContainer}>
-        <ProjectContainer selectedProject={selectedProject} workspace={workspace}/>
+        <ProjectContainer selectedProject={selectedProject} workspace={workspace} members={workspaceMembers} />
       </div>
     </div>
   )
 }
 
 function Bar({ projects, workspace, setSelectedProject }) {
+  const [createProjectModalOpen, setCreateProjectModalOpen] = useState(false)
+  const [deleteProjectModalOpen, setDeleteProjectModalOpen] = useState(false)
+
   return (
     <div className={style.barContainer}>
       <div className={style.logoContainer}>
@@ -92,32 +100,46 @@ function Bar({ projects, workspace, setSelectedProject }) {
           ) : (
             <div>No projects available</div>
           )}
-          <div className={style.createProject}>
+          <div className={style.createProject} onClick={()=> setCreateProjectModalOpen(true)} >
             <BadgePlus /> Create Project
           </div>
-          <div className={style.deleteProject}>Delete Project</div>
+          {createProjectModalOpen && <CreateProjectModal onClose={()=> setCreateProjectModalOpen(false)} />}
+          <div className={style.deleteProject} onClick={()=>setDeleteProjectModalOpen(true)} >
+            Delete Project
+          </div>
+          {deleteProjectModalOpen && <DeleteProjectModal onClose={()=> setDeleteProjectModalOpen(false)} />}
+
         </div>
       </div>
     </div>
   )
 }
 
-function ProjectContainer({ selectedProject, workspace }) {
+function ProjectContainer({ selectedProject, workspace, members }) {
   const [tasks, setTasks] = useState([])
+  const [inviteUserModalOpen, setInviteUserModalOpen] = useState(false)
   useEffect(() => {
-    const fetchTasks = async ()=>{
-      try {
+    const fetchTasks = async () => {
+      if (!selectedProject || !selectedProject.id) {
+        console.warn("Selected project is undefined or missing ID")
+        return
+      }
+  
+      try {  
         const tskRes = await getProjectTasks(selectedProject.id)
-        if(tskRes){
-          setTasks(tskRes)
-        }
-
+        setTasks(tskRes)
       } catch (error) {
-        
+        console.error("Failed to fetch project tasks:", error)
       }
     }
+  
     fetchTasks()
   }, [selectedProject])
+  
+
+  useEffect(()=>{
+    console.log(tasks)
+  },[tasks])
 
   return (
     <div className={style.projectManager}>
@@ -130,8 +152,10 @@ function ProjectContainer({ selectedProject, workspace }) {
                 <div className={style.projectStartDate}> Created On: <strong style={{color: "black"}}>May 26, 2025</strong> </div>
                 <div className={style.projectStatus}> status: <div className={style.status}>In Progress</div> </div>
               </div>
-              <div className={style.inviteUserToWorkspace}> <UserPlus /> Invite </div>
+              <div className={style.inviteUserToWorkspace} onClick={()=> setInviteUserModalOpen(true)} > <UserPlus /> Invite </div>
             </div>
+
+            {inviteUserModalOpen && <InviteModal onClose={()=> setInviteUserModalOpen(false)} />}
 
             <div className={style.taskView}>
             <div className={style.kanbanBoard}>
@@ -143,6 +167,7 @@ function ProjectContainer({ selectedProject, workspace }) {
                         status={status}
                         projectId={selectedProject.id}
                         tasks={tasks.filter((task) => task.status === status)}
+                        members={members}
                       />
                     ))
                   }
@@ -158,7 +183,10 @@ function ProjectContainer({ selectedProject, workspace }) {
 }
 
 
-function DropZone({status, tasks, projectId}){
+function DropZone({status, tasks, projectId, members}){
+
+  const [addTaskModalOpen, setAddTaskModalOpen] = useState(false)
+
 
   const [{isOver}, drop] = useDrop(()=>({
     accept: "TASK",
@@ -171,28 +199,31 @@ function DropZone({status, tasks, projectId}){
   }))
 
   useEffect(()=>{
-    console.log(tasks)
-  },[])
+    console.log("Tasks from Drp zone ", tasks)
+  }, [tasks])
   
   return (
     <div ref={drop} className={style.taskBoard}>
       <div className={style.taskBoardsHeader}>
           {status}
-          <Plus size={32} color='gray' cursor="pointer"/>
+          <Plus size={32} color='gray' cursor="pointer" onClick={()=> setAddTaskModalOpen(true)}/>
+            {addTaskModalOpen && <CreateTaskModal onClose={()=> setAddTaskModalOpen(false)} />}
       </div>
       {tasks.map((task)=> (
         <TaskItem 
           key={task.id}
           task={task}
           projectId={task.project_id}
+          members={members}
         />
       ))}
     </div>
   )
 }
 
-function TaskItem({ task, projectId }){
+function TaskItem({ task, projectId, members }){
 
+  const [taskModalOpen, setTaskModalOpen] = useState(false)
   const [{isDragging}, drag] = useDrag(()=>({
     type: "TASK",
     item: {...tasks},
@@ -201,10 +232,26 @@ function TaskItem({ task, projectId }){
     })
   }));
 
+  const [memeber, setmemeber] = useState([])
+
+  useEffect(()=>{
+    const getMembers = async(id)=>{
+      const taskMembers = members.filter((member) => member.id === task.member)
+    }
+  },)
+
   return(
-    <div className={style.taskItems} key={drag} >
-          {task.name}
+    <>
+    <div className={style.taskItems} key={drag} onClick={()=> setTaskModalOpen(true)} >
+          <div className={style.tasksDetails}>
+            <div className={style.priority}>{task.priority}</div>
+            <div className={style.taskName}> {task.task_name} </div>
+            <div className={style.taskNote}>{task.task_notes}</div>
+          </div>
+          <div className={style.membersPlusDate}></div>
     </div>
+    {taskModalOpen && <TaskModal task={task} onClose={()=> setTaskModalOpen(false)} />}
+    </>
   )
 }
 

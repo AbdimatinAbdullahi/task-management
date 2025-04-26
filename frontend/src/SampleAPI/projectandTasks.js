@@ -1,21 +1,3 @@
-export const projects = [
-    {
-      id: "e2720ab2-ef12-4292-8dab-10e82f5a165a",
-      name: "Customer Research",
-      description:
-        "This project is focused on gathering and analyzing feedback from current and potential users. It involves conducting interviews, surveys, and usability tests to understand user behavior, needs, and pain points.",
-      workspace_id: "40c3e84b-28bb-404e-9387-334b8c6de5eb",
-      created_at: "2025-04-20T17:20:03.653Z",
-    },
-    {
-      id: "f91fdcf2-b2f5-4dbe-9d59-b8d1c20b3a65",
-      name: "AI Chatbot Development",
-      description:
-        "Develop and deploy an AI-powered chatbot for customer support to reduce ticket volume and improve response time. This includes flow design, OpenAI integration, and internal QA testing.",
-      workspace_id: "40c3e84b-28bb-404e-9387-334b8c6de5eb",
-      created_at: "2025-04-20T17:30:00.000Z",
-    }
-  ];
   export const tasks = [
     {
       _id: "661f2b7198fd740001c5aabc",
@@ -37,8 +19,7 @@ export const projects = [
       created_at: "2025-04-20T18:05:00",
       due_date: "2025-04-23",
       started_at: "",
-      task_notes: "Categorize user feedback by theme.",
-      priority: "Medium",
+      task_notes: "Design a responsive card for this task in the Kanban board. Include title, due date, priority, and assigned users. Enable drag & drop and hover preview for quick details.",      priority: "Medium",
       assigned_users: ["user-003"]
     },
     {
@@ -125,6 +106,25 @@ export const workspaces = [
     }
   ];
 
+
+  export const projects = [
+    {
+      id: "e2720ab2-ef12-4292-8dab-10e82f5a165a",
+      name: "Customer Research",
+      description:
+        "This project is focused on gathering and analyzing feedback from current and potential users. It involves conducting interviews, surveys, and usability tests to understand user behavior, needs, and pain points.",
+      workspace_id: "40c3e84b-28bb-404e-9387-334b8c6de5eb",
+      created_at: "2025-04-20T17:20:03.653Z",
+    },
+    {
+      id: "f91fdcf2-b2f5-4dbe-9d59-b8d1c20b3a65",
+      name: "AI Chatbot Development",
+      description:
+        "Develop and deploy an AI-powered chatbot for customer support to reduce ticket volume and improve response time. This includes flow design, OpenAI integration, and internal QA testing.",
+      workspace_id: "40c3e84b-28bb-404e-9387-334b8c6de5eb",
+      created_at: "2025-04-20T17:30:00.000Z",
+    }
+  ];
 
 
   export const getUserWorkspace = async (userId) => {

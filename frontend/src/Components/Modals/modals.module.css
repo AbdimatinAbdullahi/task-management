@@ -125,21 +125,20 @@
     width: 96%;
     min-height: 60px;
     border-radius: 4px;
-    border: 2.5px solid #d1c8c8;
+    border: 1px solid rgb(175, 43, 193, 0.6);
     padding-left: 4%;
     font-size: 20px;
     font-weight: 600;
+    &::placeholder{
+        color: rgba(0, 0, 0, 0.25);
+        font-size: 15px;
+    }
+    &:focus{
+        border: 2.5px solid #AF2BC1;
+        outline: none;
+    }
 }
 
-.invitesInputs input::placeholder{
-    color: rgba(0, 0, 0, 0.25);
-    font-size: 15px;
-}
-
-.invitesInputs input:focus{
-    border: 2.5px solid #AF2BC1;
-    outline: none;
-}
 
 .invitesDiv{
     width: 90%;
@@ -149,7 +148,7 @@
     align-items: center;
     justify-content: space-between;
 }
-.inviteOkay {
+.inviteOkay{
     height:60px;
     width: 40%;
     color: white;
@@ -199,7 +198,6 @@
 
 
 /* User Details (Information) Modal */
-
 .userDetailContainer{
     width: 40%;
     aspect-ratio: 1/1;

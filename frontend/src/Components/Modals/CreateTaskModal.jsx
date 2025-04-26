@@ -1,9 +1,9 @@
 import React, {useState, } from "react"
 // import style from '../Kanban/kanban.module.css'
-import style from '../../../Styles/kanban.module.css'
+import style from '../../Styles/kanban.module.css'
 
 import {CheckCheck, CircleX} from 'lucide-react'
-function CreateTaskModal({onclose}){
+function CreateTaskModal({onClose}){
 
     const [taskName, settaskName] = useState('')
     const [selectedCategory, setSelectedCategory] = useState("Low")
@@ -112,7 +112,7 @@ function CreateTaskModal({onclose}){
                   </>
                 )}
                 </div>
-              <div className={style.closeButton} onClick={onclose}>
+              <div className={style.closeButton} onClick={onClose}>
                  <CircleX size={32} color="#c328b3" /> 
                  close
                  </div>

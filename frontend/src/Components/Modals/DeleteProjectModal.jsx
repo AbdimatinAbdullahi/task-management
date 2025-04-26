@@ -3,7 +3,7 @@ import style from '../Modals/modals.module.css'
 function DeleteProjectModal({projectId, projectName, onClose}) {
   return (
     <div className={style.overlay}>
-        <div className={style.modalContainer}>
+        <div className={style.modalContainer} onClick={(e) => e.stopPropagation()} >
 
           <div className={style.modalDeleteHeader}>
             {projectName}

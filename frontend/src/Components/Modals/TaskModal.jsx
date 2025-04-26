@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
-import style from '../../../Styles/kanban.module.css';
+// import style from '../../../Styles/kanban.module.css';
 import { X, FlagTriangleRight, Badge, Users, Calendar, Trash2 } from 'lucide-react';
 import axios from "axios";
 
+import style from '../../Styles/kanban.module.css'
 function TaskModal({ onClose, task, formattedDate, projectName, projectId, updateTaskStatus, updateTask, removeDeletedTaskFromUI }) {
   const handleModalClick = (e) => {
     e.stopPropagation(); // Prevent click from reaching parent elements

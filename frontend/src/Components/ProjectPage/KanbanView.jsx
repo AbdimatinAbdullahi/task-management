@@ -2,8 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { DndProvider, useDrop } from 'react-dnd';
 import { HTML5Backend, getEmptyImage } from 'react-dnd-html5-backend';
 import style from '../../../Styles/kanban.module.css';
-import CreateTaskModal from '../../Modals/CreateTaskModal';
-import TaskItem from '../../ProjectPage/TaskItem';
+import CreateTaskModal from '../Modals/CreateTaskModal';
+import TaskItem from './TaskItem';
 import axios from 'axios';
 
 

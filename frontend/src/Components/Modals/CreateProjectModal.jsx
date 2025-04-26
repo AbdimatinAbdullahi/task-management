@@ -1,7 +1,8 @@
 import React, {useEffect, useState} from 'react'
+import {FolderPlus, BookmarkX} from 'lucide-react'
 import axios from 'axios'
-
-function CreateProjectModal({ onClose, projectLength, user_id}) {
+import style from '../../Styles/mainpage.module.css'
+function CreateProjectModal({ onClose }) {
 
     const [projectName, setProjectName] = useState('')
     const [errorMessage, seterrorMessage] = useState('')
@@ -33,7 +34,7 @@ function CreateProjectModal({ onClose, projectLength, user_id}) {
 
   return (
     <div className={style.modalOverlay}>
-        <div className={style.modalContainer}>
+        <div className={style.modalContainer} onClick={(e)=> e.stopPropagation()} >
 
             {/* Header */}
             <div className={style.modalHeader}>
@@ -41,15 +42,16 @@ function CreateProjectModal({ onClose, projectLength, user_id}) {
             </div>
 
             {/* Project name */}
-            <div className={style.projectName}>
+            <div className={style.provisions}>
                 <input type="text" placeholder='Enter project name' value={projectName} onChange={(e)=> handleChange(e)} />
-                {errorMessage && <div className={style.error} >{errorMessage}</div>}  
+                {errorMessage && <div className={style.error} >{errorMessage}</div>} 
+                <textarea placeholder='Enter the task description...' /> 
             </div>
 
 
-            <div className={style.buttons}>
-                <div className={style.createButton} onClick={()=> handleCreate(projectName)} > Create <FolderPlus size={32} color="#af2bc1f3" /> </div>
-                <div className={style.closeButton} onClick={onClose} > close <BookmarkX size={32} color="#af2bc1f3" /> </div>
+            <div className={style.modalButtons}>
+                <div className={style.createButton} > Create <FolderPlus size={32} /> </div>
+                <div className={style.closeButton} onClick={onClose} > close <BookmarkX size={32} /> </div>
             </div>
 
 
