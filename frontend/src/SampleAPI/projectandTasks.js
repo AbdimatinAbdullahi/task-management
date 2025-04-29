@@ -5,7 +5,7 @@
       task_name: "Interview 5 target users",
       status: "In Progress",
       created_at: "2025-04-20T18:00:00",
-      due_date: "2025-04-22",
+      due_date: "2025-04-29",
       started_at: "2025-04-20",
       task_notes: "Ask about product usage and daily workflow.",
       priority: "High",
@@ -122,7 +122,7 @@ export const workspaces = [
       description:
         "Develop and deploy an AI-powered chatbot for customer support to reduce ticket volume and improve response time. This includes flow design, OpenAI integration, and internal QA testing.",
       workspace_id: "40c3e84b-28bb-404e-9387-334b8c6de5eb",
-      created_at: "2025-04-20T17:30:00.000Z",
+      created_at: "2024-07-24T17:30:00.000Z",
     }
   ];
 

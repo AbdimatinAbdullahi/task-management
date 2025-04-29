@@ -2,7 +2,7 @@
     --font-source-three: 'Source Sans 3';
     --font-spline-sans: "Spline Sans Mono";
     --box-shadow-auto: 20px 20px 60px #d9d9d9, -20px -20px 60px #ffffff;
-    
+    --font-fira-sans: "Fira Sans";    
 } 
 
 .mainPageContainer{
@@ -286,14 +286,15 @@
     padding-left: 1em;
 }
 .taskBoard{
+    /* width: 33%; */
     border-radius: 12px;
     background: rgb(240, 240, 240, 0.7);
     margin-right: 2em;
     margin-top: 2em;
+    border: 2px solid black;
 }
 
 .taskBoardsHeader{
-    width: 100%;
     height: 6%;
     border-bottom: 2px solid black;
     display: flex;
@@ -365,6 +366,16 @@
     padding: 0 1em;
 }
 
+
+.dueDate{
+    width: 30%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-family: var(--font-spline-sans);
+    font-size: 20px;
+    color: gray;
+}
 .members{
     width: 70%;
     height: 96%;
@@ -376,7 +387,8 @@
     height: 80%;
     aspect-ratio: 1/1;
     border-radius: 50%;
-    background-color: rgba(175, 43, 193);
+    border: 1px solid white;
+    background-color: rgb(235, 198, 240);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -384,7 +396,7 @@
     z-index: 1;
     font-family: var(--font-spline-sans);
     font-size: 20px;
-    font-weight: 900;
+    font-weight: 400;
     color: gray;
 }
 

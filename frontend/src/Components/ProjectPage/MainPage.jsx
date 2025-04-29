@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { House, Mail, BadgePlus, UserPlus, Plus } from 'lucide-react'
+import { House, Mail, BadgePlus, UserPlus, Plus, Calendar } from 'lucide-react'
 import style from '../../Styles/mainpage.module.css'
 import { useSearchParams } from 'react-router-dom'
 import { HTML5Backend } from 'react-dnd-html5-backend'
@@ -12,6 +12,10 @@ import CreateTaskModal from '../Modals/CreateTaskModal' //Add Task Modal
 import DeleteProjectModal from '../Modals/DeleteProjectModal'
 import InviteModal from '../Modals/InviteModal'
 import TaskModal from '../Modals/TaskModal'
+
+
+
+
 function MainPage() {
   const [searchParams] = useSearchParams()
   const user_id = searchParams.get("id")
@@ -140,6 +144,9 @@ function ProjectContainer({ selectedProject, workspace, members }) {
     fetchTasks()
   }, [selectedProject])
 
+  const formatedDate = selectedProject ? 
+    new Date(selectedProject.created_at).toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' })
+    : ''
 
   return (
     <div className={style.projectManager}>
@@ -149,7 +156,7 @@ function ProjectContainer({ selectedProject, workspace, members }) {
               <div className={style.projectHeader}> {workspace.name} / {selectedProject.name} </div>
               <div className={style.projectDescription}> {selectedProject.description} </div>
               <div className={style.projectAddsOn}>
-                <div className={style.projectStartDate}> Created On: <strong style={{color: "black"}}>May 26, 2025</strong> </div>
+                <div className={style.projectStartDate}> Created On: <strong style={{color: "black"}}>{formatedDate}</strong> </div>
                 <div className={style.projectStatus}> status: <div className={style.status}>In Progress</div> </div>
               </div>
               <div className={style.inviteUserToWorkspace} onClick={()=> setInviteUserModalOpen(true)} > <UserPlus /> Invite </div>
@@ -204,7 +211,7 @@ function DropZone({status, tasks, projectId, members}){
           {status}
           <Plus size={32} color='gray' cursor="pointer" onClick={()=> setAddTaskModalOpen(true)}/>
       </div>
-      {addTaskModalOpen && <CreateTaskModal onClose={()=> setAddTaskModalOpen(false)} />}
+      {addTaskModalOpen && <CreateTaskModal onClose={()=> setAddTaskModalOpen(false)} members={members} />}
       {tasks.map((task)=> (
         <TaskItem 
           key={task.id}
@@ -243,6 +250,9 @@ function TaskItem({ task, projectId, members }){
     console.log("Task Memebers: ", taskMemebers)
 
   },[taskMemebers])
+
+  const isPastDate = new Date(task.due_date) < new Date()
+  const taskDueDate = task ? new Date(task.due_date).toLocaleDateString("en-US", { month: "long", day: "numeric" }) : ""
   
 
   return(
@@ -255,12 +265,13 @@ function TaskItem({ task, projectId, members }){
           </div>
           <div className={style.membersPlusDate}>
             <div className={style.members}>
-                {taskMemebers.map((member) => <div className={style.member} key={member.id} > 
-                  {member.email.slice(0, 2).toUpperCase()}
+                {taskMemebers.map((member) => <div className={style.member} key={member.id} title={member.fullname} > 
+                  {member.email.slice(0, 1).toUpperCase()}
                 </div> )}
             </div>
-            <div className={style.dueDate}>
-                  {task.due_date}
+            <div className={style.dueDate} title='Due Date' style={{ color: isPastDate ? "red" : "" }} >
+                  <Calendar />
+                  {taskDueDate}
             </div>
           </div>
     </div>

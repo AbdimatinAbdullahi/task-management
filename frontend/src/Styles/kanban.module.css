@@ -1,17 +1,9 @@
 :root{      
     --box-shadow: 2px 2px 100px 0.5px rgba(0, 0, 0, 0.15);
-    --font-sansation: "Sansation"
+    --font-sansation: "Sansation";
+    --font-fira-sans: "Fira Sans"
 }
 
-.kanbanContainer{
-    width: 100%;
-    height: 100%;
-    display: flex;
-    flex-direction: row;
-    align-items: start;
-    justify-content: center;
-    gap: 1%;
-}
 
 .taskBoard{
     width: 25%;
@@ -54,20 +46,8 @@
     transition: transform 0.2s ease;
     border: 3px solid gray;
     cursor: move;
-    /* opacity: 0.5; */
   }
   
-
-.taskProject{
-    width: 70%;
-    height: 15%;
-    background: rgb(240, 186, 247);
-    border-radius: 15px;
-    margin-top: 12px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
 
 .taskName{
     margin-top: 23px;
@@ -149,76 +129,17 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: space-evenly;
-}
-
-.inputContainer, .selectCategory, .taskDescription, .datePicker, .buttons{
-    width: 90%;
-}
-
-.inputContainer, .selectCategory{
-    height: 10%;
-}
-.inputContainer input, .selectCategory select, .taskDescription textarea{
-    width: 100%;
-    height: 100%;
-    text-indent: 1%;
-    border: none;
-    border: 3px solid #AF2BC1;
-    outline: none;
-    font-family: var(--font-spline-sans);
-    font-size: 20px;
-    font-weight: 500;
-    border-radius: 4px;
-    color: rgb(137, 133, 133);
-}
-.taskDescription{
-    height: 30%;
-}
-
-.datePicker{
-    width: 90%;
-    display: flex;
-    flex-direction: row;
-    align-items: center;
     justify-content: space-between;
+
 }
 
-.startDate, .endDate{
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-}
-.startDate{
-    margin-right: 10px;
-}
-.startDate input, .endDate input{
-    width: 100%;
-    height: 40px;
-    text-indent: 1%;
-    font-family: var(--font-spline-sans);
-    font-size: 18px;
-    font-weight: 700;
-    border-radius: 12px;
-    color: gray;
-}
-
-.buttons{
-    height: 10%;
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: space-between;
-}
-
-.createButton, .closeButton{
-    width: 40%;
-    height: 100%;
-    background-color: rgba(175, 43, 193, 0.11);
-    border-radius: 12px;
-    display: flex;
-    align-items: center;
-    justify-content: space-around;
+.displayer{
+  width: 99%;
+  border-bottom: 1px solid black;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-left: 1em;
 }
 
 .error{
@@ -253,192 +174,7 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-}
-
-.close{
-    position: absolute;
-    top: 10px;
-    right: 10px;
-}
-
-
-.modalTaskName{
-    width: 90%;
-    height: 10%;
-    margin-top: 30px;
-    margin-bottom: 30px;
-}
-
-.modalTaskName input{
-    width: 100%;
-    height: 100%;
-    font-family: var(--font-spline-sans);
-    font-weight: 900;
-    font-size: 24px;
-    border: none;
-    outline: none;
-}
-
-.modalTaskDescription{
-    width: 90%;
-    height: 10%;
-    margin-top: 30px;
-    margin-bottom: 30px;
-}
-
-.modalTaskDescription input{
-    width: 100%;
-    height: 100%;
-    border: 3px solid #AF2BC1;
-    outline: none;
-    border-radius: 4px;
-    font-family: var(--font-spline-sans);
-    font-size: 16px;
-    font-weight: 700;
-    color: gray;
-    padding-left: 2%;
-}
-
-
-.taskModalPrir{
-    width: 90%;
-    height: 20%;
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    grid-template-rows: repeat(2, 1fr);
-    row-gap: 30px;
-    column-gap: 10px;
-    margin-top: 10%;
-}
-
-.itemGrids{
-    display: grid;
-    grid-template-columns: 0.5fr 1fr 2fr;
-    width: 100%;
-    /* border: 1px solid red; */
-    align-items: center;
-    justify-content: space-between;
-}
-
-
-.itemGrids .status{
-    width: 90%;
-    height: 70%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 4px;
-    font-weight: bold;
-}
-
-.itemGrids .assignees{
-    width: 90%;
-    height: 70%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background-color: rgb(138, 232, 152);
-    border-radius: 4px;
-    font-weight: bold;
-}
-
-.datesContainer{
-    display: flex;
-    flex-direction: row;
-}
-
-.datesContainer input{
-    font-family: var(--font-spline-sans);
-    color: black;
-    font-weight: 900;
-    border: none;
-    outline: none;
-}
-
-.customSelect {
-    /* Remove default appearance */
-    appearance: none;
-    -webkit-appearance: none;
-    -moz-appearance: none;
-  
-    /* Remove border, background, etc. */
-    border: none;
-    background: none;
-    padding: 0;
-    margin: 0;
-    outline: none;
-    box-shadow: none;
-  
-    /* Optional: add custom styles */
-    font-size: 1rem;
-    cursor: pointer;
-  
-    /* Remove arrow */
-    background-image: none;
-  
-    /* If you want, you can add your custom styles here */
-    color: #000;
-    width: 100%;
-    height: 100%;
-    text-align: center;
-  }
-  
-  /* Optional: remove option styling (limited, but helps) */
-  .customSelect option {
-    background-color: rgb(132, 132, 131, 0.1);
-    color: black;
-  }
-  
-
-
-.toDo {
-    background-color: rgb(255, 226, 226);
-  }
-  
-  .inProgress {
-    background-color: rgb(206, 255, 209);
-  }
-  
-  .inReview {
-    background-color: rgb(70, 172, 209);
-  }
-  
-  .complete {
-    background-color: rgba(10, 47, 10, 0.1);
-  }
-  
-
-
-  .toDoBorder {
-    border: 3px solid rgba(255, 166, 166);
-  }
-  
-  .inProgressBorder {
-    border: 3px solid rgb(96, 238, 106);
-  }
-  
-  .inReviewBorder {
-    border: 3px solid rgb(255, 159, 233);
-  }
-  
-  .completeBorder {
-    border: 3px solid green;
-  }
-   
-  
-
-  .medium{
-    background-color: rgb(225, 243, 94);
-  }
-
-  .high{
-    background-color: rgb(224, 23, 23);
-  }
-
-  .normal{
-    background-color: rgb(10, 220, 17);
-  }
-
+}  
 
   .createTask{
     width: 100%;
@@ -446,25 +182,6 @@
     display: flex;
     align-items: center;
     justify-content: center;
-  }
-
-
-  .deleteTask{
-    margin-top: 40px;
-    width: 90%;
-    border:  1px solid red;
-    border-radius: 8px;
-    display: flex;
-    align-items: center;
-    justify-content: space-evenly;
-  }
-
-
-
-  .closeIcon{
-    position: absolute;
-    top: 4px;
-    right: 4px;
   }
 
   .taskNameAndStatus{
@@ -532,13 +249,12 @@
     box-sizing: border-box;
     width: 100%;
     height: calc(100% - 50px);
-    /* border: 3px solid purple; */
     display: grid;
     grid-template-columns: repeat(4, 1fr);
   }
 
   .creationHeader, .statHeader, .startHeader, .dueHeader{
-    font-family: var(--font-sansation );
+    font-family: var(--font-spline-sans);
     font-size: 20px;
     font-weight: 700;
     color: black;
@@ -547,13 +263,32 @@
   .creationHeader, .creationDateH{
     padding-left: 1em;
   }
-  .creationDateH, .statD, .startD, .dueD{
+  .creationDateH, .statD, .dueD{
     margin-top: 2em;
     font-size: 20px;
-    font-weight: 900;
+    font-weight: 400;
     color: gray;
-    font-family: var(--font-sansation);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-family: var(--font-fira-sans);
   }
+
+  .dueD input[type="date"]{
+    width: 100%;
+    font-size: 18px;
+    font-weight: 400;
+    border: none;
+    outline: none;
+    color: gray;
+    font-family: var(--font-fira-sans);
+  }
+
+  .dueD input[type="date"]::-webkit-calendar-picker-indicator{
+    margin-right: 2em;
+  }
+
+
 
   .descriptionContainer{
     width: 90%;
@@ -568,12 +303,12 @@
     resize: none;
     width: 100%;
     height: 100%;
-    font-family: var(--font-spline-sans);
-    font-weight: 700;
+    font-weight: 400;
     font-size: 14px;
     color: gray;
     padding: 1px 1px;
     border: none;
+    font-family: var(--font-fira-sans);
     &:focus{
       border: none;
       outline: none;
@@ -595,5 +330,36 @@
     align-items: center;
     border-radius: 50%;
     margin-right: -20px;
-    background-color: #848483;
+    font-family: var(--font-sansation);
+    font-weight: 900;
+    background-color: rgb(235, 198, 240);
+  }
+
+  .deleteTask{
+    margin-top: 20px;
+    width: 90%;
+    height: 60px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .delete, .closeModal{
+    width: 20%;
+    height: 100%;
+    border-radius: 12px;
+    background-color: rgb(175, 43, 193, 0.11);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #AF2BC1;
+    font-family: var(--font-spline-sans);
+    font-size: 20px;
+    font-weight: 900;
+    &:hover{
+      background-color: #AF2BC1;
+      color: white;
+      cursor: pointer;
+    }
   }

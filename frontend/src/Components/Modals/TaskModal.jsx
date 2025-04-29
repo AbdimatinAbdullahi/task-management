@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
-// import style from '../../../Styles/kanban.module.css';
-import { X, FlagTriangleRight, Badge, Users, Calendar, Trash2 } from 'lucide-react';
-
+import {Calendar} from 'lucide-react'
 import style from '../../Styles/kanban.module.css'
+
+
 function TaskModal({ onClose, task, members }) {
 
   const [taskDetails, settaskDetails] = useState({
@@ -13,13 +13,18 @@ function TaskModal({ onClose, task, members }) {
     priority: task.priority,
     description: task.task_notes,
     creation_date: task.created_at
-  })
+  });
+
+  const isPastDueDate = new Date(taskDetails.due_date) < new Date()
+  const formattedDueDate = taskDetails ? new Date(task.due_date).toLocaleDateString('en-US', { month: "long", day: "numeric" }) : ""
+  const formatedStartDate = taskDetails.start_date ? new Date(task.started_at).toLocaleDateString('en-US', {month: "long", day: "numeric"}): ""
+  const creationDate = taskDetails ? new Date(task.created_at).toLocaleDateString('en-US', {month: "long", day: "numeric"}): ""
+
+
 
   return (
     <div className={style.modalOverlay}>
       <div className={style.modalTaskContainer}>
-
-        {/* Close Icon */}
 
         {/* Task Name and Status Conatiner */}
         <div className={style.taskNameAndStatus}>
@@ -41,7 +46,7 @@ function TaskModal({ onClose, task, members }) {
             {/* Creation container */}
             <div className={style.creationDate}>
               <div className={style.creationHeader}> Created On</div>
-              <div className={style.creationDateH}> {taskDetails.creation_date} </div>
+              <div className={style.creationDateH}> {creationDate} </div>
             </div>
 
               {/* Status Container */}
@@ -51,15 +56,29 @@ function TaskModal({ onClose, task, members }) {
             </div>
 
             {/* Start Date */}
-            <div className={style.startDate}>
-              <div className={style.startHeader}> Start Date</div>
-              <div className={style.startD}> {taskDetails.start_date}</div>
+            <div className={style.dueDate}>
+              <div className={style.dueHeader}> Start Date</div>
+              <div className={style.dueD}>
+                <input 
+                    type="date" 
+                    value={taskDetails.start_date ? taskDetails.start_date.substring(0, 10) : ""} 
+                    onChange={(e) => settaskDetails({ ...taskDetails, start_date: e.target.value })} 
+                    placeholder="Start Date"
+                  />
+            </div>
             </div>
 
             {/* Due Date */}
             <div className={style.dueDate}>
               <div className={style.dueHeader}> Due Date</div>
-              <div className={style.dueD}> {taskDetails.due_date}</div>
+              <div className={style.dueD}>
+                <input 
+                    type="date" 
+                    value={taskDetails.due_date ? taskDetails.due_date.substring(0, 10) : ""} 
+                    onChange={(e) => settaskDetails({ ...taskDetails, due_date: e.target.value })} 
+                    style={{color: isPastDueDate ? "red" : ""}}
+                  />
+            </div>
             </div>
           </div>
         </div>
@@ -72,14 +91,15 @@ function TaskModal({ onClose, task, members }) {
 
         <div className={style.assignesContainer}>
             {members.map((member)=> (
-              <div className={style.assignedMember}>
-                {member.email.slice(0, 2).toUpperCase()}
+              <div className={style.assignedMember} title={member.fullname} >
+                {member.email.slice(0,1).toUpperCase()}
               </div>
             ))}
         </div>
 
-        <div className={style.deleteTask} onClick={onClose} >
-          Delete Task
+        <div className={style.deleteTask} >
+          <div className={style.closeModal}  onClick={onClose} > Close Modal </div>
+          <div className={style.delete}>Delete Task</div>
         </div>
 
       </div>

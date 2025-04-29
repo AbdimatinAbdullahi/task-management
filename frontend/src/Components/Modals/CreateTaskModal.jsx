@@ -1,127 +1,154 @@
-import React, {useState, } from "react"
-// import style from '../Kanban/kanban.module.css'
+import React, {useEffect, useState, } from "react"
 import style from '../../Styles/kanban.module.css'
+import Select from 'react-select'
+import makeAnimated from 'react-select/animated'
+import {X} from 'lucide-react'
+import { label } from "framer-motion/client"
 
-import {CheckCheck, CircleX} from 'lucide-react'
-function CreateTaskModal({onClose}){
 
-    const [taskName, settaskName] = useState('')
-    const [selectedCategory, setSelectedCategory] = useState("Low")
-    const [taskDescription, setTaskDescription] = useState("")
-    const [startDate, setStartDate] = useState(null)
-    const [endDate, setEndDate] = useState(null)
+
+const animatedComponents = makeAnimated();
+
+
+function CreateTaskModal({onClose, members}){
+
+
+    const [newTask, setNewTask] = useState({
+      name: "",
+      prioity: "Low",
+      description: "",
+      start_date: null,
+      due_date: null,
+      assignees: []
+    });
+
     const [errorMessage, setErrorMessage] = useState("")
     const [loading, setLoading] = useState(false)
     const project_name = ""
   
-    const categories = ["Low", "Medium", "High"]
-  
-    // Function to handle Select category
-    const handleSelectedChange = (e) =>{
-      setSelectedCategory(e.target.value)
-    }
+    const priorities = ["Low", "Medium", "High"]
+
+
+    const memberOptions = members.map((member)=>({
+      value: member.id,
+      label: member.fullname
+    }));
+
+    const priorityOptions = [
+      { value: "Low", label: "Low" },
+      { value: "Urgent", label: "Urgent" },
+      { value: "Normal", label: "Normal" }
+    ]
   
     // Function to send the task to backend and create new one
     const handleCreateTask = async () => {
       // Validate input before setting loading state
-      if (taskName === "" || taskDescription === "") {
+      if (newTask.name === "" || newTask.description === "") {
         setErrorMessage("Provide both task name and task description");
         return;
       }
-    
-      setLoading(true); // Set loading after validation
-    
-      try {
-        const response = await axios.post("http://127.0.0.1:5000/api/create-task", {
-          taskName,
-          taskDescription,
-          startDate,
-          endDate,
-          selectedCategory,
-        });
-        
-        console.log(response.data);
-      } catch (error) {
-        setErrorMessage(error.message);
-      } finally {
-        setLoading(false); // Ensure loading is turned off after request completes
-      }
     };
     
+    useEffect(()=>{
+      console.log("Members from create task modal", members)
+    }, [members])
   
     // Function to handle the task change
-    const handleTaskNameChange = (e)=>{
-      settaskName(e.target.value)
-      setErrorMessage("")
+    const handleTaskChang = (e)=>{
+      const { name, value } = e.target;
+      setTask((prevTask) => ({
+        ...prevTask,
+        [name]: value,
+      }));
     }
-  
+
+    const handleTaskAssigneChange = (selectedOptions)=>{
+      const assigneeIds = selectedOptions.map((option) => option.value);
+      setNewTask((prevTask)=>({
+        ...prevTask,
+        assignees: assigneeIds
+      }))
+    };
+
+
+    const handlePriortyChange = (selectedOption) => {
+      setNewTask((prevTask) => ({
+        ...prevTask,
+        prioity: selectedOption.value, 
+      }));
+    };
+    
   
     return (
       <div className={style.overlay}>
         <div className={style.modalContainer}>
-            {errorMessage && <p className={style.error} >{errorMessage}</p>}
-  
-            {/* Input container */}
-            <div className={style.inputContainer}>
-              <input type="text" placeholder='Enter the task name'  value={taskName} onChange={handleTaskNameChange}/>
+            <div className={style.displayer}>
+              <div className={style.taskOwner}> ACME Inc. / Customer Reserach / In Progress </div>
+              <X size={32} color="gray" onClick={onClose}/>
             </div>
-  
-  
-            {/* Category selection */}
-            <div className={style.selectCategory}>
-              <select value={selectedCategory} onChange={handleSelectedChange} >
-                {categories.map((category)=>(
-                  <option value={category} key={category} >{category}</option>
-                ))}
-              </select>
+
+            <div className={style.taskNameAndDescription}>
+              <input type="text" value={newTask.name} onChange={handleTaskChang} />
+              <textarea value={newTask.description}  onChange={handleTaskChang}  />
             </div>
+
+            <div className={style.datesPriorityAndStatus}>
+              <input type="date" value={newTask.start_date || "" } onChange={handleTaskChang}  />
+              <input type="date" value={newTask.due_date || ""} onChange={handleTaskChang} />
+              <Select options={priorityOptions}
+                    value={priorityOptions.find(opt => opt.value === newTask.prioity)} // Ensure the selected value is in sync
+                    onChange={handlePriortyChange} // Handle the change
+                    placeholder="Select priority"
+                    styles={customStyles} // Use custom styles for consistency
+                    components={animatedComponents} // Smooth animations
+                    />
+            </div>
+
+            <div className={style.assignessSelection}>
+              <Select options={memberOptions} isMulti onChange={handleTaskAssigneChange} placeholder="Assign Team Members ..." components={animatedComponents} styles={customStyles}/>
+            </div>
+
+            <div className={style.createTaskButton}>
+              <button>Create Task</button>
+            </div>
+
             
-  
-            {/* Task Description */}
-            <div className={style.taskDescription}>
-              <textarea onChange={(e)=> setTaskDescription(e.target.value)} placeholder='Enter description of task' ></textarea>
-            </div>
-  
-  
-  
-            {/* Date picker */}
-            <div className={style.datePicker}>
-              <div className={style.startDate}>
-                select start date
-                <input type="date" onChange={(e)=> setStartDate(e.target.value)} value={startDate} />
-              </div>
-              <div className={style.endDate}>
-              select End date
-              <input type="date" onChange={(e)=> setEndDate(e.target.value)} value={endDate} />
-  
-              </div>
-            </div>
-  
-  
-  
-            {/* Buttons */}
-            <div className={style.buttons}>
-              <div className={style.createButton} onClick={handleCreateTask} >
-                {loading ? (
-                  <>
-                    <Loader size={32} color='#c328b3' />  CreatingTask...                
-                  </>
-                ) : (
-                  <>
-                    <CheckCheck color='#c328b3' size={32}  /> Create Task
-                  </>
-                )}
-                </div>
-              <div className={style.closeButton} onClick={onClose}>
-                 <CircleX size={32} color="#c328b3" /> 
-                 close
-                 </div>
-            </div>
-  
-  
+
         </div>
       </div>
     )
   }
   
+
+
+
+  const selectedColor = "rgb(227, 129, 240)"; // teal background
+  const removeHoverColor = "#ff4d4f"; // red hover on remove
+  const fontFamily = "'Fira Sans, sans-serif"; // change to any custom font
+  
+  const customStyles = {
+    multiValue: (base) => ({
+      ...base,
+      backgroundColor: selectedColor,
+      borderRadius: "6px",
+      padding: "2px 6px",
+    }),
+    multiValueLabel: (base) => ({
+      ...base,
+      color: "white",
+      fontWeight: "600",
+      fontFamily: fontFamily,
+      fontSize: "0.85rem",
+    }),
+    multiValueRemove: (base) => ({
+      ...base,
+      color: "white",
+      cursor: "pointer",
+      ":hover": {
+        backgroundColor: removeHoverColor,
+        color: "white",
+      },
+    }),
+  };
+    
 export default CreateTaskModal  
