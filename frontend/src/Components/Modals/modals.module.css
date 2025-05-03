@@ -1,6 +1,10 @@
 :root{
-    --splie-sans: "Spline sans mono"
-}
+    --font-source-three: 'Source Sans 3';
+    --font-spline-sans: "Spline Sans Mono";
+    --box-shadow-auto: 20px 20px 60px #d9d9d9, -20px -20px 60px #ffffff;
+    --font-fira-sans: "Fira Sans";    
+} 
+
 
 .overlay{
     width: 100vw;
@@ -31,10 +35,10 @@
 .modalDeleteHeader{
     margin-top: 40px;
     color: #AF2BC1;
-    font-family: var(--splie-sans);
     font-weight: 700;
     font-size: 30px;
     margin-top: 40px;
+    font-family: var(--font-spline-sans);
 }
 
 .deleteWarning{
@@ -44,16 +48,19 @@
     align-items: center;
     justify-content: center;
     flex-direction: column;
-    margin-top: 30px;
+    margin-top: 10px;
 }
 
 .warningHeader{
     font-size: 20px;
     color: red;
+    font-family: var(--font-fira-sans);
+    font-weight: 700;
 }
 .warningText{
     width: 100%;
     text-align: center;
+    font-family: var(--font-fira-sans);
 }
 
 .actionButton{
@@ -73,6 +80,10 @@
     font-weight: 800;
     border: none;
     outline: none;
+    font-family: var(--font-spline-sans);
+    &:hover{
+        cursor: pointer;
+    }
 }
 
 /* Modal Invite users styles */
@@ -101,13 +112,14 @@
     font-size: 30px;
     font-weight: bold;
     text-transform: uppercase;
+    font-family: var(--font-spline-sans);
 }
 
 .headerTwo{
     font-size: 32px;
     color: #AF2BC1;
     font-weight: bolder;
-    font-family: var(--splie-sans);
+    font-family: var(--font-fira-sans);
 }
 
 .invitesInputs{
@@ -118,6 +130,7 @@
     justify-content: space-around;
     flex-direction: column;
     margin-top: 50px;
+    font-family: var(--font-spline-sans);
     
 }
 
@@ -131,7 +144,8 @@
     font-weight: 600;
     &::placeholder{
         color: rgba(0, 0, 0, 0.25);
-        font-size: 15px;
+        font-size: 16px;
+        font-family: var(--font-fira-sans);
     }
     &:focus{
         border: 2.5px solid #AF2BC1;
@@ -159,7 +173,13 @@
     font-size: 24px;
     font-weight: bolder;
     text-transform: uppercase;
-    background-color: #AF2BC1;
+    background-color: rgba(217, 106, 232, 0.6);
+    font-family: var(--font-spline-sans);
+    &:hover{
+        color: white;
+        background-color: #AF2BC1;
+        cursor: pointer;
+    }
 }
 
 
@@ -175,6 +195,12 @@
     color: #848383;
     border-radius: 12px;
     background-color: rgba(175, 43, 193, 0.11);
+    font-family: var(--font-spline-sans);
+    &:hover{
+        color: white;
+        background-color: #AF2BC1;
+        cursor: pointer;
+    }
 }
 
 #cancel{

@@ -14,7 +14,7 @@ function CreateTaskModal({onClose, members}){
 
 
     const [newTask, setNewTask] = useState({
-      name: "",
+      task_name: "",
       prioity: "Low",
       description: "",
       start_date: null,
@@ -25,15 +25,11 @@ function CreateTaskModal({onClose, members}){
     const [errorMessage, setErrorMessage] = useState("")
     const [loading, setLoading] = useState(false)
     const project_name = ""
-  
-    const priorities = ["Low", "Medium", "High"]
-
 
     const memberOptions = members.map((member)=>({
       value: member.id,
       label: member.fullname
     }));
-
     const priorityOptions = [
       { value: "Low", label: "Low" },
       { value: "Urgent", label: "Urgent" },
@@ -43,7 +39,7 @@ function CreateTaskModal({onClose, members}){
     // Function to send the task to backend and create new one
     const handleCreateTask = async () => {
       // Validate input before setting loading state
-      if (newTask.name === "" || newTask.description === "") {
+      if (newTask.task_name === "" || newTask.description === "") {
         setErrorMessage("Provide both task name and task description");
         return;
       }
@@ -54,13 +50,14 @@ function CreateTaskModal({onClose, members}){
     }, [members])
   
     // Function to handle the task change
-    const handleTaskChang = (e)=>{
+    const handleTaskChang = (e) => {
+      setErrorMessage("")
       const { name, value } = e.target;
-      setTask((prevTask) => ({
+      setNewTask((prevTask) => ({
         ...prevTask,
         [name]: value,
       }));
-    }
+    };    
 
     const handleTaskAssigneChange = (selectedOptions)=>{
       const assigneeIds = selectedOptions.map((option) => option.value);
@@ -84,17 +81,26 @@ function CreateTaskModal({onClose, members}){
         <div className={style.modalContainer}>
             <div className={style.displayer}>
               <div className={style.taskOwner}> ACME Inc. / Customer Reserach / In Progress </div>
-              <X size={32} color="gray" onClick={onClose}/>
+              <X size={32} color="gray" onClick={onClose} className={style.Xf}/>
             </div>
 
             <div className={style.taskNameAndDescription}>
-              <input type="text" value={newTask.name} onChange={handleTaskChang} />
-              <textarea value={newTask.description}  onChange={handleTaskChang}  />
+              <input type="text" value={newTask.task_name} name="task_name" onChange={handleTaskChang} placeholder="Task Name ..."/>
+              <textarea value={newTask.description} name="description" onChange={handleTaskChang}  placeholder="Give more information and details of the task"/>
             </div>
 
             <div className={style.datesPriorityAndStatus}>
-              <input type="date" value={newTask.start_date || "" } onChange={handleTaskChang}  />
-              <input type="date" value={newTask.due_date || ""} onChange={handleTaskChang} />
+              <div className={style.startDate}>
+                <label htmlFor="date">Start Date:</label>
+                <input type="date" value={newTask.start_date || "" } onChange={handleTaskChang} name="start_date" />
+              </div>
+
+              <div className={style.endDate}>
+                <label htmlFor="date">Start Date:</label>
+                <input type="date" value={newTask.due_date || ""} onChange={handleTaskChang} name="due_date"/>
+              </div>
+              <div className={style.priorityCheck}>
+              <label htmlFor="">Priority</label>
               <Select options={priorityOptions}
                     value={priorityOptions.find(opt => opt.value === newTask.prioity)} // Ensure the selected value is in sync
                     onChange={handlePriortyChange} // Handle the change
@@ -102,29 +108,25 @@ function CreateTaskModal({onClose, members}){
                     styles={customStyles} // Use custom styles for consistency
                     components={animatedComponents} // Smooth animations
                     />
+              </div>
             </div>
 
             <div className={style.assignessSelection}>
               <Select options={memberOptions} isMulti onChange={handleTaskAssigneChange} placeholder="Assign Team Members ..." components={animatedComponents} styles={customStyles}/>
             </div>
 
-            <div className={style.createTaskButton}>
-              <button>Create Task</button>
+            <div className={style.frget}>
+              <div onClick={handleCreateTask} >Create Task</div>
             </div>
-
-            
-
+            {errorMessage && <span className={style.error}> {errorMessage} </span>}
         </div>
       </div>
     )
   }
-  
-
-
 
   const selectedColor = "rgb(227, 129, 240)"; // teal background
   const removeHoverColor = "#ff4d4f"; // red hover on remove
-  const fontFamily = "'Fira Sans, sans-serif"; // change to any custom font
+  const fontFamily = "'Fira Sans"; // change to any custom font
   
   const customStyles = {
     multiValue: (base) => ({
@@ -132,6 +134,7 @@ function CreateTaskModal({onClose, members}){
       backgroundColor: selectedColor,
       borderRadius: "6px",
       padding: "2px 6px",
+      borderColor: "rgb(227, 129, 240)",
     }),
     multiValueLabel: (base) => ({
       ...base,

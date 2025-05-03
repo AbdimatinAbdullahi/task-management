@@ -10,10 +10,11 @@
     height: 100vh;
     display: flex;
     background-color: #FAFAFA;
+    box-sizing: border-box;
 }
 
 .leftBar{
-    width: 20%;
+    width: 18%;
     height: 100vh;
     background-color: white;
     display: flex;
@@ -26,6 +27,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    box-sizing: border-box;
 }
 
 .barContainer{
@@ -180,10 +182,10 @@
 .projectManager{
     width: 100%;
     height: 98%;
+    box-sizing: border-box;
     margin-left: 2%;
     border-radius: 12px;
     background-color: white;
-    border: 1px solid black;
 }
 
 .projectDetails{
@@ -191,7 +193,6 @@
     width: 100%;
     height: 20%;
     padding-left: 1em;
-    position: relative;
 }
 
 .projectHeader{
@@ -212,11 +213,14 @@
 
 .projectAddsOn{
     margin-top: 2em;
-    width: 40%;
+    height: 20%;
+    width: 94%;
     display: flex;
     flex-direction: row;
     align-items: center;
-    justify-content: space-between;
+    /* justify-content: space-evenly; */
+    position: relative;
+    box-sizing: border-box;
 }
 .projectStartDate, .projectStatus{
     font-family: var(--font-spline-sans);
@@ -225,9 +229,11 @@
 }
 
 .projectStatus{
+    width: 14%;
+    height: 100%;
     display: flex;
     flex-direction: row;
-    /* width: 40%; */
+    margin-left: 8em;
 }
 .status{
     margin-left: 0.2em;
@@ -238,17 +244,19 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    color: #AF2BC1;
+    color: #848383;
+    font-weight: 700;
+    text-transform: uppercase;
     
 }
 
 .inviteUserToWorkspace{
     position: absolute;
-    right: 4%;
+    right: 0;
     bottom: 6%;
     width: 10%;
     display: flex;
-    height: 20%;
+    height: 100%;
     border-radius: 4px;
     align-items: center;
     justify-content: space-evenly;
@@ -264,7 +272,8 @@
 
 .taskView{
     width: 100%;
-    height: 80%;
+    height: 77%;
+    box-sizing: border-box;
 }
 
 .taskHeader h3{
@@ -277,6 +286,7 @@
 }
 
 .kanbanBoard{
+    box-sizing: border-box;
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     column-gap: 1em;
@@ -291,11 +301,16 @@
     background: rgb(240, 240, 240, 0.7);
     margin-right: 2em;
     margin-top: 2em;
-    border: 2px solid black;
+    overflow-y: auto;
+}
+
+.taskBoard::-webkit-scrollbar{
+    display: none;
 }
 
 .taskBoardsHeader{
     height: 6%;
+    background-color: rgb(240, 240, 240);
     border-bottom: 2px solid black;
     display: flex;
     align-items: center;
@@ -306,6 +321,8 @@
     text-transform: uppercase;
     font-weight:700;
     color: #848383;
+    position: sticky;
+    top: 0;
 }
 
 .taskItems{

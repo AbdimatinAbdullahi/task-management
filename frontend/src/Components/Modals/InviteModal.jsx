@@ -36,7 +36,6 @@ function InviteModal({onClose, project_id}) {
         }
 
     }
-
   return (
     <div className={style.overlay} >
         <div className={style.modalInviteContainer}>
@@ -44,9 +43,6 @@ function InviteModal({onClose, project_id}) {
             <div className={style.inviteHeader}>
                 <div className={style.headerOne}>
                     Invite user to a project
-                </div>
-                <div className={style.headerTwo}>
-                    Project: Customer Research
                 </div>
             </div>
 

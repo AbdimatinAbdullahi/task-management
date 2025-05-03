@@ -6,7 +6,7 @@ function DeleteProjectModal({projectId, projectName, onClose}) {
         <div className={style.modalContainer} onClick={(e) => e.stopPropagation()} >
 
           <div className={style.modalDeleteHeader}>
-            {projectName}
+            Customer Research
           </div>
 
           <div className={style.deleteWarning}>
@@ -18,8 +18,6 @@ function DeleteProjectModal({projectId, projectName, onClose}) {
             <button id={style.cancel} onClick={onClose}>Cancel</button>
             <button>Delete</button>
           </div>
-
-
         </div>
     </div>
   )

@@ -4,8 +4,6 @@ import style from '../../Styles/mainpage.module.css'
 import { useSearchParams } from 'react-router-dom'
 import { HTML5Backend } from 'react-dnd-html5-backend'
 import { DndProvider, useDrag, useDrop } from 'react-dnd'
-import { getProjectTasks, getUserWorkspace, getWorkspaceMembers, getWorkspaceProjects, projects, tasks } from '../../SampleAPI/projectandTasks'
-
 
 import CreateProjectModal from '../Modals/CreateProjectModal'
 import CreateTaskModal from '../Modals/CreateTaskModal' //Add Task Modal
@@ -13,7 +11,7 @@ import DeleteProjectModal from '../Modals/DeleteProjectModal'
 import InviteModal from '../Modals/InviteModal'
 import TaskModal from '../Modals/TaskModal'
 
-
+import { getProjectTasks, getUserWorkspace, getWorkspaceMembers, getWorkspaceProjects, projects, tasks } from '../../SampleAPI/projectandTasks'
 
 
 function MainPage() {
@@ -157,9 +155,9 @@ function ProjectContainer({ selectedProject, workspace, members }) {
               <div className={style.projectDescription}> {selectedProject.description} </div>
               <div className={style.projectAddsOn}>
                 <div className={style.projectStartDate}> Created On: <strong style={{color: "black"}}>{formatedDate}</strong> </div>
-                <div className={style.projectStatus}> status: <div className={style.status}>In Progress</div> </div>
+                <div className={style.projectStatus}> <div className={style.status}>In Progress</div> </div>
+                <div className={style.inviteUserToWorkspace} onClick={()=> setInviteUserModalOpen(true)} > <UserPlus /> Invite </div>
               </div>
-              <div className={style.inviteUserToWorkspace} onClick={()=> setInviteUserModalOpen(true)} > <UserPlus /> Invite </div>
             </div>
 
             {inviteUserModalOpen && <InviteModal onClose={()=> setInviteUserModalOpen(false)} />}

@@ -12,6 +12,30 @@
       assigned_users: ["user-001", "user-002"]
     },
     {
+      _id: "661f2b7198fd740001c5aabc",
+      project_id: "e2720ab2-ef12-4292-8dab-10e82f5a165a",
+      task_name: "Interview 5 target users",
+      status: "In Progress",
+      created_at: "2025-04-20T18:00:00",
+      due_date: "2025-04-29",
+      started_at: "2025-04-20",
+      task_notes: "Ask about product usage and daily workflow.",
+      priority: "High",
+      assigned_users: ["user-001", "user-002"]
+    },
+    {
+      _id: "661f2b7198fd740001c5aabc",
+      project_id: "e2720ab2-ef12-4292-8dab-10e82f5a165a",
+      task_name: "Interview 5 target users",
+      status: "In Progress",
+      created_at: "2025-04-20T18:00:00",
+      due_date: "2025-04-29",
+      started_at: "2025-04-20",
+      task_notes: "Ask about product usage and daily workflow.",
+      priority: "High",
+      assigned_users: ["user-001", "user-002"]
+    },
+    {
       _id: "661f2b7198fd740001c5aabd",
       project_id: "e2720ab2-ef12-4292-8dab-10e82f5a165a",
       task_name: "Summarize survey results",
