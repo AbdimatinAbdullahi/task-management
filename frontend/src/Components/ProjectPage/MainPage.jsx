@@ -12,6 +12,7 @@ import InviteModal from '../Modals/InviteModal'
 import TaskModal from '../Modals/TaskModal'
 
 import { getProjectTasks, getUserWorkspace, getWorkspaceMembers, getWorkspaceProjects, projects, tasks } from '../../SampleAPI/projectandTasks'
+import axios from 'axios'
 
 
 function MainPage() {
@@ -27,18 +28,13 @@ function MainPage() {
     const fetchWorkspaceData = async () => {
       if (user_id) {
         try {
-          const wsRes = await getUserWorkspace(user_id)
-          setWorkspace(wsRes)
-
-          if (wsRes) {
-            const wsProjects = await getWorkspaceProjects(wsRes.id)
-            const wsMembers = await getWorkspaceMembers(wsRes.id)
-            setWorkspaceMembers(wsMembers)
-            setProjects(wsProjects)
+          const wsRes = await axios.get(`http://127.0.0.1:5000/api/get_workspace_data/${user_id}`)
+          setWorkspace(wsRes.data.workspace_data)
+          const fetchedProjects = wsRes.data.projects
+          setProjects(fetchedProjects)
             // Set the first project as the selected one by default
-            if (wsProjects && wsProjects.length > 0) {
-              setSelectedProject(wsProjects[0])
-            }
+          if (fetchedProjects && fetchedProjects.length > 0) {
+              setSelectedProject(fetchedProjects[0])
           }
         } catch (error) {
           console.error("Error fetching workspace or projects:", error)
@@ -49,8 +45,9 @@ function MainPage() {
   }, [user_id])
 
   useEffect(()=>{
-    console.log("Workspace members: ", workspaceMembers)
-  },[workspace, workspaceMembers])
+    console.log("Workspace: ", workspace)
+    console.log("Workspace projects: ", projects)
+  },[workspace, workspaceMembers, projects])
 
 
   return (
@@ -109,7 +106,7 @@ function Bar({ projects, workspace, setSelectedProject }) {
           <div className={style.createProject} onClick={()=> setCreateProjectModalOpen(true)} >
             <BadgePlus /> Create Project
           </div>
-          {createProjectModalOpen && <CreateProjectModal onClose={()=> setCreateProjectModalOpen(false)} />}
+          {createProjectModalOpen && <CreateProjectModal onClose={()=> setCreateProjectModalOpen(false)} workspace_id={workspace.id} />}
           <div className={style.deleteProject} onClick={()=>setDeleteProjectModalOpen(true)} >
             Delete Project
           </div>

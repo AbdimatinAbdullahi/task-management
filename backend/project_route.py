@@ -1,7 +1,8 @@
 from flask import Blueprint, current_app, jsonify, json, request
 from models import Task, Project, Workspace, db
-from bson import ObjectId
 from datetime import datetime
+from bson import ObjectId
+import asyncio
 
 project_bp = Blueprint("project", __name__, url_prefix='/api')
 
@@ -16,7 +17,7 @@ def create_workspace():
         name = data.get("name")
         workspace = Workspace.query.filter_by(owner_id=owner_id).first()
         if workspace:
-            return jsonify({"error" : "Workspace already exist"}), 401
+            return jsonify({"error" : "You already have workspace"}), 401
         
         new_workspace = Workspace(name=name, owner_id=owner_id)
         db.session.add(new_workspace)
@@ -27,19 +28,37 @@ def create_workspace():
         return jsonify({"error" : "Something went wrong"}), 500
 
 
-@project_bp.get('/projects/<user_id>')
-def get_projects(user_id):
+
+
+@project_bp.get('/get_workspace_data/<user_id>')
+async def get_workspaces(user_id):
     try:
-        projects = Project.query.filter_by(user_id=user_id).all()
-        # project_json = [project.to_dict() for project in projects]
-        # Convert each project to a dictionary
-        projects_json = [project.to_dict() for project in projects]
-        print(projects_json)
-        return jsonify({"projects": projects_json})
-    
+        workspace = Workspace.query.filter_by(owner_id=user_id).first()
+        if not workspace:
+            return jsonify({"error" : "Now workspace avalable"}), 404
+        workspace_data = {
+            "name": workspace.name,
+            "id" : workspace.id,
+            "owner" :   workspace.owner_id,
+        }
+
+        projects = Project.query.filter_by(workspace_id=workspace.id).all();
+        projects_data = []
+
+        for project in projects:
+            projects_data.append({
+                "name" : project.name,
+                "id" : project.id,
+                "description" : project.description,
+                "created_at" : project.created_at
+            });        
+        return jsonify({"workspace_data" : workspace_data, "projects" : projects_data}), 200
     except Exception as e:
         print("Error occured while accessing project: ", str(e))
         return jsonify({"error": f"Errow occrs while accessing data from database: {str(e)}"}), 500
+    
+
+
 
 
 
@@ -66,8 +85,9 @@ def create_new_project():
     try:
         data = request.get_json()
         print(data)
-        new_project = Project(name=data.get("name"), user_id=data.get("user_id"))
-        new_project.save()
+        new_project = Project(name=data.get("name"), workspace_id=data.get("workspace_id"),description=data.get("description"))
+        db.session.add(new_project)
+        db.session.commit()
         return jsonify({"message":"Creatation success"}), 200
     except Exception as e:
         return jsonify({"error": f"{str(e)}"})
