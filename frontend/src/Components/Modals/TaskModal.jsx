@@ -1,26 +1,116 @@
 import React, { useState, useEffect } from "react";
-import {Calendar} from 'lucide-react'
 import style from '../../Styles/kanban.module.css'
+import axios from "axios";
 
 
 function TaskModal({ onClose, task, members }) {
 
+  // Function to return the date to the frmat that is expected by input date field
+  function formatDate(dateObj){
+    const date = new Date(dateObj.$date || dateObj);
+    return date.toISOString().split("T")[0]
+  };
+
+
   const [taskDetails, settaskDetails] = useState({
     task_name: task.task_name,
     status: task.status,
-    due_date: task.due_date,
-    start_date: task.started_at,
+    due_date: formatDate(task.due_date),
+    start_date: formatDate(task.started_at),
     priority: task.priority,
     description: task.task_notes,
     creation_date: task.created_at
   });
 
+
+  const handleTaskChange = (e) =>{
+    const {name, value} = e.target;
+    settaskDetails((prevTaskDetails)=>({
+      ...prevTaskDetails,
+      [name] : value
+    }))
+  }
+
   const isPastDueDate = new Date(taskDetails.due_date) < new Date()
-  const formattedDueDate = taskDetails ? new Date(task.due_date).toLocaleDateString('en-US', { month: "long", day: "numeric" }) : ""
-  const formatedStartDate = taskDetails.start_date ? new Date(task.started_at).toLocaleDateString('en-US', {month: "long", day: "numeric"}): ""
-  const creationDate = taskDetails ? new Date(task.created_at).toLocaleDateString('en-US', {month: "long", day: "numeric"}): ""
+  const creationDate = taskDetails ? new Date(task.created_at.$date).toLocaleDateString('en-US', {month: "long", day: "numeric"}) : ""
+
+  useEffect(()=>{
+    console.log("Tasks", task)
+  }, [task])
 
 
+  // Function to change the name of Task:
+  const handleTasknameChange = async (e) =>{
+    if(taskDetails.task_name === task.task_name){
+      return;
+    }
+    try {
+      const tncRs = await axios.patch(`http://127.0.0.1:5000/api/update_task_name/${task._id.$oid}`, {"name" : taskDetails.task_name})
+      if(tncRs.status === 200){
+        alert("Name Change Successfull!")
+      }
+    } catch (error) {
+      console.log("Error while changing the task name: ", error)
+    }
+  };
+
+  const handleTaskDescriptionChange = async(e) => {
+    if(taskDetails.description == task.task_notes){
+      return
+    };
+
+    try {
+      const tdcRs = await axios.patch(`http://127.0.0.1:5000/api/update_task_description/${task._id.$oid}`, {"description" : taskDetails.description});
+      if(tdcRs.status === 200){
+        alert("Task Change Description successful! 🎉✅")
+      }
+    } catch (error) {
+      console.log("Error while changing the task description: ", error)
+    }
+  };
+
+
+  const handleTaskStatusChange = async(e) => {
+    if(taskDetails.status == task.status){
+      return;
+    };
+
+    try {
+      const tdcRs = await axios.patch(`http://127.0.0.1:5000/api/update_task_status/${task._id.$oid}`, {"status" : taskDetails.status});
+      if(tdcRs.status === 200){
+        alert("Task Change status successful! 🎉✅")
+      }
+    } catch (error) {
+      console.log("Error while changing the task status: ", error)
+    }
+  };
+
+  
+  const handleTaskDatesChange = async(e) => {
+
+    const updateFields = {};
+
+    if(taskDetails.start_date !== formatDate(task.started_at)){
+      updateFields.start_date = new Date(taskDetails.start_date).getTime();
+    };
+
+    if(taskDetails.due_date !== formatDate(task.due_date)){
+      updateFields.due_date = new Date(taskDetails.due_date).getTime();
+    }
+
+    if(Object.keys(updateFields).length === 0){
+      return
+    }
+
+    try {
+      const tdtcRs = await axios.patch(`http://127.0.0.1:5000/api/update_task_date/${task._id.$oid}`, updateFields);
+      if(tdtcRs.status === 200){
+        alert("Task dates change successful! 🎉✅")
+      }
+    } catch (error) {
+      console.log("Error while changing the task status: ", error)
+    }
+  }
 
   return (
     <div className={style.modalOverlay}>
@@ -28,9 +118,9 @@ function TaskModal({ onClose, task, members }) {
 
         {/* Task Name and Status Conatiner */}
         <div className={style.taskNameAndStatus}>
-          <input type="text" value={taskDetails.task_name} onChange={(e)=> settaskDetails({...taskDetails, task_name: e.target.value})}/>
+          <input type="text" name="task_name" value={taskDetails.task_name} onChange={handleTaskChange} onBlur={handleTasknameChange}/>
           <div className={style.taskStatus}>
-            <select value={taskDetails.status} onChange={(e) => settaskDetails({...taskDetails, status: e.target.value})} >
+            <select value={taskDetails.status} name="status" onChange={handleTaskChange} onBlur={handleTaskStatusChange}>
               { ["To-do", "In Progress", "Done"].map((status)=> (
                 <option value={status} key={status} > {status} </option>
               )) }
@@ -60,10 +150,11 @@ function TaskModal({ onClose, task, members }) {
               <div className={style.dueHeader}> Start Date</div>
               <div className={style.dueD}>
                 <input 
-                    type="date" 
-                    value={taskDetails.start_date ? taskDetails.start_date.substring(0, 10) : ""} 
-                    onChange={(e) => settaskDetails({ ...taskDetails, start_date: e.target.value })} 
-                    placeholder="Start Date"
+                    type="date"
+                    name="start_date"
+                    value={taskDetails.start_date ? taskDetails.start_date: ""} 
+                    onChange={handleTaskChange}
+                    onBlur={handleTaskDatesChange}
                   />
             </div>
             </div>
@@ -74,8 +165,10 @@ function TaskModal({ onClose, task, members }) {
               <div className={style.dueD}>
                 <input 
                     type="date" 
-                    value={taskDetails.due_date ? taskDetails.due_date.substring(0, 10) : ""} 
-                    onChange={(e) => settaskDetails({ ...taskDetails, due_date: e.target.value })} 
+                    name="due_date"
+                    value={taskDetails.due_date ? taskDetails.due_date: ""} 
+                    onChange={handleTaskChange}
+                    onBlur={handleTaskDatesChange}
                     style={{color: isPastDueDate ? "red" : ""}}
                   />
             </div>
@@ -86,7 +179,12 @@ function TaskModal({ onClose, task, members }) {
 
         <div className={style.descriptionContainer}>
           <h2>Description</h2>
-          <textarea type="text" value={taskDetails.description} onChange={(e) =>  settaskDetails({...taskDetails, description: e.target.value})} />
+          <textarea
+          name="description"
+          type="text" value={taskDetails.description}
+          onChange={handleTaskChange}
+          onBlur={handleTaskDescriptionChange}
+          />
         </div>
 
         <div className={style.assignesContainer}>

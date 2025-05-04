@@ -57,7 +57,7 @@ function MainPage() {
       </div>
 
       <div className={style.mainBarContainer}>
-        <ProjectContainer selectedProject={selectedProject} workspace={workspace} members={workspaceMembers} />
+        <ProjectContainer selectedProject={selectedProject} workspace={workspace} members={workspaceMembers} userId={user_id} />
       </div>
     </div>
   )
@@ -118,7 +118,7 @@ function Bar({ projects, workspace, setSelectedProject }) {
   )
 }
 
-function ProjectContainer({ selectedProject, workspace, members }) {
+function ProjectContainer({ selectedProject, workspace, members, userId }) {
   const [tasks, setTasks] = useState([])
   const [inviteUserModalOpen, setInviteUserModalOpen] = useState(false)
   useEffect(() => {
@@ -129,8 +129,8 @@ function ProjectContainer({ selectedProject, workspace, members }) {
       }
   
       try {  
-        const tskRes = await getProjectTasks(selectedProject.id)
-        setTasks(tskRes)
+        const tskRes = await axios.get(`http://127.0.0.1:5000/api/get_tasks/${selectedProject.id}`)
+        setTasks(tskRes.data.tasks)
       } catch (error) {
         console.error("Failed to fetch project tasks:", error)
       }
@@ -157,7 +157,7 @@ function ProjectContainer({ selectedProject, workspace, members }) {
               </div>
             </div>
 
-            {inviteUserModalOpen && <InviteModal onClose={()=> setInviteUserModalOpen(false)} />}
+            {inviteUserModalOpen && <InviteModal onClose={()=> setInviteUserModalOpen(false)} userId={userId} workspaceId={workspace.id} />}
 
             <div className={style.taskView}>
             <div className={style.kanbanBoard}>
@@ -170,6 +170,8 @@ function ProjectContainer({ selectedProject, workspace, members }) {
                         projectId={selectedProject.id}
                         tasks={tasks.filter((task) => task.status === status)}
                         members={members}
+                        selectedProject={selectedProject}
+                        workspace_name={workspace.name}
                       />
                     ))
                   }
@@ -185,7 +187,7 @@ function ProjectContainer({ selectedProject, workspace, members }) {
 }
 
 
-function DropZone({status, tasks, projectId, members}){
+function DropZone({status, tasks, members, selectedProject, workspace_name}){
 
   const [addTaskModalOpen, setAddTaskModalOpen] = useState(false)
 
@@ -206,7 +208,7 @@ function DropZone({status, tasks, projectId, members}){
           {status}
           <Plus size={32} color='gray' cursor="pointer" onClick={()=> setAddTaskModalOpen(true)}/>
       </div>
-      {addTaskModalOpen && <CreateTaskModal onClose={()=> setAddTaskModalOpen(false)} members={members} />}
+      {addTaskModalOpen && <CreateTaskModal onClose={()=> setAddTaskModalOpen(false)} members={members} project={selectedProject} status={status} workspaceName={workspace_name}/>}
       {tasks.map((task)=> (
         <TaskItem 
           key={task.id}
@@ -247,7 +249,7 @@ function TaskItem({ task, projectId, members }){
   },[taskMemebers])
 
   const isPastDate = new Date(task.due_date) < new Date()
-  const taskDueDate = task ? new Date(task.due_date).toLocaleDateString("en-US", { month: "long", day: "numeric" }) : ""
+  const taskDueDate = task ? new Date(task.due_date.$date || task.due_date).toLocaleDateString("en-US", { month: "long", day: "numeric" }) : ""
   
 
   return(

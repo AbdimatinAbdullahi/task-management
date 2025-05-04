@@ -2,7 +2,7 @@ import React, {useState} from 'react'
 import style from '../Modals/modals.module.css'
 import axios from 'axios'
 
-function InviteModal({onClose, project_id}) {
+function InviteModal({onClose, project_id, workspaceId, userId}) {
 
     const [userDetails, setuserDetails] = useState({ fullname: "", email: ""})
     const [loading, setloading] = useState(false)
@@ -23,7 +23,7 @@ function InviteModal({onClose, project_id}) {
                 return
             }
          
-            const response = await axios.post(`http://127.0.0.1:5000/api/invites_users`, { email: userDetails.email, username: userDetails.fullname, project_id: project_id })
+            const response = await axios.post(`http://127.0.0.1:5000/api/invites_users`, { email: userDetails.email, username: userDetails.fullname, workspaceId, userId })
             if(response.status === 200){
                 alert("User Invited!")
                 onClose()
@@ -42,7 +42,7 @@ function InviteModal({onClose, project_id}) {
 
             <div className={style.inviteHeader}>
                 <div className={style.headerOne}>
-                    Invite user to a project
+                    Invite user to a Workspace
                 </div>
             </div>
 

@@ -4,13 +4,14 @@ import Select from 'react-select'
 import makeAnimated from 'react-select/animated'
 import {X} from 'lucide-react'
 import { label } from "framer-motion/client"
+import axios from "axios"
 
 
 
 const animatedComponents = makeAnimated();
 
 
-function CreateTaskModal({onClose, members}){
+function CreateTaskModal({onClose, members, project, status, workspaceName}){
 
 
     const [newTask, setNewTask] = useState({
@@ -19,6 +20,7 @@ function CreateTaskModal({onClose, members}){
       description: "",
       start_date: null,
       due_date: null,
+      status: status,
       assignees: []
     });
 
@@ -32,8 +34,8 @@ function CreateTaskModal({onClose, members}){
     }));
     const priorityOptions = [
       { value: "Low", label: "Low" },
-      { value: "Urgent", label: "Urgent" },
-      { value: "Normal", label: "Normal" }
+      { value: "Medium", label: "Medium" },
+      { value: "High", label: "High" }
     ]
   
     // Function to send the task to backend and create new one
@@ -42,6 +44,13 @@ function CreateTaskModal({onClose, members}){
       if (newTask.task_name === "" || newTask.description === "") {
         setErrorMessage("Provide both task name and task description");
         return;
+      }
+
+      try {
+        const ctResponse = await axios.post('http://127.0.0.1:5000/api/create-task', { newTask, "project_id": project.id })
+        console.log(ctResponse)
+      } catch (error) {
+        console.log(error)
       }
     };
     
@@ -80,7 +89,7 @@ function CreateTaskModal({onClose, members}){
       <div className={style.overlay}>
         <div className={style.modalContainer}>
             <div className={style.displayer}>
-              <div className={style.taskOwner}> ACME Inc. / Customer Reserach / In Progress </div>
+              <div className={style.taskOwner}> {workspaceName} / {project.name} / {status} </div>
               <X size={32} color="gray" onClick={onClose} className={style.Xf}/>
             </div>
 

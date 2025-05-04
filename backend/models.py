@@ -63,9 +63,9 @@ class Task(Document):
     project_id = StringField(required=True)  # Should match project UUID from Postgres
     task_name = StringField(required=True)
     status = StringField(default='To-do', choices=['To-do', 'In Progress', 'Done'])
-    created_at = StringField()
-    due_date =  StringField()
-    started_at =  StringField()
+    created_at = DateTimeField(default=datetime.utcnow)
+    due_date =  DateTimeField()
+    started_at =  DateTimeField()
     task_notes = StringField()
     priority = StringField(choices=["Low", "Medium", "High"], default="Medium")
     assigned_users = ListField(StringField(), max_length=7)  # Should store user UUIDs

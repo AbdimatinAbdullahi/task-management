@@ -27,7 +27,17 @@ def create_workspace():
         print(f"Something went wrong while creating workspace: {str(e)}")
         return jsonify({"error" : "Something went wrong"}), 500
 
-
+@project_bp.route("/create-new-project", methods=["POST"])
+def create_new_project():
+    try:
+        data = request.get_json()
+        print(data)
+        new_project = Project(name=data.get("name"), workspace_id=data.get("workspace_id"),description=data.get("description"))
+        db.session.add(new_project)
+        db.session.commit()
+        return jsonify({"message":"Creatation success"}), 200
+    except Exception as e:
+        return jsonify({"error": f"{str(e)}"})
 
 
 @project_bp.get('/get_workspace_data/<user_id>')
@@ -57,59 +67,57 @@ async def get_workspaces(user_id):
         print("Error occured while accessing project: ", str(e))
         return jsonify({"error": f"Errow occrs while accessing data from database: {str(e)}"}), 500
     
-
-
-
-
-
-@project_bp.get('/get_tasks/<projectId>')
-def get_project_by_id(projectId):
-    try:
-        # Fetch all tasks for the given projectId
-        tasks = Task.objects(project_id=projectId)
-        if not tasks:
-            print(f"No tasks found for project with ID {projectId}")
-            return jsonify({"message": f"No tasks found for project with ID {projectId}"}), 404
-
-        # Convert tasks to JSON (no need to use json.loads here)
-        tasks_json = tasks.to_json()
-        # Return the response
-        return jsonify({"message": "Success fetching the project", "tasks": json.loads(tasks_json)}), 200
-    except Exception as e:
-        print(f"Error: {str(e)}")
-        return jsonify({"message": f"Error while getting the project with ID {projectId}"}), 500
-
-
-@project_bp.route("/create-new-project", methods=["POST"])
-def create_new_project():
-    try:
-        data = request.get_json()
-        print(data)
-        new_project = Project(name=data.get("name"), workspace_id=data.get("workspace_id"),description=data.get("description"))
-        db.session.add(new_project)
-        db.session.commit()
-        return jsonify({"message":"Creatation success"}), 200
-    except Exception as e:
-        return jsonify({"error": f"{str(e)}"})
-
-
 # Function to create new task
 @project_bp.route('/create-task', methods=["POST"])
 def create_new_task():
     try:
         data = request.get_json()
-        
+        print(data)
+        task_name = data["newTask"]["task_name"]
+        description = data["newTask"]["description"]
+        priority = data["newTask"]["prioity"]
+        start_date_str = data["newTask"]["start_date"]
+        start_date = datetime.strptime(start_date_str, '%Y-%m-%d').date()
+        print(start_date)
+        due_data = data["newTask"]["due_date"]
+        status = data["newTask"]["status"]
+        asignees = data["newTask"]["assignees"]
+        project_id = data["project_id"]
+
+        newTask = Task(
+            task_name=task_name,
+            project_id=project_id,
+            status=status,
+            due_date=due_data,
+            started_at=start_date,
+            task_notes=description,
+            assigned_users=asignees,
+            priority=priority
+            )
+        newTask.save()
         return jsonify({"message": "Task created successfuly"}), 200
     except Exception as e:
-        return jsonify({"message": "Error while creating task"}), 500
+        print("Something went wrong while creating task: ", str(e))
+        return jsonify({"message": "Server Error while creating task"}), 500
     
 
+@project_bp.get('/get_tasks/<s_project_id>')
+def get_tasks(s_project_id):
+    try:
+        tasks = Task.objects(project_id=s_project_id)
+        tasks_json = tasks.to_json()
+        return jsonify({"tasks" : json.loads(tasks_json)})
+    except Exception as e:
+        print("Something went wrong while getting tasks: ", str(e))
+        return jsonify({"error" : "Server Error while getting tasks"}), 500
+
+
 # Function to update the task name
-@project_bp.route("/update_task_name/<taskId>", methods=["PUT"])
+@project_bp.route("/update_task_name/<taskId>", methods=["PATCH"])
 def updateTaskName(taskId):
     try:
         data = request.get_json()
-        new_task_name = data.get("task_name")
+        new_task_name = data.get("name")
         print("Id of task: ", taskId)
         task_id = ObjectId(taskId)
 
@@ -131,7 +139,7 @@ def updateTaskName(taskId):
 
 
 # Function to update task status
-@project_bp.route("/update_task_status/<taskId>", methods=["PUT"])
+@project_bp.route("/update_task_status/<taskId>", methods=["PATCH"])
 def updateTaskStatus(taskId):
     try:
         data = request.get_json()
@@ -159,23 +167,28 @@ def updateTaskStatus(taskId):
 
 
 # Function to update task dates
-@project_bp.route("/update_task_dates/<taskId>", methods=["PUT"])
+@project_bp.route("/update_task_date/<taskId>", methods=["PATCH"])
 def updateTaskDates(taskId):
     try:
         data = request.get_json()
         print(data)
-        newStartDate = data.get("newStartDate")
-        newDueDate = data.get("newDueDate")
 
         task_id = ObjectId(taskId)
 
         task = Task.objects(_id=task_id).first()
 
         if task:
-            print(taskId)
-            task.due_date = newDueDate
-            task.started_at = newStartDate
-            task.save()
+            if "start_date" in data:
+                new_start = datetime.fromtimestamp(data["start_date"] / 1000)
+                task.started_at = new_start
+                task.save()
+                print("Start date updated! ✅")
+
+            if "due_date" in data:
+                new_due = datetime.fromtimestamp(data["due_date"] / 1000)
+                task.due_date = new_due
+                task.save()
+
             print("Task dates update successful")
             return jsonify({"message": "Task date update successful"}), 200
         else:
@@ -217,7 +230,7 @@ def updateTaskPriority(taskId):
 
 
 
-@project_bp.route("/update_task_description/<taskId>", methods=["PUT"])
+@project_bp.route("/update_task_description/<taskId>", methods=["PATCH"])
 def UpdateTaskDescription(taskId):
     try:
         data = request.get_json()
