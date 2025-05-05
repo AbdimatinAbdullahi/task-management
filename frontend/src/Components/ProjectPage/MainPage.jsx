@@ -157,7 +157,7 @@ function ProjectContainer({ selectedProject, workspace, members, userId }) {
               </div>
             </div>
 
-            {inviteUserModalOpen && <InviteModal onClose={()=> setInviteUserModalOpen(false)} userId={userId} workspaceId={workspace.id} />}
+            {inviteUserModalOpen && <InviteModal onClose={()=> setInviteUserModalOpen(false)} userId={userId} workspace={workspace} />}
 
             <div className={style.taskView}>
             <div className={style.kanbanBoard}>

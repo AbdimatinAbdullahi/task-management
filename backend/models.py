@@ -47,12 +47,21 @@ class Project(db.Model):
 class WorkSpaceMember(db.Model):
     __tablename__ = "workspace_members"
     id = db.Column(db.String, primary_key = True, default=lambda: str(uuid.uuid4()))
+    username = db.Column(db.String, nullable=False)
+    email = db.Column(db.String, nullable=False)
     workspace_id = db.Column(db.String, ForeignKey("workspaces.id"), nullable=False)
     user_id = db.Column(db.String, ForeignKey("users.id"), nullable=False)
     role = db.Column(db.String, nullable=False, default="member")
+    accepted = db.Column(db.String, nullable=False, default=False)
+    password = db.Column(db.String, nullable=True)
     joined_at = db.Column(db.DateTime, default=datetime.utcnow)
     user = db.relationship("User", backref="workspace_memberships")
     workspace = db.relationship("Workspace", backref="members")
+    def set_hashed_password(self, password):
+        self.password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
+    # Method to check and verify password
+    def check_password(self, password):
+        return bcrypt.checkpw(password=password.encode('utf-8'), hashed_password=self.hashed_password.encode('utf-8'))
 
 
 

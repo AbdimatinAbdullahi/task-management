@@ -22,13 +22,13 @@ def send_verification_email(recipient, code):
     return True, "Email sent successfully"
 
 
-def sendInvitationEmail(email, code, projectName, user_id):
+def sendInvitationEmail(email, workspaceName, user_id):
     from app import mail
-    subject = f'Invitation to Workspace: {projectName}'
+    subject = f'Invitation to Workspace: {workspaceName}'
     recipient = email
     sender = "abdimatinhassan@gmail.com"
 
-    link = f"http://localhost:5173/invitation?user_id={user_id}&code={code}&email={email}"
+    link = f"http://localhost:5173/invitation?user_id={user_id}&email={email}"
     body = f"Click this link to accept the invitation: {link}"
 
     msg = Message(
@@ -41,6 +41,7 @@ def sendInvitationEmail(email, code, projectName, user_id):
         mail.send(msg)
         print("Email Sent successfully ✅")
     except Exception as e:
+        print("Email sending failed! ❌")
         current_app.logger.error(f"Failed to send invitation email: {e}")
         return False, f"Error sending email: {e}"
 

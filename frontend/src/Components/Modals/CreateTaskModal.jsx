@@ -110,7 +110,8 @@ function CreateTaskModal({onClose, members, project, status, workspaceName}){
               </div>
               <div className={style.priorityCheck}>
               <label htmlFor="">Priority</label>
-              <Select options={priorityOptions}
+              <Select 
+                    options={priorityOptions}
                     value={priorityOptions.find(opt => opt.value === newTask.prioity)} // Ensure the selected value is in sync
                     onChange={handlePriortyChange} // Handle the change
                     placeholder="Select priority"

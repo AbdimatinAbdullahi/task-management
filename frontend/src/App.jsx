@@ -10,6 +10,7 @@ import MainPage from './Components/ProjectPage/MainPage'
 import CreateWorkspace from './Components/Forms/CreateWorkspace'
 
 import { AuthProvider } from './Contexts/AuthContext'
+import InvitationAcceptance from './Components/Forms/InvitationAcceptance'
 
 
 function App() {
@@ -23,6 +24,7 @@ function App() {
         <Route path='/signup' element={<Signup/>}/>
         <Route path='/workspace' element={<MainPage/>} />   
         <Route path='/create-workspace' element={<CreateWorkspace/>} />
+        <Route path='/invitation' element={<InvitationAcceptance/>} />
       </Routes>
       </AuthProvider>  
     </Router>

@@ -1,3 +1,10 @@
+:root{
+    --font-source-three: 'Source Sans 3';
+    --font-spline-sans: "Spline Sans Mono";
+    --box-shadow-auto: 20px 20px 60px #d9d9d9, -20px -20px 60px #ffffff;
+    --font-fira-sans: "Fira Sans";    
+} 
+
 .container{
     width: 100%;
     height: 100svh;
@@ -271,4 +278,72 @@ button{
 
 .createWorkspaceForm input::placeholder{
     padding-left: 4px;
+}
+
+
+/* User Acceptace Page */
+.acc_pg{
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.form_acc_pg{
+    width: 30%;
+    aspect-ratio: 1/1;
+    border: 1px solid #dd25ea;
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-evenly;
+    box-sizing: border-box;
+    padding: 0 4em;
+    box-shadow: var(--box-shadow-auto);
+}
+.email_acc_pg, .password_acc_pg{
+    width: 90%;
+    height: 14%;
+    display: flex;
+    flex-direction: column;
+}
+.email_acc_pg label, .password_acc_pg label{
+    font-family: "Fira sans";
+    font-size: 1.4em;
+    margin-bottom: 0.4em;
+}
+.email_acc_pg input, .password_acc_pg input{
+    width: 100%;
+    height: 100%;
+    box-sizing: border-box;
+    padding-left: 1em;
+    font-family: var(--font-spline-sans);
+    font-size: 1em;
+    font-weight: 700;
+    color: #585858;
+    outline: none;
+    border: 1px solid #AF2BC1;
+    border-radius: 4px;
+    &:hover{
+        border: 2.5px solid #AF2BC1;
+        outline: none;
+    }
+}
+.form_acc_pg p{
+    font-family: var(--font-spline-sans);
+    font-size: 1.4em;
+    color: #AF2BC1;
+    font-weight: 800;
+}
+
+.form_acc_pg button{
+    background-color: #d998e1;
+    border: none;
+    font-weight: 700;
+    &:hover{
+        background-color: #AF2BC1;
+        cursor: pointer;
+        color: white;
+    }
 }

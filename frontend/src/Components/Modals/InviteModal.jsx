@@ -1,10 +1,11 @@
 import React, {useState} from 'react'
 import style from '../Modals/modals.module.css'
 import axios from 'axios'
+import Select from 'react-select'
 
-function InviteModal({onClose, project_id, workspaceId, userId}) {
+function InviteModal({onClose, project_id, workspace, userId}) {
 
-    const [userDetails, setuserDetails] = useState({ fullname: "", email: ""})
+    const [userDetails, setuserDetails] = useState({ fullname: "", email: "", role: "member"});
     const [loading, setloading] = useState(false)
     const [errorMessage, setErrorMessage] = useState("")
     
@@ -23,7 +24,7 @@ function InviteModal({onClose, project_id, workspaceId, userId}) {
                 return
             }
          
-            const response = await axios.post(`http://127.0.0.1:5000/api/invites_users`, { email: userDetails.email, username: userDetails.fullname, workspaceId, userId })
+            const response = await axios.post(`http://127.0.0.1:5000/api/invites_users`, { email: userDetails.email, username: userDetails.fullname, userId, "wsId": workspace.id, "wsName": workspace.name })
             if(response.status === 200){
                 alert("User Invited!")
                 onClose()
@@ -36,6 +37,19 @@ function InviteModal({onClose, project_id, workspaceId, userId}) {
         }
 
     }
+
+    const role = [
+        {label : "admin", value: "admin"},
+        {label : "member", value: "member"}
+    ]
+
+    const handleRoleChange = (selectedOptions) =>{
+        setuserDetails((prevDetails)=>({
+            ...prevDetails,
+            role: selectedOptions.value
+        }))
+    }
+
   return (
     <div className={style.overlay} >
         <div className={style.modalInviteContainer}>
@@ -49,6 +63,11 @@ function InviteModal({onClose, project_id, workspaceId, userId}) {
             <div className={style.invitesInputs}>
                 <input type="text" placeholder='Fullname: e.g John Mbadi' value={userDetails.fullname} onChange={(e)=>setuserDetails({...userDetails, fullname: e.target.value})} />
                 <input type="email" placeholder='Email: e.g John@tasks.com' value={userDetails.email} onChange={(e)=> setuserDetails({...userDetails, email: e.target.value})} />
+                <Select
+                options={role}
+                value={role.find(opt => opt.value === userDetails.role)}
+                onChange={handleRoleChange} 
+                />
             </div>
 
             <div className={style.invitesDiv}>

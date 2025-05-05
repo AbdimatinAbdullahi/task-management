@@ -1,7 +1,7 @@
 import secrets, string
 from mail_routes import sendInvitationEmail
 from flask import  request, jsonify, Blueprint
-from models import Invitations, Task, db
+from models import WorkSpaceMember, db
 
 users_bp = Blueprint("users", __name__, url_prefix='/api')
 
@@ -17,22 +17,25 @@ def invites_user():
         print(data)
         email = data.get("email")
         fullname = data.get("username")
-        project_id = data.get("project_id")
-        invitedUser = Invitations.query.filter_by(email_address=email, project_id=project_id).first()
+        workspace_id = data.get("workspaceId")
+        workspaceName = data.get("wsName")
+        user_id = data.get("userId")
+        role = data.get("role")
+        invitedUser = WorkSpaceMember.query.filter_by(email=email, workspace_id=workspace_id).first()
         if invitedUser:
             print("user alreadt exist!")
             return jsonify({"error": "User already invited!"}), 500
         
         code = generate_verification_code()
         print(code)
-
         try:
-            newInvitedUser = Invitations(
-                email_address=email,
-                project_id=project_id,
+            newInvitedUser = WorkSpaceMember(
                 username=fullname,  # ✅ corrected variable name
-                status=False,
-                token=code
+                email=email,
+                workspace_id=workspace_id,
+                user_id=user_id,
+                role=role,
+                accepted=True
             )
         except Exception as e:
             print(f"Creation of new user failed! {str(e)}")
@@ -40,7 +43,7 @@ def invites_user():
 
         db.session.add(newInvitedUser)
         db.session.commit()
-        sendInvitationEmail(email=newInvitedUser.email_address, code=code, user_id=newInvitedUser._id, projectName="Ecommerce Website")
+        sendInvitationEmail(email=newInvitedUser.email, user_id=newInvitedUser.id, workspaceName=workspaceName)
 
         print(data)
         return jsonify({"message": "User invited successfully"}), 200
@@ -51,13 +54,23 @@ def invites_user():
 
 
 
-# @users_bp.route('/accept-invitations', methods=["POST"])
-# def accept_invitations():
-#     try:
-#         data = request.get_json()
-#         print(data)
-#         return jsonify({"message" : "User accepted successfuly"}), 200
-#     except Exception as e:
-#         print(str(e))
-#         return jsonify({"error" : "Something went wrong while accepting the inviation"}), 500
+@users_bp.route('/accept-invitations/<userId>', methods=["POST"])
+def accept_invitations(userId):
+    try:
+        data = request.get_json()
+        user = WorkSpaceMember.query.filter_by(id=userId).first()
+        if not user:
+            return jsonify({"error" : "User not found"}), 404
+        
+        user.set_hashed_password(password=data.get("password"))
+        try:
+            db.session.commit()
+            print("Saved!")
+        except Exception as e:
+            print("Updating the password field not successful!: ", str(e))
+            return jsonify({"error": "Not saved"}), 500           
+        return jsonify({"message" : "User accepted successfuly"}), 200
+    except Exception as e:
+        print(str(e))
+        return jsonify({"error" : "Something went wrong while accepting the inviation"}), 500
 
