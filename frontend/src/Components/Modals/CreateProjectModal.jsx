@@ -3,7 +3,7 @@ import {FolderPlus, BookmarkX} from 'lucide-react'
 import axios from 'axios'
 import style from '../../Styles/mainpage.module.css'
 import { projects } from '../../SampleAPI/projectandTasks'
-function CreateProjectModal({ onClose, workspace_id }) {
+function CreateProjectModal({ onClose, workspace_id, user }) {
 
     const [projectsData, setProjectsData] = useState({
         project_name : "",
@@ -12,16 +12,26 @@ function CreateProjectModal({ onClose, workspace_id }) {
     const [errorMessage, seterrorMessage] = useState('')
 
 
-    const handleCreate = (projectName)=>{
+    const handleCreate = async (projectName) => {
         if(projectsData.project_name === '' || projectsData.description === ""){
             seterrorMessage("Provide the project name  and description!")
             return
         }
 
-        axios.post('http://127.0.0.1:5000/api/create-new-project', {"name": projectsData.project_name, "description": projectsData.description, "workspace_id":workspace_id})
-        .then(response => console.log(response.data))
-        .catch(error => console.log(error))
-        .finally(() => onClose())
+        const pcrRs = await axios.post('http://127.0.0.1:5000/api/create-new-project', 
+            {"name": projectsData.project_name, "description": projectsData.description, "workspace_id":workspace_id},
+            { headers: 
+                {
+                "Authorization" : `Bearer ${user.token}`
+                }
+            }
+        )
+
+        if(pcrRs.status == 200){
+            onClose()
+        } else {
+            seterrorMessage("something went wrong")
+        }
     }
 
 
@@ -31,7 +41,11 @@ function CreateProjectModal({ onClose, workspace_id }) {
             ...prevProjects,
             [name] : value
         }))
-    }
+    };
+
+    useEffect(()=>{
+        console.log("Sending the data with user: ", user)
+    })
 
   return (
     <div className={style.modalOverlay}>

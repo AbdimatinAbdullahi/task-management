@@ -1,16 +1,14 @@
 from flask import Flask, request, jsonify, Blueprint, current_app
 from jwt.exceptions import ExpiredSignatureError, InvalidTokenError
+from models import db, User, Workspace, WorkSpaceMember
 from mail_routes import send_verification_email
 from datetime import datetime, timedelta
-from models import db, User, Workspace
 from jwt import encode, decode
 import string, random
 import jwt
 
 
 auth_bp = Blueprint("auth", __name__)
-
-
 
 
 # Function to generate verification code
@@ -50,32 +48,51 @@ def login_user():
     print(data)
     email = data.get("email")
     password  = data.get("password")
-
-    # Query user from db by email => Check password
-    user = User.query.filter_by(email=email).first()
-    if not user or not user.check_password(password):
-        return jsonify({"error": "Invalid Email or password"}), 401
-
-    workspace = Workspace.query.filter_by(owner_id=user.id).first()
-    if not workspace:
-        return jsonify({"message" : "Create Workspace", "owner_id" : user.id, "has_workspace": False}), 200
-
-    # Lets assign payload here
-    payload = {
-        "sub": str(user.id), # Subject (User ID)
-        "email": user.email,
-        "role" : "admin",
-        "fullname": user.fullname,
-        "iat": datetime.utcnow(),  # Issued at time
-        "exp": datetime.utcnow() + timedelta(hours=10)  # Expiration time
-    }
-
-
     secret_key = current_app.config["SECRET_KEY"]
 
-    token = jwt.encode(payload, secret_key, algorithm='HS256')
-    print(f"Encoded Token: {token}")
-    return jsonify({"message": "Login successful", "token": token, "id": user.id, "fullname": user.fullname, "email": user.email, "has_workspace" : True}), 200
+    # Query first the workspace members and see if he is workspace members
+    wsMember = WorkSpaceMember.query.filter_by(email=email).first()
+    if wsMember:
+        # Check the password is correct!
+        if not wsMember.check_password(password):
+            return jsonify({"error" : "Password is incorrect!"})
+        workspace = Workspace.query.filter_by(id=wsMember.user_id).first()
+        # if not workspace:
+        #     return jsonify({"message" : "Create Workspace", "owner_id" : wsMember.user_id, "has_workspace": False}), 200
+
+        payload = {
+            "sub": str(wsMember.user_id), # Subject (User ID)
+            "email": wsMember.email,
+            "role" : wsMember.role,
+            "fullname": wsMember.username,
+            "iat": datetime.utcnow(),  # Issued at time
+            "exp": datetime.utcnow() + timedelta(hours=10)  # Expiration time
+        }
+        token = jwt.encode(payload, secret_key, algorithm='HS256')
+        return jsonify({"message": "Login successful", "token": token, "id": wsMember.user_id, "fullname": wsMember.username, "email": wsMember.email, "has_workspace" : True}), 200
+    else:
+        # Query user from db by email => Check password
+        user = User.query.filter_by(email=email).first()
+        if not user or not user.check_password(password):
+            return jsonify({"error": "Invalid Email or password"}), 401
+
+        workspace = Workspace.query.filter_by(owner_id=user.id).first()
+        if not workspace:
+            return jsonify({"message" : "Create Workspace", "owner_id" : user.id, "has_workspace": False}), 200
+
+        # Lets assign payload here
+        payload = {
+            "sub": str(user.id), # Subject (User ID)
+            "email": user.email,
+            "role" : "admin",
+            "fullname": user.fullname,
+            "iat": datetime.utcnow(),  # Issued at time
+            "exp": datetime.utcnow() + timedelta(hours=10)  # Expiration time
+        }
+
+        token = jwt.encode(payload, secret_key, algorithm='HS256')
+        print(f"Encoded Token: {token}")
+        return jsonify({"message": "Login successful", "token": token, "id": user.id, "fullname": user.fullname, "email": user.email, "has_workspace" : True}), 200
 
 
 

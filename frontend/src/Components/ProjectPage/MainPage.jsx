@@ -13,6 +13,7 @@ import TaskModal from '../Modals/TaskModal'
 
 import { getProjectTasks, getUserWorkspace, getWorkspaceMembers, getWorkspaceProjects, projects, tasks } from '../../SampleAPI/projectandTasks'
 import axios from 'axios'
+import { useAuth } from '../../Contexts/AuthContext'
 
 
 function MainPage() {
@@ -23,7 +24,7 @@ function MainPage() {
   const [projects, setProjects] = useState([])
   const [selectedProject, setSelectedProject] = useState(null)
   const [workspaceMembers, setWorkspaceMembers] = useState([])
-
+  const { user } = useAuth()
   useEffect(() => {
     const fetchWorkspaceData = async () => {
       if (user_id) {
@@ -53,7 +54,7 @@ function MainPage() {
   return (
     <div className={style.mainPageContainer}>
       <div className={style.leftBar}>
-        <Bar projects={projects} workspace={workspace} setSelectedProject={setSelectedProject} />
+        <Bar projects={projects} workspace={workspace} setSelectedProject={setSelectedProject} user={user} />
       </div>
 
       <div className={style.mainBarContainer}>
@@ -63,7 +64,7 @@ function MainPage() {
   )
 }
 
-function Bar({ projects, workspace, setSelectedProject }) {
+function Bar({ projects, workspace, setSelectedProject, user }) {
   const [createProjectModalOpen, setCreateProjectModalOpen] = useState(false)
   const [deleteProjectModalOpen, setDeleteProjectModalOpen] = useState(false)
 
@@ -106,7 +107,7 @@ function Bar({ projects, workspace, setSelectedProject }) {
           <div className={style.createProject} onClick={()=> setCreateProjectModalOpen(true)} >
             <BadgePlus /> Create Project
           </div>
-          {createProjectModalOpen && <CreateProjectModal onClose={()=> setCreateProjectModalOpen(false)} workspace_id={workspace.id} />}
+          {createProjectModalOpen && <CreateProjectModal onClose={()=> setCreateProjectModalOpen(false)} workspace_id={workspace.id} user={user}/>}
           <div className={style.deleteProject} onClick={()=>setDeleteProjectModalOpen(true)} >
             Delete Project
           </div>

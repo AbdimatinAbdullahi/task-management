@@ -1,12 +1,37 @@
 from flask import Blueprint, current_app, jsonify, json, request
 from models import Task, Project, Workspace, db
 from datetime import datetime
+from functools import wraps
 from bson import ObjectId
 import asyncio
+import jwt
 
 project_bp = Blueprint("project", __name__, url_prefix='/api')
 
 
+
+def require_role(allowed_roles): # Decorator factory and it passes allowed roles to decorator
+    def decorator(f): # Actual decorator that takes the function to be wrapped!
+        @wraps(f)
+        def wrapper(*args, **kwargs): # What is this args and kwargs now ???
+            auth_header = request.headers.get("Authorization", None)
+            if not auth_header or not auth_header.startswith('Bearer '):
+                return jsonify({"error" : "Misssing credintials or invalid token"})
+            token = auth_header.split(" ")[1]
+            try:
+                payload = jwt.decode(token, current_app.config["SECRET_KEY"], algorithms=['HS256'])
+                user_role = payload.get("role")
+                if user_role not in allowed_roles:
+                    return jsonify({"error" : "Forbidden: Insufficient permission!"}), 403
+                return f(*args, **kwargs) # returns proceeds to original functin if everything is okay!
+            except jwt.ExpiredSignatureError:
+                print("Error due to expired token", str(e))
+                return jsonify({"error" : "Expired Token!"}), 401
+            except jwt.InvalidTokenError as e:
+                print("Error due to invalid token", str(e))
+                return jsonify({"error" : "Invalid Token"}), 401
+        return wrapper
+    return decorator
 
 
 @project_bp.route('/create-workspace', methods=["POST"])
@@ -28,6 +53,7 @@ def create_workspace():
         return jsonify({"error" : "Something went wrong"}), 500
 
 @project_bp.route("/create-new-project", methods=["POST"])
+@require_role(["admin"])
 def create_new_project():
     try:
         data = request.get_json()
@@ -69,6 +95,7 @@ async def get_workspaces(user_id):
     
 # Function to create new task
 @project_bp.route('/create-task', methods=["POST"])
+@require_role(["admin"])
 def create_new_task():
     try:
         data = request.get_json()
@@ -101,6 +128,7 @@ def create_new_task():
         return jsonify({"message": "Server Error while creating task"}), 500
     
 
+
 @project_bp.get('/get_tasks/<s_project_id>')
 def get_tasks(s_project_id):
     try:
@@ -110,6 +138,8 @@ def get_tasks(s_project_id):
     except Exception as e:
         print("Something went wrong while getting tasks: ", str(e))
         return jsonify({"error" : "Server Error while getting tasks"}), 500
+
+
 
 
 # Function to update the task name

@@ -11,6 +11,34 @@ export const AuthProvider = ({children})=>{
     const [user, setUser] = useState(null)
     const [errorMesage, setErrorMesage] = useState('')
 
+
+    useEffect(() => {
+        setErrorMesage("")
+        const token = localStorage.getItem("token");
+        console.log("Token from localStorage:", token);  // Debugging
+    
+        if (!token) {
+            setErrorMesage("No token found!");
+            return;
+        }
+    
+        axios.get("http://127.0.0.1:5000/auth/protected", {
+            headers: {
+                "Authorization": `Bearer ${token}`,
+            },
+        })
+        .then(response => {
+            setUser({ firstname: response.data.fullname, email: response.data.email, token: response.data.token});
+            navigate(`/workspace?id=${response.data.id}`)
+        })
+        .catch(error => {
+            console.error("Error:", error.response?.data || error);
+            setErrorMesage(error.response?.data?.message || "Authentication failed");
+            navigate('/')
+        });
+        
+    }, []);
+
     const login = async (email, password) =>{
         setErrorMesage("")
         try {
@@ -22,7 +50,9 @@ export const AuthProvider = ({children})=>{
                 setUser({
                     firstname: response.data.fullname,
                     email: response.data.email,
+                    token: response.data.token
                 });
+                localStorage.setItem("token", response.data.token)
                 navigate(`/workspace?id=${response.data.id}`);
             }            
         } catch (error) {
@@ -53,34 +83,6 @@ export const AuthProvider = ({children})=>{
             setErrorMesage(error.response?.data?.message)
         }
     }
-
-
-    useEffect(() => {
-        setErrorMesage("")
-        const token = localStorage.getItem("token");
-        console.log("Token from localStorage:", token);  // Debugging
-    
-        if (!token) {
-            setErrorMesage("No token found!");
-            return;
-        }
-    
-        axios.get("http://127.0.0.1:5000/auth/protected", {
-            headers: {
-                "Authorization": `Bearer ${token}`,
-            },
-        })
-        .then(response => {
-            setUser({ firstname: response.data.fullname, email: response.data.email });
-            navigate('/task')
-        })
-        .catch(error => {
-            console.error("Error:", error.response?.data || error);
-            setErrorMesage(error.response?.data?.message || "Authentication failed");
-            navigate('/')
-        });
-        
-    }, []);
     
 
     return (

@@ -5,8 +5,7 @@ import makeAnimated from 'react-select/animated'
 import {X} from 'lucide-react'
 import { label } from "framer-motion/client"
 import axios from "axios"
-
-
+import {useAuth} from '../../Contexts/AuthContext'
 
 const animatedComponents = makeAnimated();
 
@@ -26,6 +25,7 @@ function CreateTaskModal({onClose, members, project, status, workspaceName}){
 
     const [errorMessage, setErrorMessage] = useState("")
     const [loading, setLoading] = useState(false)
+    const { user }  = useAuth()
     const project_name = ""
 
     const memberOptions = members.map((member)=>({
@@ -47,7 +47,12 @@ function CreateTaskModal({onClose, members, project, status, workspaceName}){
       }
 
       try {
-        const ctResponse = await axios.post('http://127.0.0.1:5000/api/create-task', { newTask, "project_id": project.id })
+        const ctResponse = await axios.post('http://127.0.0.1:5000/api/create-task',
+          { newTask, "project_id": project.id },
+          {headers : {
+            "Authorization" : `Bearer ${user.token}`
+          }
+        })
         console.log(ctResponse)
       } catch (error) {
         console.log(error)

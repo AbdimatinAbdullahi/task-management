@@ -21,6 +21,7 @@ function TaskModal({ onClose, task, members }) {
     description: task.task_notes,
     creation_date: task.created_at
   });
+  const [loading, setloading] = useState(false)
 
 
   const handleTaskChange = (e) =>{
@@ -112,6 +113,21 @@ function TaskModal({ onClose, task, members }) {
     }
   }
 
+  const handleTaskDelete = async ()=>{
+    setloading(true)
+    try {
+      const dtRs = await axios.put(`http://127.0.0.1:5000/api/delete_task/${task._id.$oid}`)
+      if(dtRs.status == 200){
+        alert("Task Deleted!")
+        onClose()
+      }
+    } catch (error) {
+      console.log("Error while deleting the task!", error)
+    } finally{
+      setloading(false)
+    }
+  }
+
   return (
     <div className={style.modalOverlay}>
       <div className={style.modalTaskContainer}>
@@ -194,10 +210,9 @@ function TaskModal({ onClose, task, members }) {
               </div>
             ))}
         </div>
-
         <div className={style.deleteTask} >
           <div className={style.closeModal}  onClick={onClose} > Close Modal </div>
-          <div className={style.delete}>Delete Task</div>
+          <div className={style.delete} onClick={handleTaskDelete} style={{ backgroundColor: loading ? "gray" :  "" }}>{loading ? "Deleting ..." : "Delete Task"}</div>
         </div>
 
       </div>

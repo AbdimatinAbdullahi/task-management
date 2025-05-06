@@ -17,10 +17,11 @@ def invites_user():
         print(data)
         email = data.get("email")
         fullname = data.get("username")
-        workspace_id = data.get("workspaceId")
+        workspace_id = data.get("wsId")
         workspaceName = data.get("wsName")
         user_id = data.get("userId")
         role = data.get("role")
+
         invitedUser = WorkSpaceMember.query.filter_by(email=email, workspace_id=workspace_id).first()
         if invitedUser:
             print("user alreadt exist!")
