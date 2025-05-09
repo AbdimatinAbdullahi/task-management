@@ -264,7 +264,10 @@
   color: red;
   font-family: var(--font-fira-sans);
   margin-bottom: 20px;
+  position: absolute;
+  top: 2%;
 }
+
 
 /* Task Modal */
 .modalOverlay{
@@ -285,7 +288,7 @@
 .modalTaskContainer{
     position: relative;
     width: 40%;
-    height:60%;
+    height:70%;
     background-color: white;
     border-radius: 12px;
     display: flex;
@@ -481,7 +484,45 @@
     height: 10%;
     display: flex;
     align-items: center;
+    border: 1px solid goldenrod;
+    position: relative;
   }
+
+  .selectAndDeselectUser {
+    position: absolute;
+    top: 100%; /* Places it just below the assignesContainer */
+    left: 0;
+    width: 100%; /* Optional: match width */
+    z-index: 1000; /* Make sure it overlays properly */
+    margin-top: 8px; /* Optional spacing */
+  }
+
+
+  .addMemOrRemv{
+    position: absolute;
+    right: 0;
+    width: 40%;
+    height: 100%;
+    position: absolute;
+    border-radius: 4px;
+    font-family: var(--font-fira-sans);
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: space-evenly;
+    border: 1px solid black;
+  }
+
+  .closeSelect, .updateTask{
+    border:  1px solid black;
+    &:hover{
+      background-color: #AF2BC1;
+      color: white;
+      cursor: pointer;
+    }
+  }
+
+
   .assignedMember{
     height: 100%;
     aspect-ratio: 1/1;
@@ -496,14 +537,23 @@
     background-color: rgb(235, 198, 240);
   }
 
+  .remainingMembersCount{
+    margin-left: 2em;
+    font-size: 1em;
+    font-family: var(--font-spline-sans);
+    font-weight: 700;
+    color: gray;
+  }
+
   .deleteTask{
-    margin-top: 20px;
     width: 90%;
     height: 60px;
     border-radius: 8px;
     display: flex;
     align-items: center;
     justify-content: space-between;
+    position: absolute;
+    bottom: 2%;
   }
 
   .delete, .closeModal{

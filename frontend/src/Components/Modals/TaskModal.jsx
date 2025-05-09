@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from "react";
 import style from '../../Styles/kanban.module.css'
+import Select from 'react-select'
 import axios from "axios";
 
 
-function TaskModal({ onClose, task, members }) {
+function TaskModal({ onClose, task, members, allUsers }) {
 
   // Function to return the date to the frmat that is expected by input date field
   function formatDate(dateObj){
@@ -22,6 +23,39 @@ function TaskModal({ onClose, task, members }) {
     creation_date: task.created_at
   });
   const [loading, setloading] = useState(false)
+  const [toggleSelect, setToggleSelect] = useState(false);
+  const [selectedMembers, setSelectedMembers] = useState(members.map((m) => m.id)); // 8
+  const [errorMessage, setErrorMessage] = useState("")
+
+  const originalMemberIds = members.map((m) => m.id) // 7
+  const hasChanged = selectedMembers.length !== originalMemberIds.length 
+  const displayMembers = members.slice(0, 2);
+  const remainingMemlen = members.length - 2;
+
+  const allUserOptions = allUsers.map((member)=>({
+        value: member.id,
+        label: member.fullname
+  }));
+
+  const updateTaskAssignes = async ()=>{ 
+    const removedMembers = originalMemberIds.filter(id => !selectedMembers.includes(id))
+    const addedMembers = selectedMembers.filter(id => !originalMemberIds.includes(id))
+
+    setloading(true)
+    setErrorMessage("")
+    try {
+      const addMemRs = await axios.patch(`http://127.0.0.1:5000/api/update_task_members/${task._id.$oid}`, { addedMembers, removedMembers })
+      if(addMemRs.status === 200){
+        alert("Task member updates")
+      }
+    } catch (error) {
+      console.log("Error updating members : ", error)
+      setErrorMessage(error?.data?.message || "Failed Updating task members")
+    } finally{
+      setloading(false)
+    }
+
+  }
 
 
   const handleTaskChange = (e) =>{
@@ -32,12 +66,13 @@ function TaskModal({ onClose, task, members }) {
     }))
   }
 
+  const tgSlct = ()=>{
+    setToggleSelect(!toggleSelect)
+    setSelectedMembers(members.map((m) => m.id))
+  }
+
   const isPastDueDate = new Date(taskDetails.due_date) < new Date()
   const creationDate = taskDetails ? new Date(task.created_at.$date).toLocaleDateString('en-US', {month: "long", day: "numeric"}) : ""
-
-  useEffect(()=>{
-    console.log("Tasks", task)
-  }, [task])
 
 
   // Function to change the name of Task:
@@ -131,7 +166,7 @@ function TaskModal({ onClose, task, members }) {
   return (
     <div className={style.modalOverlay}>
       <div className={style.modalTaskContainer}>
-
+          {errorMessage && <p className={style.error}> {errorMessage} </p>}
         {/* Task Name and Status Conatiner */}
         <div className={style.taskNameAndStatus}>
           <input type="text" name="task_name" value={taskDetails.task_name} onChange={handleTaskChange} onBlur={handleTasknameChange}/>
@@ -204,12 +239,45 @@ function TaskModal({ onClose, task, members }) {
         </div>
 
         <div className={style.assignesContainer}>
-            {members.map((member)=> (
+            {displayMembers.map((member)=> (
               <div className={style.assignedMember} title={member.fullname} >
-                {member.email.slice(0,1).toUpperCase()}
+                {member.fullname.slice(0,1).toUpperCase()}
               </div>
             ))}
+            {remainingMemlen > 0 && (
+              <div className={style.remainingMembersCount}>+{remainingMemlen}</div>
+            )}
+
+            {members.length < 6 && (
+            <div className={style.addMemOrRemv}>
+              <div className={style.closeSelect} onClick={tgSlct} >
+                close/Discard
+              </div>
+              {
+                hasChanged && (
+                  <div className={style.updateTask} onClick={updateTaskAssignes} >
+                      Update Assigness
+                  </div>
+                )
+              }
+            </div>
+            )}
+
+          {toggleSelect && (
+            <Select
+              options={allUserOptions}
+              value={allUserOptions.filter(option => selectedMembers.includes(option.value))}
+              onChange={selectedOptions => setSelectedMembers(selectedOptions.map(option => option.value))}
+              isMulti
+              className={style.selectAndDeselectUser}
+            />
+          )}
         </div>
+
+
+
+
+
         <div className={style.deleteTask} >
           <div className={style.closeModal}  onClick={onClose} > Close Modal </div>
           <div className={style.delete} onClick={handleTaskDelete} style={{ backgroundColor: loading ? "gray" :  "" }}>{loading ? "Deleting ..." : "Delete Task"}</div>

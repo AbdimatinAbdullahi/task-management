@@ -49,7 +49,7 @@ function Login() {
         </div>
 
 
-        <div className={styles.passwordcontainer}>
+        <div className={styles.passwordcontainer }>
           <input type="password"
             placeholder='Enter your password'
             {...register("password",

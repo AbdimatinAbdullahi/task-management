@@ -38,8 +38,30 @@
     flex-direction: column;
     align-items: center;
     background-color: #FAFAFA;
+    position: relative;
 }
 
+.logout{
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 100%;
+    height: 40px;
+    border: 1px solid #AF2BC1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    font-family: var(--font-spline-sans);
+    font-size: 1.2em;
+    font-weight: 700;
+    color: gray;
+    &:hover{
+        background-color: #AF2BC1;
+        color: white;
+        cursor: pointer;
+    }
+}
 .logoContainer{
     width: 90%;
     height: 6%;

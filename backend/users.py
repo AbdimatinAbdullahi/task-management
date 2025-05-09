@@ -74,4 +74,21 @@ def accept_invitations(userId):
     except Exception as e:
         print(str(e))
         return jsonify({"error" : "Something went wrong while accepting the inviation"}), 500
-
+    
+@users_bp.route('/get-workspace_members')
+def get_workspace_members():
+    try:
+        wsId = request.args.get("id")
+        print("Worspace id: ___ ", wsId)
+        wsMembers = WorkSpaceMember.query.filter_by(workspace_id=wsId).all()
+        wsMembersArr = []
+        for member in wsMembers:
+            wsMembersArr.append({
+                "fullname" : member.username,
+                "email" : member.email,
+                "id" : member.id
+            })
+        return jsonify({"members" : wsMembersArr}), 200
+    except Exception as e:
+        print(f"Request failed while fetching Mmebers: {str(e)}")
+        return jsonify({"error" : "Member fetch failed!"}), 500

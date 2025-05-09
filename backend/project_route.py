@@ -335,3 +335,27 @@ def delete_project(taskId):
     except Exception as e:
         print(f"Error while delete task: ", str(e))
         return jsonify({"error" : "Error deleting task"}), 500
+
+@project_bp.route('/update_task_members/<taskId>', methods=["PATCH"])
+def update_task_members(taskId):
+    try:
+        data = request.get_json()
+        print(data)
+        task_id = ObjectId(taskId)
+        try:
+            task = Task.objects(_id=task_id).first()
+            if len(data["addedMembers"]) != 0:
+                for user_id in data["addedMembers"]:
+                    task.update(add_to_set__assigned_users=user_id)
+                    print("Added a user")
+            if len(data["removedMembers"]) != 0:
+                for user_id in data["removedMembers"]:
+                    task.update(pull__assigned_users=user_id)
+                    print("User removed successfully")
+            return jsonify({"message" : "Task update successful"})
+        except Exception as e:
+            print(f"Failed {str(e)}")
+            return jsonify({"error" : str(e)})                
+    except Exception as e:
+        print("Failed while updating task members: ", str(e))
+        return jsonify({"error" : "Failed updating task members"}), 500

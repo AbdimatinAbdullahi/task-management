@@ -24,13 +24,18 @@ function MainPage() {
   const [projects, setProjects] = useState([])
   const [selectedProject, setSelectedProject] = useState(null)
   const [workspaceMembers, setWorkspaceMembers] = useState([])
-  const { user } = useAuth()
+  const { user, logout } = useAuth()
   useEffect(() => {
     const fetchWorkspaceData = async () => {
       if (user_id) {
         try {
           const wsRes = await axios.get(`http://127.0.0.1:5000/api/get_workspace_data/${user_id}`)
           setWorkspace(wsRes.data.workspace_data)
+          
+            const wsmRs = await axios.get(`http://127.0.0.1:5000/api/get-workspace_members`, {
+              params: { id: wsRes.data.workspace_data.id }
+            })
+            setWorkspaceMembers(wsmRs.data.members)
           const fetchedProjects = wsRes.data.projects
           setProjects(fetchedProjects)
             // Set the first project as the selected one by default
@@ -67,9 +72,10 @@ function MainPage() {
 function Bar({ projects, workspace, setSelectedProject, user }) {
   const [createProjectModalOpen, setCreateProjectModalOpen] = useState(false)
   const [deleteProjectModalOpen, setDeleteProjectModalOpen] = useState(false)
-
+  const { logout } = useAuth()
   return (
     <div className={style.barContainer}>
+        <div className={style.logout} onClick={logout}>Logout</div>
       <div className={style.logoContainer}>
         <div className={style.logo}></div>
         <div className={style.companyName}>SIMPLIFY</div>
@@ -264,7 +270,7 @@ function TaskItem({ task, projectId, members }){
           <div className={style.membersPlusDate}>
             <div className={style.members}>
                 {taskMemebers.map((member) => <div className={style.member} key={member.id} title={member.fullname} > 
-                  {member.email.slice(0, 1).toUpperCase()}
+                  {member.fullname.slice(0, 1).toUpperCase()}
                 </div> )}
             </div>
             <div className={style.dueDate} title='Due Date' style={{ color: isPastDate ? "red" : "" }} >
@@ -273,7 +279,7 @@ function TaskItem({ task, projectId, members }){
             </div>
           </div>
     </div>
-    {taskModalOpen && <TaskModal task={task} onClose={()=> setTaskModalOpen(false)} members={taskMemebers} />}
+    {taskModalOpen && <TaskModal task={task} onClose={()=> setTaskModalOpen(false)} members={taskMemebers} allUsers={members}/>}
     </>
   )
 }

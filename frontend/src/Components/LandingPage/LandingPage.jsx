@@ -16,7 +16,7 @@ function LandingPage() {
             </div>
 
             <div className={styles.navbuttons}>
-                <button onClick={() => navigate('/login')} style={{"background": "white", color: "black"}} >Login</button>
+                <button onClick={() => navigate('/login')} style={{"background": "white", color: "black", border: "1px solid #AF2BC1"}} >Login</button>
                 <button onClick={() => navigate('/signup')} >Get Started</button>
             </div>
         </nav>

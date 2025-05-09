@@ -14,9 +14,7 @@ export const AuthProvider = ({children})=>{
 
     useEffect(() => {
         setErrorMesage("")
-        const token = localStorage.getItem("token");
-        console.log("Token from localStorage:", token);  // Debugging
-    
+        const token = localStorage.getItem("token");    
         if (!token) {
             setErrorMesage("No token found!");
             return;
@@ -32,8 +30,6 @@ export const AuthProvider = ({children})=>{
             navigate(`/workspace?id=${response.data.id}`)
         })
         .catch(error => {
-            console.error("Error:", error.response?.data || error);
-            setErrorMesage(error.response?.data?.message || "Authentication failed");
             navigate('/')
         });
         
@@ -42,7 +38,6 @@ export const AuthProvider = ({children})=>{
     const login = async (email, password) =>{
         setErrorMesage("")
         try {
-            console.log("Email and password: ", email, password)
             const response = await axios.post("http://127.0.0.1:5000/auth/login", {email, password})
             if (response.data.has_workspace === false) {
                 navigate(`/create-workspace?owner_id=${response.data.owner_id}`);
@@ -86,7 +81,7 @@ export const AuthProvider = ({children})=>{
     
 
     return (
-        <AuthContext.Provider value={{user, login, signup, errorMesage}} >
+        <AuthContext.Provider value={{user, login, signup, errorMesage, logout}} >
             {children}
         </AuthContext.Provider>
     )

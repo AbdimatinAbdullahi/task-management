@@ -40,6 +40,7 @@ function CreateTaskModal({onClose, members, project, status, workspaceName}){
   
     // Function to send the task to backend and create new one
     const handleCreateTask = async () => {
+      setLoading(true)
       // Validate input before setting loading state
       if (newTask.task_name === "" || newTask.description === "") {
         setErrorMessage("Provide both task name and task description");
@@ -56,6 +57,8 @@ function CreateTaskModal({onClose, members, project, status, workspaceName}){
         console.log(ctResponse)
       } catch (error) {
         console.log(error)
+      } finally{
+        setLoading(false)
       }
     };
     
@@ -131,7 +134,7 @@ function CreateTaskModal({onClose, members, project, status, workspaceName}){
             </div>
 
             <div className={style.frget}>
-              <div onClick={handleCreateTask} >Create Task</div>
+              <div onClick={handleCreateTask} style={{ backgroundColor: loading ? "gray" : ""}} > {loading ? "Creating task ..." : "Create Task"} </div>
             </div>
             {errorMessage && <span className={style.error}> {errorMessage} </span>}
         </div>
