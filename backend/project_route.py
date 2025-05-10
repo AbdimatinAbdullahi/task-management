@@ -57,11 +57,16 @@ def create_workspace():
 def create_new_project():
     try:
         data = request.get_json()
-        print(data)
         new_project = Project(name=data.get("name"), workspace_id=data.get("workspace_id"),description=data.get("description"))
         db.session.add(new_project)
+        project ={
+            "name" : new_project.name,
+            "id" : new_project.id,
+            "description" : new_project.description,
+            "created_at" : new_project.created_at
+        }
         db.session.commit()
-        return jsonify({"message":"Creatation success"}), 200
+        return jsonify({"message":"Creatation success", "project" : project}), 200
     except Exception as e:
         return jsonify({"error": f"{str(e)}"})
 
@@ -122,7 +127,19 @@ def create_new_task():
             priority=priority
             )
         newTask.save()
-        return jsonify({"message": "Task created successfuly"}), 200
+        task = {
+            "_id" : str(newTask._id),
+            "project_id" : newTask.project_id,
+            "task_name": newTask.task_name,
+            "status" : newTask.status,
+            "created_at": newTask.created_at,
+            "due_date" : newTask.due_date,
+            "started_at": newTask.started_at,
+            "task_notes": newTask.task_notes,
+            "priority" : newTask.priority,
+            "assigned_users": newTask.assigned_users       
+            }
+        return jsonify({"message": "Task created successfuly", "task": task}), 200
     except Exception as e:
         print("Something went wrong while creating task: ", str(e))
         return jsonify({"message": "Server Error while creating task"}), 500
@@ -335,6 +352,9 @@ def delete_project(taskId):
     except Exception as e:
         print(f"Error while delete task: ", str(e))
         return jsonify({"error" : "Error deleting task"}), 500
+
+
+
 
 @project_bp.route('/update_task_members/<taskId>', methods=["PATCH"])
 def update_task_members(taskId):

@@ -484,8 +484,11 @@
     height: 10%;
     display: flex;
     align-items: center;
-    border: 1px solid goldenrod;
+    border: 1px solid #f5d5f9;
+    border-radius: 12px;
     position: relative;
+    padding: 0.4em 1em;
+    box-sizing: border-box;
   }
 
   .selectAndDeselectUser {
@@ -501,7 +504,7 @@
   .addMemOrRemv{
     position: absolute;
     right: 0;
-    width: 40%;
+    width: 45%;
     height: 100%;
     position: absolute;
     border-radius: 4px;
@@ -510,17 +513,27 @@
     display: flex;
     align-items: center;
     justify-content: space-evenly;
-    border: 1px solid black;
   }
 
   .closeSelect, .updateTask{
-    border:  1px solid black;
+    border:  1px solid #AF2BC1;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    width: 45%;
+    height: 70%;
+    font-size: 1em;
+    font-family: var(--font-sansation);
+    font-weight: 700;
+    color: gray;
+    border-radius: 4px;
     &:hover{
-      background-color: #AF2BC1;
-      color: white;
+      background-color: rgb(175, 43, 193, 0.11);
+      color: #AF2BC1;
       cursor: pointer;
     }
   }
+
 
 
   .assignedMember{

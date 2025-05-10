@@ -50,16 +50,19 @@ function MainPage() {
     fetchWorkspaceData()
   }, [user_id])
 
-  useEffect(()=>{
-    console.log("Workspace: ", workspace)
-    console.log("Workspace projects: ", projects)
-  },[workspace, workspaceMembers, projects])
+  const updateAddedProject = (project)=>{
+    setProjects(prevProject => [...prevProject, project])
+    setSelectedProject(project)
+  }
 
+  const updateDeletedProject = (project) =>{
+    setProjects(prevProject => prevProject.filter((proj) => proj.id !== project.id))
+  }
 
   return (
     <div className={style.mainPageContainer}>
       <div className={style.leftBar}>
-        <Bar projects={projects} workspace={workspace} setSelectedProject={setSelectedProject} user={user} />
+        <Bar projects={projects} workspace={workspace} setSelectedProject={setSelectedProject} user={user} updateAddedProject={updateAddedProject} updateDeletedProject={updateDeletedProject}/>
       </div>
 
       <div className={style.mainBarContainer}>
@@ -69,7 +72,7 @@ function MainPage() {
   )
 }
 
-function Bar({ projects, workspace, setSelectedProject, user }) {
+function Bar({ projects, workspace, setSelectedProject, user, updateAddedProject, updateDeletedProject}) {
   const [createProjectModalOpen, setCreateProjectModalOpen] = useState(false)
   const [deleteProjectModalOpen, setDeleteProjectModalOpen] = useState(false)
   const { logout } = useAuth()
@@ -113,7 +116,13 @@ function Bar({ projects, workspace, setSelectedProject, user }) {
           <div className={style.createProject} onClick={()=> setCreateProjectModalOpen(true)} >
             <BadgePlus /> Create Project
           </div>
-          {createProjectModalOpen && <CreateProjectModal onClose={()=> setCreateProjectModalOpen(false)} workspace_id={workspace.id} user={user}/>}
+          {createProjectModalOpen &&
+            <CreateProjectModal 
+                onClose={()=> setCreateProjectModalOpen(false)} 
+                workspace_id={workspace.id}
+                user={user}
+                updateAddedProject={updateAddedProject}
+                />}
           <div className={style.deleteProject} onClick={()=>setDeleteProjectModalOpen(true)} >
             Delete Project
           </div>
@@ -150,6 +159,14 @@ function ProjectContainer({ selectedProject, workspace, members, userId }) {
     new Date(selectedProject.created_at).toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' })
     : ''
 
+    const updateAddTask = (task)=>{
+      setTasks(prevTasks => [...prevTasks, task])
+    }
+
+    const updateDeleteTask = (task_id) =>{
+      setTasks(prevTasks => prevTasks.filter((task) => task.id !== task_id))
+    }
+
   return (
     <div className={style.projectManager}>
       {selectedProject ? (
@@ -179,6 +196,8 @@ function ProjectContainer({ selectedProject, workspace, members, userId }) {
                         members={members}
                         selectedProject={selectedProject}
                         workspace_name={workspace.name}
+                        updateAddTask={updateAddTask}
+                        updateDeleteTask={updateDeleteTask}
                       />
                     ))
                   }
@@ -194,7 +213,7 @@ function ProjectContainer({ selectedProject, workspace, members, userId }) {
 }
 
 
-function DropZone({status, tasks, members, selectedProject, workspace_name}){
+function DropZone({status, tasks, members, selectedProject, workspace_name, updateAddTask, updateDeleteTask}){
 
   const [addTaskModalOpen, setAddTaskModalOpen] = useState(false)
 
@@ -215,27 +234,28 @@ function DropZone({status, tasks, members, selectedProject, workspace_name}){
           {status}
           <Plus size={32} color='gray' cursor="pointer" onClick={()=> setAddTaskModalOpen(true)}/>
       </div>
-      {addTaskModalOpen && <CreateTaskModal onClose={()=> setAddTaskModalOpen(false)} members={members} project={selectedProject} status={status} workspaceName={workspace_name}/>}
+      {addTaskModalOpen && <CreateTaskModal onClose={()=> setAddTaskModalOpen(false)} members={members} project={selectedProject} status={status} workspaceName={workspace_name} updateAddTask={updateAddTask}/>}
       {tasks.map((task)=> (
         <TaskItem 
           key={task.id}
           task={task}
           projectId={task.project_id}
           members={members}
+          updateDeleteTask={updateDeleteTask}
         />
       ))}
     </div>
   )
 }
 
-function TaskItem({ task, projectId, members }){
+function TaskItem({ task, projectId, members, updateDeleteTask }){
 
   const [taskModalOpen, setTaskModalOpen] = useState(false)
   const [taskMemebers, setTaskMemebers] = useState([])
 
   const [{isDragging}, drag] = useDrag(()=>({
     type: "TASK",
-    item: {...tasks},
+    item: {...task},
     collect: (monitor)=>({
       isDragging: !!monitor.isDragging()
     })
@@ -248,12 +268,6 @@ function TaskItem({ task, projectId, members }){
       setTaskMemebers(assigned);
     }
   }, [task, members]);
-
-
-  useEffect(()=>{
-    console.log("Task Memebers: ", taskMemebers)
-
-  },[taskMemebers])
 
   const isPastDate = new Date(task.due_date) < new Date()
   const taskDueDate = task ? new Date(task.due_date.$date || task.due_date).toLocaleDateString("en-US", { month: "long", day: "numeric" }) : ""
@@ -279,7 +293,7 @@ function TaskItem({ task, projectId, members }){
             </div>
           </div>
     </div>
-    {taskModalOpen && <TaskModal task={task} onClose={()=> setTaskModalOpen(false)} members={taskMemebers} allUsers={members}/>}
+    {taskModalOpen && <TaskModal task={task} onClose={()=> setTaskModalOpen(false)} members={taskMemebers} allUsers={members} updateDeleteTask={updateDeleteTask}/>}
     </>
   )
 }

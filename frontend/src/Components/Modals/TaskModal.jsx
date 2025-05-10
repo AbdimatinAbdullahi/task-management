@@ -1,17 +1,17 @@
 import React, { useState, useEffect } from "react";
 import style from '../../Styles/kanban.module.css'
+import {UserPen, UserCheck} from 'lucide-react'
 import Select from 'react-select'
 import axios from "axios";
 
 
-function TaskModal({ onClose, task, members, allUsers }) {
+function TaskModal({ onClose, task, members, allUsers, updateDeleteTask}) {
 
   // Function to return the date to the frmat that is expected by input date field
   function formatDate(dateObj){
     const date = new Date(dateObj.$date || dateObj);
     return date.toISOString().split("T")[0]
   };
-
 
   const [taskDetails, settaskDetails] = useState({
     task_name: task.task_name,
@@ -154,6 +154,7 @@ function TaskModal({ onClose, task, members, allUsers }) {
       const dtRs = await axios.put(`http://127.0.0.1:5000/api/delete_task/${task._id.$oid}`)
       if(dtRs.status == 200){
         alert("Task Deleted!")
+        updateDeleteTask(dtRs.data.task_id)
         onClose()
       }
     } catch (error) {
@@ -251,12 +252,12 @@ function TaskModal({ onClose, task, members, allUsers }) {
             {members.length < 6 && (
             <div className={style.addMemOrRemv}>
               <div className={style.closeSelect} onClick={tgSlct} >
-                close/Discard
+                <UserPen /> <p> {toggleSelect ? "Close" : "Edit Users"} </p>
               </div>
               {
                 hasChanged && (
                   <div className={style.updateTask} onClick={updateTaskAssignes} >
-                      Update Assigness
+                      <UserCheck /> <p>Update Users</p>
                   </div>
                 )
               }
@@ -273,9 +274,6 @@ function TaskModal({ onClose, task, members, allUsers }) {
             />
           )}
         </div>
-
-
-
 
 
         <div className={style.deleteTask} >

@@ -10,7 +10,7 @@ import {useAuth} from '../../Contexts/AuthContext'
 const animatedComponents = makeAnimated();
 
 
-function CreateTaskModal({onClose, members, project, status, workspaceName}){
+function CreateTaskModal({onClose, members, project, status, workspaceName, updateAddTask}){
 
 
     const [newTask, setNewTask] = useState({
@@ -54,7 +54,9 @@ function CreateTaskModal({onClose, members, project, status, workspaceName}){
             "Authorization" : `Bearer ${user.token}`
           }
         })
-        console.log(ctResponse)
+        if(ctResponse.status == 200){
+          updateAddTask(ctResponse.data.task)
+        }
       } catch (error) {
         console.log(error)
       } finally{

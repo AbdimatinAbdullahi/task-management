@@ -3,7 +3,7 @@ import {FolderPlus, BookmarkX} from 'lucide-react'
 import axios from 'axios'
 import style from '../../Styles/mainpage.module.css'
 import { projects } from '../../SampleAPI/projectandTasks'
-function CreateProjectModal({ onClose, workspace_id, user }) {
+function CreateProjectModal({ onClose, workspace_id, user, updateAddedProject }) {
 
     const [projectsData, setProjectsData] = useState({
         project_name : "",
@@ -28,6 +28,7 @@ function CreateProjectModal({ onClose, workspace_id, user }) {
         )
 
         if(pcrRs.status == 200){
+            updateAddedProject(pcrRs.data.project)
             onClose()
         } else {
             seterrorMessage("something went wrong")
