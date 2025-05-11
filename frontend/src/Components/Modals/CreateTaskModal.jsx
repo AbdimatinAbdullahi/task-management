@@ -56,6 +56,7 @@ function CreateTaskModal({onClose, members, project, status, workspaceName, upda
         })
         if(ctResponse.status == 200){
           updateAddTask(ctResponse.data.task)
+          onClose()
         }
       } catch (error) {
         console.log(error)

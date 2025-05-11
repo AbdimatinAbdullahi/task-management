@@ -12,7 +12,7 @@ function CreateProjectModal({ onClose, workspace_id, user, updateAddedProject })
     const [errorMessage, seterrorMessage] = useState('')
 
 
-    const handleCreate = async (projectName) => {
+    const handleCreate = async () => {
         if(projectsData.project_name === '' || projectsData.description === ""){
             seterrorMessage("Provide the project name  and description!")
             return

@@ -16,7 +16,7 @@ def require_role(allowed_roles): # Decorator factory and it passes allowed roles
         def wrapper(*args, **kwargs): # What is this args and kwargs now ???
             auth_header = request.headers.get("Authorization", None)
             if not auth_header or not auth_header.startswith('Bearer '):
-                return jsonify({"error" : "Misssing credintials or invalid token"})
+                return jsonify({"error" : "Misssing credintials or invalid token"}), 401
             token = auth_header.split(" ")[1]
             try:
                 payload = jwt.decode(token, current_app.config["SECRET_KEY"], algorithms=['HS256'])
@@ -52,6 +52,8 @@ def create_workspace():
         print(f"Something went wrong while creating workspace: {str(e)}")
         return jsonify({"error" : "Something went wrong"}), 500
 
+
+
 @project_bp.route("/create-new-project", methods=["POST"])
 @require_role(["admin"])
 def create_new_project():
@@ -59,16 +61,18 @@ def create_new_project():
         data = request.get_json()
         new_project = Project(name=data.get("name"), workspace_id=data.get("workspace_id"),description=data.get("description"))
         db.session.add(new_project)
+        db.session.commit()
         project ={
             "name" : new_project.name,
             "id" : new_project.id,
             "description" : new_project.description,
             "created_at" : new_project.created_at
         }
-        db.session.commit()
         return jsonify({"message":"Creatation success", "project" : project}), 200
     except Exception as e:
         return jsonify({"error": f"{str(e)}"})
+
+
 
 
 @project_bp.get('/get_workspace_data/<user_id>')
@@ -99,6 +103,12 @@ async def get_workspaces(user_id):
         return jsonify({"error": f"Errow occrs while accessing data from database: {str(e)}"}), 500
     
 # Function to create new task
+
+def safe_parse_date(date_str):
+    if date_str and isinstance(date_str, str) and date_str.strip():
+        return datetime.strptime(date_str.strip(), "%Y-%m-%d")
+    return None
+
 @project_bp.route('/create-task', methods=["POST"])
 @require_role(["admin"])
 def create_new_task():
@@ -109,9 +119,9 @@ def create_new_task():
         description = data["newTask"]["description"]
         priority = data["newTask"]["prioity"]
         start_date_str = data["newTask"]["start_date"]
-        start_date = datetime.strptime(start_date_str, '%Y-%m-%d').date()
+        start_date = safe_parse_date(start_date_str)
         print(start_date)
-        due_data = data["newTask"]["due_date"]
+        due_data = safe_parse_date(data["newTask"]["due_date"])
         status = data["newTask"]["status"]
         asignees = data["newTask"]["assignees"]
         project_id = data["project_id"]
@@ -120,10 +130,10 @@ def create_new_task():
             task_name=task_name,
             project_id=project_id,
             status=status,
-            due_date=due_data,
-            started_at=start_date,
+            due_date=due_data or None,
+            started_at=start_date or None,
             task_notes=description,
-            assigned_users=asignees,
+            assigned_users=asignees or [],
             priority=priority
             )
         newTask.save()
@@ -275,8 +285,6 @@ def updateTaskPriority(taskId):
 
 
 
-
-
 @project_bp.route("/update_task_description/<taskId>", methods=["PATCH"])
 def UpdateTaskDescription(taskId):
     try:
@@ -379,3 +387,21 @@ def update_task_members(taskId):
     except Exception as e:
         print("Failed while updating task members: ", str(e))
         return jsonify({"error" : "Failed updating task members"}), 500
+
+
+
+@project_bp.route('/delete-project/<projectId>', methods=["DELETE"])
+def delete_project_and_project_resources(projectId):
+    try:
+        project = Project.query.filter_by(id=projectId).first()
+        if not project:
+            print("Project not found!")
+            return jsonify({"error" : "Project not found"}), 404
+        
+        deleted_tasks = Task.objects(project_id=projectId).delete()
+        db.session.delete(project)
+        db.session.commit()
+        return jsonify({"message" : "Project deleted", "id" : projectId}), 200
+    except Exception as e:
+        print("Something went wrong while deleteing project: ", str(e))
+        return jsonify({"error" : "Error while deleting project"}), 500

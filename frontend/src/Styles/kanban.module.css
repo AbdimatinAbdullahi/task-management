@@ -288,7 +288,7 @@
 .modalTaskContainer{
     position: relative;
     width: 40%;
-    height:70%;
+    height:75%;
     background-color: white;
     border-radius: 12px;
     display: flex;
@@ -456,7 +456,7 @@
 
   .descriptionContainer{
     width: 90%;
-    height: 15%;
+    min-height: 15%;
     margin-top: 2em;
   }
   .descriptionContainer h2{
@@ -466,16 +466,25 @@
     margin-top: 1em;
     resize: none;
     width: 100%;
-    height: 100%;
+    height: 90%;
     font-weight: 400;
-    font-size: 14px;
+    font-size: 1.2em;
     color: gray;
-    padding: 1px 1px;
+    padding: 3px 3px;
     border: none;
+    overflow-y: scroll;
     font-family: var(--font-fira-sans);
+    margin-bottom: 2em;
     &:focus{
       border: none;
       outline: none;
+    }
+    &::-webkit-scrollbar{
+      display: none;
+    }
+    &:focus{
+      border: 1px solid #AF2BC1;
+      border-radius: 4px;
     }
   }
 
@@ -489,6 +498,7 @@
     position: relative;
     padding: 0.4em 1em;
     box-sizing: border-box;
+    margin-top: 3em;
   }
 
   .selectAndDeselectUser {

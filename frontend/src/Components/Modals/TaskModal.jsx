@@ -5,30 +5,45 @@ import Select from 'react-select'
 import axios from "axios";
 
 
-function TaskModal({ onClose, task, members, allUsers, updateDeleteTask}) {
+function TaskModal({ onClose, task, members, allUsers, updateDeleteTask, updateTask}) {
 
   // Function to return the date to the frmat that is expected by input date field
-  function formatDate(dateObj){
-    const date = new Date(dateObj.$date || dateObj);
-    return date.toISOString().split("T")[0]
-  };
+  function formatDate(dateObj) {
+    if (!dateObj) return "";
+    const date = new Date(dateObj?.$date || dateObj);
+    if (isNaN(date)) return "";
+    return date.toISOString().split("T")[0];
+  }
+
 
   const [taskDetails, settaskDetails] = useState({
     task_name: task.task_name,
     status: task.status,
-    due_date: formatDate(task.due_date),
-    start_date: formatDate(task.started_at),
+    due_date: formatDate(task.due_date) || "",
+    start_date: formatDate(task.started_at) || "",
     priority: task.priority,
     description: task.task_notes,
     creation_date: task.created_at
   });
   const [loading, setloading] = useState(false)
   const [toggleSelect, setToggleSelect] = useState(false);
-  const [selectedMembers, setSelectedMembers] = useState(members.map((m) => m.id)); // 8
   const [errorMessage, setErrorMessage] = useState("")
+  const [originalAssigned, setOriginalAssigned] = useState(
+  Array.isArray(task.assigned_users) ? task.assigned_users : []
+  );
+  const [selectedMembers, setSelectedMembers] = useState(
+  Array.isArray(task.assigned_users) ? task.assigned_users : []
+  );
 
-  const originalMemberIds = members.map((m) => m.id) // 7
-  const hasChanged = selectedMembers.length !== originalMemberIds.length 
+  const originalMemberIds = Array.isArray(members)
+    ? members.map((m) => m.id)
+    : [];
+
+
+  const hasChanged =
+  selectedMembers.length !== originalAssigned.length ||
+  !selectedMembers.every((id) => originalAssigned.includes(id));
+
   const displayMembers = members.slice(0, 2);
   const remainingMemlen = members.length - 2;
 
@@ -37,25 +52,36 @@ function TaskModal({ onClose, task, members, allUsers, updateDeleteTask}) {
         label: member.fullname
   }));
 
-  const updateTaskAssignes = async ()=>{ 
-    const removedMembers = originalMemberIds.filter(id => !selectedMembers.includes(id))
-    const addedMembers = selectedMembers.filter(id => !originalMemberIds.includes(id))
+  const updateTaskAssignes = async () => {
+    const removedMembers = originalAssigned.filter(
+      (id) => !selectedMembers.includes(id)
+    );
+    const addedMembers = selectedMembers.filter(
+      (id) => !originalAssigned.includes(id)
+    );
 
-    setloading(true)
-    setErrorMessage("")
+    setloading(true);
+    setErrorMessage("");
+
     try {
-      const addMemRs = await axios.patch(`http://127.0.0.1:5000/api/update_task_members/${task._id.$oid}`, { addedMembers, removedMembers })
-      if(addMemRs.status === 200){
-        alert("Task member updates")
+      const addMemRs = await axios.patch(
+        `http://127.0.0.1:5000/api/update_task_members/${task._id.$oid}`,
+        { addedMembers, removedMembers }
+      );
+
+      if (addMemRs.status === 200) {
+        // Update local state to match new server state
+        setOriginalAssigned([...selectedMembers]);
+        setToggleSelect(false);
       }
     } catch (error) {
-      console.log("Error updating members : ", error)
-      setErrorMessage(error?.data?.message || "Failed Updating task members")
-    } finally{
-      setloading(false)
+      console.log("Error updating members : ", error);
+      setErrorMessage(error?.data?.message || "Failed Updating task members");
+    } finally {
+      setloading(false);
     }
+  };
 
-  }
 
 
   const handleTaskChange = (e) =>{
@@ -72,7 +98,13 @@ function TaskModal({ onClose, task, members, allUsers, updateDeleteTask}) {
   }
 
   const isPastDueDate = new Date(taskDetails.due_date) < new Date()
-  const creationDate = taskDetails ? new Date(task.created_at.$date).toLocaleDateString('en-US', {month: "long", day: "numeric"}) : ""
+  const creationDate = task?.created_at
+  ? new Date(task.created_at?.$date || task.created_at).toLocaleDateString(
+      "en-US",
+      { month: "long", day: "numeric" }
+    )
+  : "";
+
 
 
   // Function to change the name of Task:
@@ -83,7 +115,7 @@ function TaskModal({ onClose, task, members, allUsers, updateDeleteTask}) {
     try {
       const tncRs = await axios.patch(`http://127.0.0.1:5000/api/update_task_name/${task._id.$oid}`, {"name" : taskDetails.task_name})
       if(tncRs.status === 200){
-        alert("Name Change Successfull!")
+        updateTask({...task, task_name: taskDetails.task_name})
       }
     } catch (error) {
       console.log("Error while changing the task name: ", error)
@@ -99,6 +131,7 @@ function TaskModal({ onClose, task, members, allUsers, updateDeleteTask}) {
       const tdcRs = await axios.patch(`http://127.0.0.1:5000/api/update_task_description/${task._id.$oid}`, {"description" : taskDetails.description});
       if(tdcRs.status === 200){
         alert("Task Change Description successful! 🎉✅")
+        updateTask({...task, task_notes: taskDetails.description})
       }
     } catch (error) {
       console.log("Error while changing the task description: ", error)
@@ -114,6 +147,7 @@ function TaskModal({ onClose, task, members, allUsers, updateDeleteTask}) {
     try {
       const tdcRs = await axios.patch(`http://127.0.0.1:5000/api/update_task_status/${task._id.$oid}`, {"status" : taskDetails.status});
       if(tdcRs.status === 200){
+        updateTask({...task, status: taskDetails.status})
         alert("Task Change status successful! 🎉✅")
       }
     } catch (error) {
@@ -141,6 +175,7 @@ function TaskModal({ onClose, task, members, allUsers, updateDeleteTask}) {
     try {
       const tdtcRs = await axios.patch(`http://127.0.0.1:5000/api/update_task_date/${task._id.$oid}`, updateFields);
       if(tdtcRs.status === 200){
+        updateTask({...task, started_at: taskDetails.start_date, due_date: taskDetails.due_date})
         alert("Task dates change successful! 🎉✅")
       }
     } catch (error) {

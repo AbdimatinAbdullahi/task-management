@@ -1,19 +1,17 @@
 import React, { useEffect, useState } from 'react'
-import { House, Mail, BadgePlus, UserPlus, Plus, Calendar } from 'lucide-react'
+import { House, BadgePlus, UserPlus, Plus, Calendar, SquareX} from 'lucide-react'
 import style from '../../Styles/mainpage.module.css'
 import { useSearchParams } from 'react-router-dom'
 import { HTML5Backend } from 'react-dnd-html5-backend'
 import { DndProvider, useDrag, useDrop } from 'react-dnd'
 
 import CreateProjectModal from '../Modals/CreateProjectModal'
-import CreateTaskModal from '../Modals/CreateTaskModal' //Add Task Modal
 import DeleteProjectModal from '../Modals/DeleteProjectModal'
+import CreateTaskModal from '../Modals/CreateTaskModal' //Add Task Modal
+import { useAuth } from '../../Contexts/AuthContext'
 import InviteModal from '../Modals/InviteModal'
 import TaskModal from '../Modals/TaskModal'
-
-import { getProjectTasks, getUserWorkspace, getWorkspaceMembers, getWorkspaceProjects, projects, tasks } from '../../SampleAPI/projectandTasks'
 import axios from 'axios'
-import { useAuth } from '../../Contexts/AuthContext'
 
 
 function MainPage() {
@@ -24,8 +22,12 @@ function MainPage() {
   const [projects, setProjects] = useState([])
   const [selectedProject, setSelectedProject] = useState(null)
   const [workspaceMembers, setWorkspaceMembers] = useState([])
-  const { user, logout } = useAuth()
+  const { user } = useAuth()
+
+
   useEffect(() => {
+    // Fetch the workspace Data When user logins: Using the user to fetch => Workspace and 
+    // in return using workspace to fetch the projects that belongs to workspace
     const fetchWorkspaceData = async () => {
       if (user_id) {
         try {
@@ -50,29 +52,56 @@ function MainPage() {
     fetchWorkspaceData()
   }, [user_id])
 
-  const updateAddedProject = (project)=>{
-    setProjects(prevProject => [...prevProject, project])
-    setSelectedProject(project)
+  const updateAddedProject = (project) => {
+    setProjects(prevProjects => {
+      const updated = [...prevProjects, project]
+      if (prevProjects.length === 0) {
+        setSelectedProject(project)
+      }
+      return updated
+    })
   }
 
-  const updateDeletedProject = (project) =>{
-    setProjects(prevProject => prevProject.filter((proj) => proj.id !== project.id))
+
+  const updateDeletedProject = (id) =>{
+    const filteredProjects = projects.filter((project) => project.id !== id)
+    setProjects(filteredProjects)
+    if(selectedProject?.id === id){
+      if(filteredProjects.length > 0){
+        setSelectedProject(filteredProjects[0])
+      } else{
+        setSelectedProject(null)
+      }
+    }
   }
 
   return (
     <div className={style.mainPageContainer}>
       <div className={style.leftBar}>
-        <Bar projects={projects} workspace={workspace} setSelectedProject={setSelectedProject} user={user} updateAddedProject={updateAddedProject} updateDeletedProject={updateDeletedProject}/>
+        <Bar 
+        projects={projects} 
+        workspace={workspace} 
+        setSelectedProject={setSelectedProject} 
+        user={user} 
+        updateAddedProject={updateAddedProject} 
+        updateDeletedProject={updateDeletedProject}  
+        project={selectedProject} />
       </div>
 
       <div className={style.mainBarContainer}>
-        <ProjectContainer selectedProject={selectedProject} workspace={workspace} members={workspaceMembers} userId={user_id} />
+        <ProjectContainer 
+          selectedProject={selectedProject}
+          workspace={workspace} 
+          members={workspaceMembers}
+          userId={user_id}
+          />
+
       </div>
     </div>
   )
 }
 
-function Bar({ projects, workspace, setSelectedProject, user, updateAddedProject, updateDeletedProject}) {
+function Bar({ projects, workspace, setSelectedProject, user, updateAddedProject, updateDeletedProject, project}) {
   const [createProjectModalOpen, setCreateProjectModalOpen] = useState(false)
   const [deleteProjectModalOpen, setDeleteProjectModalOpen] = useState(false)
   const { logout } = useAuth()
@@ -93,9 +122,6 @@ function Bar({ projects, workspace, setSelectedProject, user, updateAddedProject
           <div className={style.dashboard}>
             <House size={34} /> Dashboard
           </div>
-          <div className={style.inbox}>
-            <Mail size={34} /> Inbox
-          </div>
         </div>
 
         <div className={style.projectsItems}>
@@ -111,7 +137,7 @@ function Bar({ projects, workspace, setSelectedProject, user, updateAddedProject
               </div>
             ))
           ) : (
-            <div>No projects available</div>
+            <div className={style.noProjAvail} >No projects available</div>
           )}
           <div className={style.createProject} onClick={()=> setCreateProjectModalOpen(true)} >
             <BadgePlus /> Create Project
@@ -123,10 +149,17 @@ function Bar({ projects, workspace, setSelectedProject, user, updateAddedProject
                 user={user}
                 updateAddedProject={updateAddedProject}
                 />}
+
           <div className={style.deleteProject} onClick={()=>setDeleteProjectModalOpen(true)} >
             Delete Project
           </div>
-          {deleteProjectModalOpen && <DeleteProjectModal onClose={()=> setDeleteProjectModalOpen(false)} />}
+          {deleteProjectModalOpen && projects.length > 0 && 
+                <DeleteProjectModal 
+                onClose={()=> setDeleteProjectModalOpen(false)}
+                project={project}
+                updateDeletedProject={updateDeletedProject}
+                />
+          }
 
         </div>
       </div>
@@ -167,6 +200,15 @@ function ProjectContainer({ selectedProject, workspace, members, userId }) {
       setTasks(prevTasks => prevTasks.filter((task) => task.id !== task_id))
     }
 
+    
+    const updateTask = (updatedTask) => {
+      setTasks(prevTasks =>
+        prevTasks.map((tsk) =>
+          tsk._id === updatedTask._id ? { ...tsk, ...updatedTask } : tsk
+        )
+      );
+    };
+
   return (
     <div className={style.projectManager}>
       {selectedProject ? (
@@ -198,6 +240,7 @@ function ProjectContainer({ selectedProject, workspace, members, userId }) {
                         workspace_name={workspace.name}
                         updateAddTask={updateAddTask}
                         updateDeleteTask={updateDeleteTask}
+                        updateTask={updateTask}
                       />
                     ))
                   }
@@ -206,14 +249,19 @@ function ProjectContainer({ selectedProject, workspace, members, userId }) {
             </div>
         </>
       ) : (
-        <p>No project selected.</p>
+        <div className={style.noProjAvailMain} >
+          <div className={style.notAvail}>
+            <SquareX size={50} />
+            <p>No Project Available</p>
+          </div>
+        </div>
       )}
     </div>
   )
 }
 
 
-function DropZone({status, tasks, members, selectedProject, workspace_name, updateAddTask, updateDeleteTask}){
+function DropZone({status, tasks, members, selectedProject, workspace_name, updateAddTask, updateDeleteTask, updateTask}){
 
   const [addTaskModalOpen, setAddTaskModalOpen] = useState(false)
 
@@ -242,13 +290,15 @@ function DropZone({status, tasks, members, selectedProject, workspace_name, upda
           projectId={task.project_id}
           members={members}
           updateDeleteTask={updateDeleteTask}
+          updateAddTask={updateAddTask}
+          updateTask={updateTask}
         />
       ))}
     </div>
   )
 }
 
-function TaskItem({ task, projectId, members, updateDeleteTask }){
+function TaskItem({ task, projectId, members, updateDeleteTask, updateTask}){
 
   const [taskModalOpen, setTaskModalOpen] = useState(false)
   const [taskMemebers, setTaskMemebers] = useState([])
@@ -263,15 +313,24 @@ function TaskItem({ task, projectId, members, updateDeleteTask }){
 
 
   useEffect(() => {
-    if (task.assigned_users) {
+    if (Array.isArray(task.assigned_users)) {
       const assigned = members.filter((member) => task.assigned_users.includes(member.id));
       setTaskMemebers(assigned);
+    } else {
+      setTaskMemebers([]);
     }
   }, [task, members]);
 
-  const isPastDate = new Date(task.due_date) < new Date()
-  const taskDueDate = task ? new Date(task.due_date.$date || task.due_date).toLocaleDateString("en-US", { month: "long", day: "numeric" }) : ""
-  
+  let taskDueDate = ''
+  let isPastDate = false
+
+  if (task.due_date) {
+    const rawDate = task.due_date?.$date || task.due_date
+    const parsedDate = new Date(rawDate)
+    taskDueDate = parsedDate.toLocaleDateString("en-US", { month: "long", day: "numeric" })
+    isPastDate = parsedDate < new Date()
+  }
+
 
   return(
     <>
@@ -293,7 +352,14 @@ function TaskItem({ task, projectId, members, updateDeleteTask }){
             </div>
           </div>
     </div>
-    {taskModalOpen && <TaskModal task={task} onClose={()=> setTaskModalOpen(false)} members={taskMemebers} allUsers={members} updateDeleteTask={updateDeleteTask}/>}
+    {taskModalOpen && <TaskModal 
+      task={task} 
+      onClose={()=> setTaskModalOpen(false)} 
+      members={taskMemebers} 
+      allUsers={members} 
+      updateDeleteTask={updateDeleteTask}
+      updateTask={updateTask}
+      />}
     </>
   )
 }
