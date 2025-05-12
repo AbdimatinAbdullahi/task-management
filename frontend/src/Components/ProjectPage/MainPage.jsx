@@ -275,12 +275,25 @@ function DropZone({status, tasks, members, selectedProject, workspace_name, upda
       isOver: !!monitor.isOver()
     }),
   }))
-  
+
+  const getColor = (status) => {
+    switch (status) {
+      case "In Progress":
+        return "#AF2BC1";
+      case "To-do":
+        return "red";
+      case "Done":
+        return "#2bc133";
+      default:
+        return "gray";
+    }
+  };
+
   return (
     <div ref={drop} className={style.taskBoard}>
-      <div className={style.taskBoardsHeader}>
+      <div className={style.taskBoardsHeader} style={{ color: getColor(status), borderBottomColor: getColor(status) }} >
           {status}
-          <Plus size={32} color='gray' cursor="pointer" onClick={()=> setAddTaskModalOpen(true)}/>
+          <Plus size={32} color={getColor(status)} cursor="pointer" onClick={()=> setAddTaskModalOpen(true)} />
       </div>
       {addTaskModalOpen && <CreateTaskModal onClose={()=> setAddTaskModalOpen(false)} members={members} project={selectedProject} status={status} workspaceName={workspace_name} updateAddTask={updateAddTask}/>}
       {tasks.map((task)=> (
@@ -292,13 +305,14 @@ function DropZone({status, tasks, members, selectedProject, workspace_name, upda
           updateDeleteTask={updateDeleteTask}
           updateAddTask={updateAddTask}
           updateTask={updateTask}
+          getColor={getColor}
         />
       ))}
     </div>
   )
 }
 
-function TaskItem({ task, projectId, members, updateDeleteTask, updateTask}){
+function TaskItem({ task, projectId, members, updateDeleteTask, updateTask, getColor}){
 
   const [taskModalOpen, setTaskModalOpen] = useState(false)
   const [taskMemebers, setTaskMemebers] = useState([])
@@ -332,11 +346,24 @@ function TaskItem({ task, projectId, members, updateDeleteTask, updateTask}){
   }
 
 
+  const getPriorityColor = (priority)=>{
+    switch (priority) {
+      case "High":
+        return "#fc2c4e"
+      case "Low":
+        return "#cff3a1"
+      case "Medium":
+        return "#f28dee"    
+      default:
+        return ""
+    }
+  }
+
   return(
     <>
-    <div className={style.taskItems} key={drag} onClick={()=> setTaskModalOpen(true)} >
+    <div className={style.taskItems} key={drag} onClick={()=> setTaskModalOpen(true)} style={{borderColor: getColor(task.status)}} >
           <div className={style.tasksDetails}>
-            <div className={style.priority}>{task.priority}</div>
+            <div className={style.priority} style={{backgroundColor: getPriorityColor(task.priority)}} >{task.priority}</div>
             <div className={style.taskName}> {task.task_name} </div>
             <div className={style.taskNote}>{task.task_notes}</div>
           </div>
