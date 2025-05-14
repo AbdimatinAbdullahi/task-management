@@ -13,6 +13,8 @@ flask-cors = "*"
 flask-jwt-extended = "*"
 pyjwt = "*"
 mongoengine = "*"
+confluent-kafka = "*"
+redis = "*"
 
 [dev-packages]
 

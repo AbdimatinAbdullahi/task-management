@@ -1,5 +1,6 @@
 from flask import Blueprint, current_app, jsonify, json, request
 from models import Task, Project, Workspace, db
+from confluent_kafka import Producer
 from datetime import datetime
 from functools import wraps
 from bson import ObjectId
@@ -7,8 +8,20 @@ import asyncio
 import jwt
 
 project_bp = Blueprint("project", __name__, url_prefix='/api')
+# producer = Producer({"bootstrap.servers": "localhost:9092"})
 
 
+# def task_done(task):
+#     task_json = task.to_json()
+#     producer.produce(
+#         topic="task-status-updated-to-done",
+#         key=str(task._id),
+#         value=task_json,
+#         callback=lambda err, msg: print(
+#             f"✅ Sent Message to consumer {task}" if not err else f"❌ Task sent failed: {err}"
+#             )
+#     )
+#     producer.flush()
 
 def require_role(allowed_roles): # Decorator factory and it passes allowed roles to decorator
     def decorator(f): # Actual decorator that takes the function to be wrapped!
@@ -114,13 +127,11 @@ def safe_parse_date(date_str):
 def create_new_task():
     try:
         data = request.get_json()
-        print(data)
         task_name = data["newTask"]["task_name"]
         description = data["newTask"]["description"]
         priority = data["newTask"]["prioity"]
         start_date_str = data["newTask"]["start_date"]
         start_date = safe_parse_date(start_date_str)
-        print(start_date)
         due_data = safe_parse_date(data["newTask"]["due_date"])
         status = data["newTask"]["status"]
         asignees = data["newTask"]["assignees"]
@@ -212,6 +223,7 @@ def updateTaskStatus(taskId):
             task.status = newStatus
             task.save()
             print("The Status update successfull")
+            # task_done(task)
             return jsonify({"message": "Update successfull"}), 200
         else:
             print("Task not there")
