@@ -1,0 +1,357 @@
+:root{
+    --font-source-three: 'Source Sans 3';
+    --font-spline-sans: "Spline Sans Mono";
+    --box-shadow-auto: 20px 20px 60px #d9d9d9, -20px -20px 60px #ffffff;
+    --font-fira-sans: "Fira Sans";
+    --font-noto-sans:"Noto Sans", sans-serif;    
+} 
+
+
+.dashboardContainer{
+    width: 100%;
+    height: 99%;   
+    border: 1px solid gray;
+    border-radius: 4px;
+    display: flex;
+    flex-direction: column;
+}
+
+.threeQuaterContainer{
+    border: 1px solid green;
+    width: 100%;
+    height: 76%;
+    display: flex;
+    flex-direction: row;
+}
+
+.myTasks{
+    width: 100%;
+    border: 1px solid red;
+}
+
+.rdQrt{
+    box-sizing: border-box;
+    padding-top: 0.4em;
+    width: 70%;
+    height: 100%;
+}
+
+.allProjectsData{
+    height: 20%;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 1em;
+}
+
+.unassignedTasks, .inProgressData, .doneData{
+    width: 30%;
+    height: 100%;
+    border:  1px solid black;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 1em 1em;
+    box-sizing: border-box;
+}
+
+.headerrsrdR{
+    width: 80%;
+    height: 40px;
+    background-color: rgb(255, 225, 225);
+    border-radius: 20px;
+    font-family: var(--font-noto-sans);
+    display: flex;
+    flex-direction: row;
+    align-items:center;
+    justify-content: space-between;
+    box-sizing: border-box;
+    padding-left: 1em;
+    padding-right: 8em;
+    font-weight: 700; 
+}
+
+.dataTwo{
+    width: 80%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    font-family: var(--font-noto-sans);
+    box-sizing: border-box;
+    padding-right: 10em;
+}
+
+.dataTwo p{
+    font-size: 2em;
+    font-weight: 900;
+}
+
+.dataTwo span{
+    text-align:center;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    font-family: var(--font-noto-sans);
+    font-size: 1.4em;
+    color: gray;
+    font-weight: 700;
+}
+
+
+.dot{
+    width: 20px;
+    aspect-ratio: 1/1;
+    background-color: black;
+    border-radius: 50%;
+}
+
+
+
+
+/* Tasks By assigness */
+
+.assignesByTaskAndAllAddignes{
+    box-sizing: border-box;
+    padding: 1em 1em;
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    height: calc(100% - 20%);
+}
+
+
+.assignessByTask{
+    width: 50%;
+    border: 2px solid gray;
+    margin-right: 0.5em;
+    box-sizing: border-box;
+    height: 100%;
+    border-radius: 4px;
+}
+
+.allAssigness{
+    width: 50%;
+    border: 2px solid gray;
+    margin-right: 0.5em;
+    height: 100%;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+.headerTwoAssAndMem{
+    width: 70%;
+    height: 50px;
+    border-radius: 30px;
+    background-color: rgba(175, 43, 193, 0.11);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-noto-sans);
+    font-weight: 700;
+    color: black;
+    font-size: 1.3em;
+    margin: 1em 0.2em;
+}
+
+.tasksByAssignees{
+    width: 100%;
+    height: calc(100% - 50px - 3em);
+    overflow-y: auto;
+    box-sizing: border-box;
+    padding: 0 0.5em;
+}
+
+.tasksByAssignees::-webkit-scrollbar{
+    display: none;
+}
+
+.tasksByMem{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    box-sizing: border-box;
+    padding: 0 1em;
+    height: 10%;
+    margin-top: 0.5em;
+    border: 2px solid gray;
+    border-radius: 10px;
+    font-family: var(--font-noto-sans);
+    font-weight: 700;
+    font-size: 1.2em;
+    color: #af2bc1;
+    &:hover{
+        box-shadow: var(--box-shadow-auto);
+    }
+}
+
+
+.allAssigneesForWorkspace{
+    width: 100%;
+    height: calc(100% - 50px - 3em);
+    overflow-y: auto;
+    box-sizing: border-box;
+    padding: 0 0.5em;
+    overflow-y: auto;
+    box-sizing: border-box;
+}
+
+.allAssigneesForWorkspace::-webkit-scrollbar{
+    display: none;
+}
+
+.memberDiv{
+    width: 100%;
+    border: 2px solid gray;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: repeat(2, 1fr);
+    margin-bottom: 1em;
+    border-radius: 4px;
+    box-sizing: border-box;
+    padding: 0.2em 0.5em;
+    height: 20%;
+    &:hover{
+        box-shadow: var(--box-shadow-auto);
+    }
+}
+
+
+.MemberNameAndIcon{
+    font-family: var(--font-noto-sans);
+    font-weight: 700;
+    color: #af2bc1;
+    font-size: 1.2em;
+}
+
+.acceptanceStatus{
+    font-weight: 700;
+    color: gray;
+    font-size: 1em;
+    display: flex;
+    align-items: center;
+    font-family: var(--font-spline-sans);
+}
+
+.deleteIcon, .joinedAtMem{
+    display: flex;
+    align-items: center;
+    justify-content: end;
+}
+.deleteIcon{
+    color: #af2bc1;
+    &:hover{
+        color: red;
+        cursor: pointer;
+    }
+}
+
+.joinedAtMem{
+    color: gray;
+    font-size: large;
+    font-weight: 700;
+    font-family: var(--font-spline-sans);
+}
+
+.weekDataAndWorkLoadSts{
+    width: 30%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+    padding: 0.2em 0.6em;
+}
+
+.weekCompletion{
+    width: 100%;
+    height: 50%;
+    margin-top: 0.2em;
+    border: 1px solid gray;
+    box-sizing: border-box;
+    padding-left: 1em;
+    padding-top: 1em;
+    border-radius:  4px;
+}
+
+.workLoadStatus{
+    width: 100%;
+    height: 50%;
+    margin-top: 0.2em;
+    border: 1px solid gray;
+    box-sizing: border-box;
+    padding: 0.2em 1em;
+    padding-top: 0.2em;
+    border-radius: 4px;
+}
+
+
+.completedThisWeek, .workLStatus{
+    width: 50%;
+    height: 40px;
+    border: 1px solid #af2bc1;
+    border-radius: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-noto-sans);
+    font-size: 1em;
+    font-weight: 700;
+    background-color: rgba(175, 43, 193, 0.11);
+} 
+
+.workLstatusD{
+    width: 100%;
+    height: calc(100% - 40px - 0.2em - 0.4em);
+    margin-top: 0.4em;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.toDoData, .inprogressData2, .completeData2{
+    width: 100%;
+    height: 30%;
+    border-bottom: 1px solid purple; 
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+}
+
+.typeName{
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content:space-between;
+    /* border: 1px solid red; */
+}
+
+.typeName span{
+    font-family: var(--font-noto-sans);
+    font-weight: 700;
+    color: gray;
+    font-size: 1em;
+}
+
+.workloadDataToDo{
+    width: 100%;
+    height: 40%;
+    /* border: 1px solid red; */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.barOne{
+    width: 100%;
+    height: 10px;
+    background-color: rgb(193, 185, 185);
+    border-radius: 10px;
+}
+
+.barTwo{
+    border-radius: 10px;
+}
