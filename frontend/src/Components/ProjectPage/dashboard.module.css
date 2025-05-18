@@ -17,16 +17,10 @@
 }
 
 .threeQuaterContainer{
-    border: 1px solid green;
     width: 100%;
-    height: 76%;
+    height: 70%;
     display: flex;
     flex-direction: row;
-}
-
-.myTasks{
-    width: 100%;
-    border: 1px solid red;
 }
 
 .rdQrt{
@@ -45,10 +39,14 @@
     padding: 0 1em;
 }
 
+.allProjectsData > div{
+    border:  2px solid gray;
+    border-radius: 6px;
+}
+
 .unassignedTasks, .inProgressData, .doneData{
     width: 30%;
     height: 100%;
-    border:  1px solid black;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -355,3 +353,115 @@
 .barTwo{
     border-radius: 10px;
 }
+
+.myTasks{
+    width: 100%;
+    height: calc(100% - 70%);
+    display: flex;
+    flex-direction: column;
+    font-family: var(--font-spline-sans);
+    color: #af2bc1;
+    font-size: 1.3em;
+    font-weight: 700;
+    box-sizing: border-box;
+    padding-left: 1em;
+}
+
+.myTaskHeader{
+    height: 50px;
+    width: 10%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #af2bc1;
+    color: white;
+    font-family: var(--font-noto-sans);
+    font-weight: 700;
+    border-radius: 30px;
+    margin-top: 1em;
+}
+
+.myTasksM{
+    height: calc(100% - 50px);
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+    overflow-x: auto;
+}
+
+.myTasksM::-webkit-scrollbar-button{
+    display: none;
+}
+
+
+
+.taskContainer{
+    width: 30%;
+    height: 220px;
+    border-radius: 10px;
+    overflow: hidden;
+    box-sizing: border-box;
+    padding-top: 0.8em;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    margin-right: 1em;
+}
+
+.taskNameAndInfo{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    box-sizing: border-box;
+    padding: 0 0.4em;
+    height: 24%;
+}
+
+.taskNameN{
+    width: 80%;
+    height: 100%;
+    border-radius: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: white;
+    color: rgb(69, 66, 66);
+    font-family: var(--font-noto-sans);
+}
+
+.taskDes{
+    width: 100%;
+    height: 40%;
+    box-sizing: border-box;
+    padding: 0 0.4em;
+    overflow-y: hidden;
+    font-size: 0.8em;
+    font-family: var(--font-noto-sans);
+    color: black;
+    font-weight: 400;
+}
+
+.taskdueDate{
+    display: flex;
+    align-items: center;
+    justify-content: end;
+    margin-bottom: 1em;
+    box-sizing: border-box;
+    padding-right: 1em;
+    color: gray;
+    font-weight: 700;
+    height: 20%;
+}
+
+.taskdueDate > div{
+    background-color: white;
+    width: 40%;
+    text-align: right;
+    border-radius: 30px;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+

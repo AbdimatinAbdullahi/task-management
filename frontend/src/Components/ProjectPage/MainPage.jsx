@@ -94,6 +94,7 @@ function MainPage() {
         updateAddedProject={updateAddedProject} 
         updateDeletedProject={updateDeletedProject}  
         project={selectedProject} 
+        setDashboardOpen={setDashboardOpen}
         handleDashboardOpenAndClose={handleDashboardOpenAndClose}
         />
       </div>
@@ -113,7 +114,7 @@ function MainPage() {
   )
 }
 
-function Bar({ projects, workspace, setSelectedProject, user, updateAddedProject, updateDeletedProject, project, handleDashboardOpenAndClose}) {
+function Bar({ projects, workspace, setSelectedProject, user, updateAddedProject, updateDeletedProject, project, setDashboardOpen, handleDashboardOpenAndClose}) {
   const [createProjectModalOpen, setCreateProjectModalOpen] = useState(false)
   const [deleteProjectModalOpen, setDeleteProjectModalOpen] = useState(false)
   const { logout } = useAuth()
@@ -143,7 +144,10 @@ function Bar({ projects, workspace, setSelectedProject, user, updateAddedProject
               <div
                 key={project.id}
                 className={style.project}
-                onClick={() => setSelectedProject(project)} // Click to select project
+                onClick={() =>{ 
+                  setSelectedProject(project)
+                  setDashboardOpen(false)
+                }} // Click to select project
               >
                 {project.name}
               </div>

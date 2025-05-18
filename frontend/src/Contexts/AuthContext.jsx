@@ -26,7 +26,7 @@ export const AuthProvider = ({children})=>{
             },
         })
         .then(response => {
-            setUser({ firstname: response.data.fullname, email: response.data.email, token: response.data.token});
+            setUser({ firstname: response.data.fullname, email: response.data.email, token: response.data.token, id: response.data.id});
             navigate(`/workspace?id=${response.data.id}`)
         })
         .catch(error => {
@@ -45,7 +45,9 @@ export const AuthProvider = ({children})=>{
                 setUser({
                     firstname: response.data.fullname,
                     email: response.data.email,
-                    token: response.data.token
+                    token: response.data.token,
+                    id: response.data.id,
+                    memberId: response?.data?.memberId ?? null
                 });
                 localStorage.setItem("token", response.data.token)
                 navigate(`/workspace?id=${response.data.id}`);

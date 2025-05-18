@@ -1,12 +1,17 @@
 import React, { startTransition, useEffect , useState} from 'react'
 import {useSearchParams} from 'react-router-dom'
 import {useAuth} from '../../Contexts/AuthContext'
-// import {Dot} from 'lucide-react'
 import axios from 'axios'
 
-
 import style from './dashboard.module.css'
-import {Trash2 } from 'lucide-react'
+import {Trash2 , Info} from 'lucide-react'
+
+
+const backgroundColors = [
+  'rgba(135, 83, 255, 0.09)',
+  'rgba(250, 31, 243, 0.09)',
+];
+
 
 function Dashboard() {
 
@@ -39,21 +44,21 @@ function Dashboard() {
     }, [user_id])
 
 
+    const myTasks = dashboardData?.data?.tasks.filter((task) => task.assigned_users.includes(user?.memberId))
+    myTasks && console.log(myTasks)
+
     useEffect(()=>{
-        console.log("Dashboard data:", dashboardData)
-    }, [dashboardData])
-
-    // <span> {dashboardData.data.project_summary.in_progress_tasks_numbers} | {(dashboardData.data.project_summary.in_progress_tasks_numbers / dashboardData.data.project_summary.total_number_of_tasks ) * 100 } %</span>
-
+        console.log(user?.id)
+        console.log("Dashboard data: ", dashboardData)
+    }, [])
 
 
 
-        const toDoPercent = (dashboardData?.data?.project_summary?.to_do_tasks_numbers / dashboardData?.data?.project_summary.total_number_of_tasks) * 100
-        const inProgressPercent = (dashboardData?.data?.project_summary?.in_progress_tasks_numbers / dashboardData?.data?.project_summary.total_number_of_tasks) * 100
-        const donePercent = (dashboardData?.data?.project_summary?.done_task_numbers / dashboardData?.data?.project_summary.total_number_of_tasks) * 100
-        console.log("To do : ", toDoPercent)
-        console.log("Inprogress : ",  inProgressPercent)
-        console.log(" Done : ", donePercent)
+
+    const toDoPercent = ((dashboardData?.data?.project_summary?.to_do_tasks_numbers / dashboardData?.data?.project_summary.total_number_of_tasks) * 100).toFixed(0)
+    const inProgressPercent = ((dashboardData?.data?.project_summary?.in_progress_tasks_numbers / dashboardData?.data?.project_summary.total_number_of_tasks) * 100).toFixed(0)
+    const donePercent = ((dashboardData?.data?.project_summary?.done_task_numbers / dashboardData?.data?.project_summary.total_number_of_tasks) * 100).toFixed(0)
+
     
   return (
     <div className={style.dashboardContainer}>
@@ -62,7 +67,7 @@ function Dashboard() {
                 <div className={style.allProjectsData}>
                     <div className={style.unassignedTasks}>
                         <div className={style.headerrsrdR}>
-                            <div className={style.dot} />
+                            <div className={style.dot} style={{backgroundColor: "red"}} />
                             <span>Unassigned</span>
                         </div>
                         <div className={style.dataTwo}>
@@ -70,8 +75,8 @@ function Dashboard() {
                         </div>
                     </div>
                     <div className={style.inProgressData}>
-                        <div className={style.headerrsrdR}>
-                            <div className={style.dot} />
+                        <div className={style.headerrsrdR} style={{backgroundColor: "rgba(135, 83, 255, 0.09)"}} >
+                            <div className={style.dot} style={{backgroundColor: "#AF2BC1"}} />
                             <span>In Progress</span>
                         </div>
                         <div className={style.dataTwo}>
@@ -79,8 +84,8 @@ function Dashboard() {
                         </div>                        
                     </div>
                     <div className={style.doneData}> 
-                        <div className={style.headerrsrdR}>
-                           <div className={style.dot} />
+                        <div className={style.headerrsrdR} style={{backgroundColor: "rgba(123, 218, 177, 0.4)"}} >
+                           <div className={style.dot}  style={{backgroundColor: "#00AF64"}} />
                             <span>Complete</span>
                         </div>
                         <div className={style.dataTwo}>
@@ -118,7 +123,7 @@ function Dashboard() {
                                         <div className={style.nameF}>{member?.fullname}</div>
                                     </div>
                                     <div className={style.deleteIcon}>
-                                        <Trash2 size={40} />
+                                        <Info size={20} />
                                     </div>
                                     <div className={style.acceptanceStatus}>
                                         {member.email}
@@ -190,7 +195,36 @@ function Dashboard() {
         </div>
 
         <div className={style.myTasks}>
+            <div className={style.myTaskHeader}>
+                My Tasks
+            </div>
+            <div className={style.myTasksM} >
+            {myTasks?.length > 0 ? (
+                myTasks.map((task, index) => (
+                    <div className={style.taskContainer} style={{backgroundColor: backgroundColors[index % backgroundColors.length]}} key={index}>
+                        <div className={style.taskNameAndInfo}>
+                            <div className={style.taskNameN}>
+                                {task.task_name}
+                            </div>
+                            <div className={style.infoI}>
+                                <Info/>
+                            </div>
+                        </div>
+                        <div className={style.taskDes}>
+                            {task.task_notes}
+                        </div>
 
+                        <div className={style.taskdueDate}style={{ color: new Date(task.due_date) < new Date() ? "red" : "gray"}} >
+                           <div>
+                             Due {new Date(task.due_date).toLocaleDateString("en-US", {month: "long", day: "numeric", year: "numeric"})}
+                         </div>
+                        </div>
+                    </div>
+                ))
+            ) : (
+                <p>No tasks assigned to you.</p>
+            )}
+            </div>
         </div>
     </div>
   )
