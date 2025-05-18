@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import style from '../../Styles/kanban.module.css'
 import {UserPen, UserCheck} from 'lucide-react'
+import Toastify from "./toastify";
 import Select from 'react-select'
 import axios from "axios";
 
@@ -34,6 +35,12 @@ function TaskModal({ onClose, task, members, allUsers, updateDeleteTask, updateT
   const [selectedMembers, setSelectedMembers] = useState(
   Array.isArray(task.assigned_users) ? task.assigned_users : []
   );
+  const [toastifyOpen, setToastifyOpen] = useState(false)
+  const [message, setMessage] = useState({
+    message: "",
+    borderColor: "",
+    backgroundColor: ""
+  })
 
   const originalMemberIds = Array.isArray(members)
     ? members.map((m) => m.id)
@@ -71,12 +78,18 @@ function TaskModal({ onClose, task, members, allUsers, updateDeleteTask, updateT
 
       if (addMemRs.status === 200) {
         // Update local state to match new server state
-        setOriginalAssigned([...selectedMembers]);
         setToggleSelect(false);
+        setMessage({message: `Task members updated!`, borderColor: "green", backgroundColor: "rgb(69, 255, 91, 0.11)"})
+        setToastifyOpen(true)
+        
+      } else{
+          setMessage({message: `Members changed failed!`, borderColor: "red", backgroundColor: "rgb(255, 200, 200)"})
+          setToastifyOpen(true)
       }
     } catch (error) {
+      setMessage({message: `Members change failed!`, borderColor: "red", backgroundColor: "rgb(255, 200, 200)"})
+      setToastifyOpen(true)
       console.log("Error updating members : ", error);
-      setErrorMessage(error?.data?.message || "Failed Updating task members");
     } finally {
       setloading(false);
     }
@@ -115,9 +128,17 @@ function TaskModal({ onClose, task, members, allUsers, updateDeleteTask, updateT
     try {
       const tncRs = await axios.patch(`http://127.0.0.1:5000/api/update_task_name/${task._id.$oid}`, {"name" : taskDetails.task_name})
       if(tncRs.status === 200){
+        setMessage({message: `Task name changed`, borderColor: "green", backgroundColor: "rgb(69, 255, 91, 0.11)"})
+        setToastifyOpen(true)
         updateTask({...task, task_name: taskDetails.task_name})
       }
+      else{
+      setMessage({message: `Task name changed failed!`, borderColor: "red", backgroundColor: "rgb(255, 200, 200)"})
+      setToastifyOpen(true)
+      }
     } catch (error) {
+      setMessage({message: `Task name changed failed!`, borderColor: "red", backgroundColor: "rgb(255, 200, 200)"})
+      setToastifyOpen(true)
       console.log("Error while changing the task name: ", error)
     }
   };
@@ -130,9 +151,16 @@ function TaskModal({ onClose, task, members, allUsers, updateDeleteTask, updateT
     try {
       const tdcRs = await axios.patch(`http://127.0.0.1:5000/api/update_task_description/${task._id.$oid}`, {"description" : taskDetails.description});
       if(tdcRs.status === 200){
+        setMessage({message: "Task note changed successfully", borderColor: "green", backgroundColor: "rgb(69, 255, 91, 0.11)"})
+        setToastifyOpen(true)
         updateTask({...task, task_notes: taskDetails.description})
+      } else{
+        setMessage({message: `Task description changed failed!`, borderColor: "red", backgroundColor: "rgb(255, 200, 200)"})
+        setToastifyOpen(true)
       }
     } catch (error) {
+      setMessage({message: `Task description changed failed!`, borderColor: "red", backgroundColor: "rgb(255, 200, 200)"})
+      setToastifyOpen(true)
       console.log("Error while changing the task description: ", error)
     }
   };
@@ -143,9 +171,17 @@ function TaskModal({ onClose, task, members, allUsers, updateDeleteTask, updateT
     try {
       const tdcRs = await axios.patch(`http://127.0.0.1:5000/api/update_task_status/${task._id.$oid}`, {"status" : e.target.value});
       if(tdcRs.status === 200){
-        updateTask({...task, status: e.target.value})
+        setMessage({message: `Task status changed to ${e.target.value}`, borderColor: "green", backgroundColor: "rgb(69, 255, 91, 0.11)"})
+        setToastifyOpen(true)
+        updateTask((prev) => ({ ...prev, status: newStatus }));
+      }
+      else{
+      setMessage({message: `Task status changed failed!`, borderColor: "red", backgroundColor: "rgb(255, 200, 200)"})
+      setToastifyOpen(true)
       }
     } catch (error) {
+      setMessage({message: `Task status changed failed!`, borderColor: "red", backgroundColor: "rgb(255, 200, 200)"})
+      setToastifyOpen(true)
       console.log("Error while changing the task status: ", error)
     }
   };
@@ -182,9 +218,16 @@ function TaskModal({ onClose, task, members, allUsers, updateDeleteTask, updateT
           due_date: name === "due_date" && value,
           started_at: name === "start_date" && value,
         })
-        alert("Task dates change successful! 🎉✅")
+        setMessage({message: `Task ${name} changed to ${value}`, borderColor: "green", backgroundColor: "rgb(69, 255, 91, 0.11)"})
+        setToastifyOpen(true)
+      }
+      else{
+        setMessage({message: `Task due date changed failed X`, borderColor: "red", backgroundColor: "rgb(255, 200, 200)"})
+        setToastifyOpen(true) 
       }
     } catch (error) {
+      setMessage({message: `Task due date changed failed X`, borderColor: "red", backgroundColor: "rgb(255, 200, 200)"})
+      setToastifyOpen(true)
       console.log("Error while changing the task status: ", error)
     }
   }
@@ -199,15 +242,24 @@ function TaskModal({ onClose, task, members, allUsers, updateDeleteTask, updateT
         onClose()
       }
     } catch (error) {
+      setMessage({message: `Task deletion failed!`, borderColor: "red", backgroundColor: "rgb(255, 200, 200)"})
       console.log("Error while deleting the task!", error)
     } finally{
       setloading(false)
     }
   }
 
+
+  const handleCloseToast = () => {
+    setMessage({message: "", borderColor: "", backgroundColor: ""})
+    setToastifyOpen(false);
+  };
+
+
   return (
     <div className={style.modalOverlay}>
       <div className={style.modalTaskContainer}>
+        {toastifyOpen && <Toastify handleCloseToast={handleCloseToast} message={message} />}
           {errorMessage && <p className={style.error}> {errorMessage} </p>}
         {/* Task Name and Status Conatiner */}
         <div className={style.taskNameAndStatus}>

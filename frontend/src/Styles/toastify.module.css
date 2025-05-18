@@ -1,0 +1,30 @@
+:root{
+    --font-source-three: 'Source Sans 3';
+    --font-spline-sans: "Spline Sans Mono";
+    --box-shadow-auto: 20px 20px 60px #d9d9d9, -20px -20px 60px #ffffff;
+    --font-fira-sans: "Fira Sans";
+    --font-noto-sans:"Noto Sans", sans-serif;    
+}
+
+.taostContainer{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 400px;
+    height: 32px;
+    margin-top: 1em;
+    box-sizing: border-box;
+    padding: 0 1em;
+    border-radius: 4px;
+    font-family: var(--font-noto-sans);
+    border: 1px solid;
+    position: absolute;
+    top: 0.2em;
+}
+
+.closeIc{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
