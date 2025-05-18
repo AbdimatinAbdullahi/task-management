@@ -285,7 +285,8 @@ function DropZone({status, tasks, members, selectedProject, workspace_name, upda
   const [{isOver}, drop] = useDrop(()=>({
     accept: "TASK",
     drop: (item)=>{
-        console.log(item)
+        console.log("Dropped item:", item);
+        updateTask({...item, status:status})
     },
     collect: (monitor)=>({
       isOver: !!monitor.isOver()
@@ -377,7 +378,7 @@ function TaskItem({ task, projectId, members, updateDeleteTask, updateTask, getC
 
   return(
     <>
-    <div className={style.taskItems} key={drag} onClick={()=> setTaskModalOpen(true)} style={{borderColor: getColor(task.status)}} >
+    <div className={style.taskItems} ref={drag} onClick={()=> setTaskModalOpen(true)} style={{borderColor: getColor(task.status)}} >
           <div className={style.tasksDetails}>
             <div className={style.priority} style={{backgroundColor: getPriorityColor(task.priority)}} >{task.priority}</div>
             <div className={style.taskName}> {task.task_name} </div>
