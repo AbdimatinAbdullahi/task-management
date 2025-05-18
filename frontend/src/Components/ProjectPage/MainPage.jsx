@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
-import { House, BadgePlus, UserPlus, Plus, Calendar, SquareX} from 'lucide-react'
+import { House, BadgePlus, UserPlus, Plus, Calendar, SquareX, TrainFrontTunnel} from 'lucide-react'
 import style from '../../Styles/mainpage.module.css'
-import { useSearchParams } from 'react-router-dom'
+import { useSearchParams, useNavigate } from 'react-router-dom'
 import { HTML5Backend } from 'react-dnd-html5-backend'
 import { DndProvider, useDrag, useDrop } from 'react-dnd'
 
@@ -12,6 +12,7 @@ import { useAuth } from '../../Contexts/AuthContext'
 import InviteModal from '../Modals/InviteModal'
 import TaskModal from '../Modals/TaskModal'
 import axios from 'axios'
+import Dashboard from './Dashboard'
 
 
 function MainPage() {
@@ -22,7 +23,9 @@ function MainPage() {
   const [projects, setProjects] = useState([])
   const [selectedProject, setSelectedProject] = useState(null)
   const [workspaceMembers, setWorkspaceMembers] = useState([])
+  const [dashboardOpen, setDashboardOpen] = useState(false)
   const { user } = useAuth()
+  const navigate = useNavigate()
 
 
   useEffect(() => {
@@ -75,6 +78,11 @@ function MainPage() {
     }
   }
 
+
+  const handleDashboardOpenAndClose = ()=>{
+    setDashboardOpen(!dashboardOpen)
+  }
+
   return (
     <div className={style.mainPageContainer}>
       <div className={style.leftBar}>
@@ -85,23 +93,28 @@ function MainPage() {
         user={user} 
         updateAddedProject={updateAddedProject} 
         updateDeletedProject={updateDeletedProject}  
-        project={selectedProject} />
+        project={selectedProject} 
+        setDashboardOpen={setDashboardOpen}
+        handleDashboardOpenAndClose={handleDashboardOpenAndClose}
+        />
       </div>
 
       <div className={style.mainBarContainer}>
-        <ProjectContainer 
-          selectedProject={selectedProject}
-          workspace={workspace} 
-          members={workspaceMembers}
-          userId={user_id}
-          />
-
+          { dashboardOpen ? 
+                  <Dashboard/> 
+                  : 
+                  <ProjectContainer 
+                    selectedProject={selectedProject}
+                    workspace={workspace} 
+                    members={workspaceMembers}
+                    userId={user_id}
+                    />}
       </div>
     </div>
   )
 }
 
-function Bar({ projects, workspace, setSelectedProject, user, updateAddedProject, updateDeletedProject, project}) {
+function Bar({ projects, workspace, setSelectedProject, user, updateAddedProject, updateDeletedProject, project, setDashboardOpen, handleDashboardOpenAndClose}) {
   const [createProjectModalOpen, setCreateProjectModalOpen] = useState(false)
   const [deleteProjectModalOpen, setDeleteProjectModalOpen] = useState(false)
   const { logout } = useAuth()
@@ -119,7 +132,7 @@ function Bar({ projects, workspace, setSelectedProject, user, updateAddedProject
         </div>
 
         <div className={style.workspaceItems}>
-          <div className={style.dashboard}>
+          <div className={style.dashboard} onClick={handleDashboardOpenAndClose} >
             <House size={34} /> Dashboard
           </div>
         </div>
@@ -131,7 +144,10 @@ function Bar({ projects, workspace, setSelectedProject, user, updateAddedProject
               <div
                 key={project.id}
                 className={style.project}
-                onClick={() => setSelectedProject(project)} // Click to select project
+                onClick={() =>{ 
+                  setSelectedProject(project)
+                  setDashboardOpen(false)
+                }} // Click to select project
               >
                 {project.name}
               </div>

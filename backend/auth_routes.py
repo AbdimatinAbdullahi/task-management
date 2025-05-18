@@ -69,7 +69,7 @@ def login_user():
             "exp": datetime.utcnow() + timedelta(hours=10)  # Expiration time
         }
         token = jwt.encode(payload, secret_key, algorithm='HS256')
-        return jsonify({"message": "Login successful", "token": token, "id": wsMember.user_id, "fullname": wsMember.username, "email": wsMember.email, "has_workspace" : True}), 200
+        return jsonify({"message": "Login successful", "token": token, "id": wsMember.user_id, "fullname": wsMember.username, "email": wsMember.email, "has_workspace" : True, "memberId": wsMember.id}), 200
     else:
         # Query user from db by email => Check password
         user = User.query.filter_by(email=email).first()
