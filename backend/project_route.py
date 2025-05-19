@@ -8,20 +8,20 @@ import asyncio
 import jwt
 
 project_bp = Blueprint("project", __name__, url_prefix='/api')
-# producer = Producer({"bootstrap.servers": "localhost:9092"})
+producer = Producer({"bootstrap.servers": "localhost:9092"})
 
 
-# def task_done(task):
-#     task_json = task.to_json()
-#     producer.produce(
-#         topic="task-status-updated-to-done",
-#         key=str(task._id),
-#         value=task_json,
-#         callback=lambda err, msg: print(
-#             f"✅ Sent Message to consumer {task}" if not err else f"❌ Task sent failed: {err}"
-#             )
-#     )
-#     producer.flush()
+def task_done(task):
+    task_json = task.to_json()
+    producer.produce(
+        topic="task-status-updated-to-done",
+        key=str(task._id),
+        value=task_json,
+        callback=lambda err, msg: print(
+            f"✅ Sent Message to consumer {task}" if not err else f"❌ Task sent failed: {err}"
+            )
+    )
+    producer.flush()
 
 def require_role(allowed_roles): # Decorator factory and it passes allowed roles to decorator
     def decorator(f): # Actual decorator that takes the function to be wrapped!
@@ -148,19 +148,8 @@ def create_new_task():
             priority=priority
             )
         newTask.save()
-        task = {
-            "_id" : str(newTask._id),
-            "project_id" : newTask.project_id,
-            "task_name": newTask.task_name,
-            "status" : newTask.status,
-            "created_at": newTask.created_at,
-            "due_date" : newTask.due_date,
-            "started_at": newTask.started_at,
-            "task_notes": newTask.task_notes,
-            "priority" : newTask.priority,
-            "assigned_users": newTask.assigned_users       
-            }
-        return jsonify({"message": "Task created successfuly", "task": task}), 200
+        new_tasks = newTask.to_json()
+        return jsonify({"message": "Task created successfuly", "task": json.loads(new_tasks)}), 200
     except Exception as e:
         print("Something went wrong while creating task: ", str(e))
         return jsonify({"message": "Server Error while creating task"}), 500
@@ -223,7 +212,7 @@ def updateTaskStatus(taskId):
             task.status = newStatus
             task.save()
             print("The Status update successfull")
-            # task_done(task)
+            task_done(task)
             return jsonify({"message": "Update successfull"}), 200
         else:
             print("Task not there")
@@ -237,6 +226,7 @@ def updateTaskStatus(taskId):
 
 # Function to update task dates
 @project_bp.route("/update_task_date/<taskId>", methods=["PATCH"])
+@require_role(["admin"])
 def updateTaskDates(taskId):
     try:
         data = request.get_json()
@@ -321,6 +311,7 @@ def UpdateTaskDescription(taskId):
    
 
 @project_bp.route('/create_task', methods=["POST"])
+@require_role(["admin"])
 def create_task():
     try:
         data = request.get_json()
@@ -358,6 +349,7 @@ def create_task():
         return jsonify({"error" : "Error occured"}), 500
     
 
+@require_role(["admin"])
 @project_bp.route('/delete_task/<taskId>', methods=["PUT"])
 def delete_project(taskId):
     try:
@@ -366,7 +358,7 @@ def delete_project(taskId):
         try:
             task = Task.objects(_id=task_id).first()
             task.delete()
-            return jsonify({"message": "Deleted successful"}), 200
+            return jsonify({"message": "Deleted successful", "task_id" : taskId}), 200
         except Exception as e:
             return jsonify({"error" : "Something went wrong"}), 500
     except Exception as e:
@@ -403,6 +395,7 @@ def update_task_members(taskId):
 
 
 @project_bp.route('/delete-project/<projectId>', methods=["DELETE"])
+@require_role(["admin"])
 def delete_project_and_project_resources(projectId):
     try:
         project = Project.query.filter_by(id=projectId).first()

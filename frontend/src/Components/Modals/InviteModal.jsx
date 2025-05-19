@@ -2,13 +2,15 @@ import React, {useState} from 'react'
 import style from '../Modals/modals.module.css'
 import axios from 'axios'
 import Select from 'react-select'
+import { useAuth } from '../../Contexts/AuthContext';
 
 function InviteModal({onClose, project_id, workspace, userId}) {
 
     const [userDetails, setuserDetails] = useState({ fullname: "", email: "", role: "member"});
     const [loading, setloading] = useState(false)
     const [errorMessage, setErrorMessage] = useState("")
-    
+    const {user} = useAuth()
+
     const handleInvite = async ()=>{
 
         try {
@@ -24,7 +26,15 @@ function InviteModal({onClose, project_id, workspace, userId}) {
                 return
             }
          
-            const response = await axios.post(`http://127.0.0.1:5000/api/invites_users`, { email: userDetails.email, username: userDetails.fullname, userId, "wsId": workspace.id, "wsName": workspace.name })
+            const response = await axios.post(`http://127.0.0.1:5000/api/invites_users`, 
+                { email: userDetails.email, username: userDetails.fullname, userId, "wsId": workspace.id, "wsName": workspace.name },
+                {
+                    headers: 
+                    { 
+                        "Authorization" :`Bearer ${user.token}`
+                    }
+                }
+            )
             if(response.status === 200){
                 alert("User Invited!")
                 onClose()

@@ -78,7 +78,6 @@ def aggregation_job(user_id):
             "tasks" : project_tasks
         }
 
-        print("Dashboard data" , json.dumps(dashboard_data, indent=4))
 
         r.set(redis_key, json.dumps(dashboard_data), ex=3600)
     except Exception as e:
@@ -93,7 +92,6 @@ def get_workspace_data():
 
         cached_data = r.get(redis_key)
         if cached_data:
-            print("Dashboard Data: ", json.loads(cached_data))
             return jsonify({"data" : json.loads(cached_data)}), 200
         
         aggregation_job(use_id)

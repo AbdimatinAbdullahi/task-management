@@ -4,6 +4,7 @@ import {UserPen, UserCheck} from 'lucide-react'
 import Toastify from "./toastify";
 import Select from 'react-select'
 import axios from "axios";
+import { useAuth } from "../../Contexts/AuthContext";
 
 
 function TaskModal({ onClose, task, members, allUsers, updateDeleteTask, updateTask}) {
@@ -16,7 +17,7 @@ function TaskModal({ onClose, task, members, allUsers, updateDeleteTask, updateT
     return date.toISOString().split("T")[0];
   }
 
-
+  const {user} = useAuth()
   const [taskDetails, settaskDetails] = useState({
     task_name: task.task_name,
     status: task.status,
@@ -82,10 +83,7 @@ function TaskModal({ onClose, task, members, allUsers, updateDeleteTask, updateT
         setMessage({message: `Task members updated!`, borderColor: "green", backgroundColor: "rgb(69, 255, 91, 0.11)"})
         setToastifyOpen(true)
         
-      } else{
-          setMessage({message: `Members changed failed!`, borderColor: "red", backgroundColor: "rgb(255, 200, 200)"})
-          setToastifyOpen(true)
-      }
+      } 
     } catch (error) {
       setMessage({message: `Members change failed!`, borderColor: "red", backgroundColor: "rgb(255, 200, 200)"})
       setToastifyOpen(true)
@@ -211,7 +209,12 @@ function TaskModal({ onClose, task, members, allUsers, updateDeleteTask, updateT
     console.log(updateFields)
 
     try {
-      const tdtcRs = await axios.patch(`http://127.0.0.1:5000/api/update_task_date/${task._id.$oid}`, updateFields);
+      const tdtcRs = await axios.patch(`http://127.0.0.1:5000/api/update_task_date/${task._id.$oid}`, 
+        updateFields,
+        {headers: {
+          "Authorization": `Bearer ${User.token}`
+        }}
+      );
       if(tdtcRs.status === 200){
         updateTask({
           ...task,
@@ -220,16 +223,26 @@ function TaskModal({ onClose, task, members, allUsers, updateDeleteTask, updateT
         })
         setMessage({message: `Task ${name} changed to ${value}`, borderColor: "green", backgroundColor: "rgb(69, 255, 91, 0.11)"})
         setToastifyOpen(true)
-      }
-      else{
-        setMessage({message: `Task due date changed failed X`, borderColor: "red", backgroundColor: "rgb(255, 200, 200)"})
-        setToastifyOpen(true) 
-      }
+          }
     } catch (error) {
-      setMessage({message: `Task due date changed failed X`, borderColor: "red", backgroundColor: "rgb(255, 200, 200)"})
-      setToastifyOpen(true)
-      console.log("Error while changing the task status: ", error)
+      if (error.response && error.response.status === 403) {
+        setMessage({
+          message: `You don't have permission to change the task dates!`,
+          borderColor: "red",
+          backgroundColor: "rgb(255, 200, 200)"
+        });
+        setToastifyOpen(true);
+      } else {
+        setMessage({
+          message: `Failed to change task date.`,
+          borderColor: "red",
+          backgroundColor: "rgb(255, 200, 200)"
+        });
+        setToastifyOpen(true);
+        console.log("Error while changing the task date: ", error);
+      }
     }
+
   }
 
   const handleTaskDelete = async ()=>{
@@ -237,11 +250,14 @@ function TaskModal({ onClose, task, members, allUsers, updateDeleteTask, updateT
     try {
       const dtRs = await axios.put(`http://127.0.0.1:5000/api/delete_task/${task._id.$oid}`)
       if(dtRs.status == 200){
-        alert("Task Deleted!")
+        alert(dtRs.data.task_id)
         updateDeleteTask(dtRs.data.task_id)
-        onClose()
       }
     } catch (error) {
+      if(error.status == 403){
+        setMessage({message: `You dont have a permission to delete task!`, borderColor: "red", backgroundColor: "rgb(255, 200, 200)"})
+        setToastifyOpen(true)
+      }
       setMessage({message: `Task deletion failed!`, borderColor: "red", backgroundColor: "rgb(255, 200, 200)"})
       console.log("Error while deleting the task!", error)
     } finally{

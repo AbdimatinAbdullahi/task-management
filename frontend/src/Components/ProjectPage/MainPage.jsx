@@ -108,6 +108,7 @@ function MainPage() {
                     workspace={workspace} 
                     members={workspaceMembers}
                     userId={user_id}
+                    dashboardOpen={dashboardOpen}
                     />}
       </div>
     </div>
@@ -183,9 +184,10 @@ function Bar({ projects, workspace, setSelectedProject, user, updateAddedProject
   )
 }
 
-function ProjectContainer({ selectedProject, workspace, members, userId }) {
+function ProjectContainer({ selectedProject, workspace, members, userId, dashboardOpen}) {
   const [tasks, setTasks] = useState([])
   const [inviteUserModalOpen, setInviteUserModalOpen] = useState(false)
+
   useEffect(() => {
     const fetchTasks = async () => {
       if (!selectedProject || !selectedProject.id) {
@@ -202,7 +204,7 @@ function ProjectContainer({ selectedProject, workspace, members, userId }) {
     }
   
     fetchTasks()
-  }, [selectedProject])
+  }, [selectedProject, dashboardOpen])
 
   const formatedDate = selectedProject ? 
     new Date(selectedProject.created_at).toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' })
@@ -212,9 +214,16 @@ function ProjectContainer({ selectedProject, workspace, members, userId }) {
       setTasks(prevTasks => [...prevTasks, task])
     }
 
-    const updateDeleteTask = (task_id) =>{
-      setTasks(prevTasks => prevTasks.filter((task) => task.id !== task_id))
-    }
+
+    const updateDeleteTask = (task_id) => {
+      console.log("Task before filtering: ", tasks)
+      setTasks(prevTasks => prevTasks.filter(task => {
+        const id = task._id?.$oid || task.id;
+        return id !== task_id;
+      }));
+      console.log("Task before filtering: ", tasks)
+    };
+
 
     
     const updateTask = (updatedTask) => {
@@ -284,9 +293,22 @@ function DropZone({status, tasks, members, selectedProject, workspace_name, upda
 
   const [{isOver}, drop] = useDrop(()=>({
     accept: "TASK",
-    drop: (item)=>{
+    drop: async (item)=>{
         console.log("Dropped item:", item);
         updateTask({...item, status:status})
+          // Skip if already in same column
+        if (item.status === status) return;
+
+        try {
+          const res = await axios.patch(`http://127.0.0.1:5000/api/update_task_status/${item._id.$oid}`, {
+            status: status
+          });
+          if(res.status == 200){
+             updateTask({ ...item, status });  
+          }
+        } catch (error) {
+          console.error("Failed to update task status on drop:", error);
+        }
     },
     collect: (monitor)=>({
       isOver: !!monitor.isOver()

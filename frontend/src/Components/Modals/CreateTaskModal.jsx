@@ -3,10 +3,9 @@ import style from '../../Styles/kanban.module.css'
 import Select from 'react-select'
 import makeAnimated from 'react-select/animated'
 import {X} from 'lucide-react'
-import { label } from "framer-motion/client"
 import axios from "axios"
 import {useAuth} from '../../Contexts/AuthContext'
-
+import Toastify from "./toastify"
 const animatedComponents = makeAnimated();
 
 
@@ -24,6 +23,8 @@ function CreateTaskModal({onClose, members, project, status, workspaceName, upda
     });
 
     const [errorMessage, setErrorMessage] = useState("")
+    const [toastifyOpen, setToastifyOpen] = useState(false)
+    const [message, setMessage] = useState({message: "", borderColor: "", backgroundColor: ""})
     const [loading, setLoading] = useState(false)
     const { user }  = useAuth()
     const project_name = ""
@@ -57,7 +58,11 @@ function CreateTaskModal({onClose, members, project, status, workspaceName, upda
         if(ctResponse.status == 200){
           updateAddTask(ctResponse.data.task)
           onClose()
+        } else{
+          setMessage({message: `Members changed failed!`, borderColor: "red", backgroundColor: "rgb(255, 200, 200)"})
+          setToastifyOpen(true)
         }
+
       } catch (error) {
         console.log(error)
       } finally{
@@ -95,11 +100,16 @@ function CreateTaskModal({onClose, members, project, status, workspaceName, upda
       }));
     };
     
+    const handleCloseToast = ()=>{
+      setMessage({message: "", backgroundColor: "", borderColor: ""})
+      setToastifyOpen(false)
+    }
   
     return (
       <div className={style.overlay}>
         <div className={style.modalContainer}>
             <div className={style.displayer}>
+            {toastifyOpen && <Toastify message={message} handleCloseToast={handleCloseToast} />}
               <div className={style.taskOwner}> {workspaceName} / {project.name} / {status} </div>
               <X size={32} color="gray" onClick={onClose} className={style.Xf}/>
             </div>

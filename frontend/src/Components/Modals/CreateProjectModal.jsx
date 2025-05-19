@@ -2,7 +2,8 @@ import React, {useEffect, useState} from 'react'
 import {FolderPlus, BookmarkX} from 'lucide-react'
 import axios from 'axios'
 import style from '../../Styles/mainpage.module.css'
-import { projects } from '../../SampleAPI/projectandTasks'
+import Toastify from './toastify'
+
 function CreateProjectModal({ onClose, workspace_id, user, updateAddedProject }) {
 
     const [projectsData, setProjectsData] = useState({
@@ -10,28 +11,40 @@ function CreateProjectModal({ onClose, workspace_id, user, updateAddedProject })
         description: ""
     })
     const [errorMessage, seterrorMessage] = useState('')
-
+    const [message, setMessage] = useState({
+        message: "",
+        borderColor: "",
+        backgroundColor: ""
+    });
+    const [toastifyOpen, setToastifyOpen] = useState(false)
 
     const handleCreate = async () => {
         if(projectsData.project_name === '' || projectsData.description === ""){
             seterrorMessage("Provide the project name  and description!")
             return
         }
-
-        const pcrRs = await axios.post('http://127.0.0.1:5000/api/create-new-project', 
-            {"name": projectsData.project_name, "description": projectsData.description, "workspace_id":workspace_id},
-            { headers: 
-                {
-                "Authorization" : `Bearer ${user.token}`
+        try {
+            const pcrRs = await axios.post('http://127.0.0.1:5000/api/create-new-project', 
+                {"name": projectsData.project_name, "description": projectsData.description, "workspace_id":workspace_id},
+                { headers: 
+                    {
+                    "Authorization" : `Bearer ${user.token}`
+                    }
                 }
-            }
-        )
+             )
 
-        if(pcrRs.status == 200){
-            updateAddedProject(pcrRs.data.project)
-            onClose()
-        } else {
-            seterrorMessage("something went wrong")
+            if(pcrRs.status == 200){
+                updateAddedProject(pcrRs.data.project)
+                onClose()
+            }
+        } catch (error) {
+            if(error.status == 403){
+                setMessage({message: `You dont have permission to create a project!`, borderColor: "red", backgroundColor: "rgb(255, 200, 200)"})
+                setToastifyOpen(true)
+            }
+            setMessage({message: `Project creation failed!`, borderColor: "red", backgroundColor: "rgb(255, 200, 200)"})
+            setToastifyOpen(true)
+            console.log(error)
         }
     }
 
@@ -44,14 +57,15 @@ function CreateProjectModal({ onClose, workspace_id, user, updateAddedProject })
         }))
     };
 
-    useEffect(()=>{
-        console.log("Sending the data with user: ", user)
-    })
+    const handleCloseToast = ()=>{
+        setMessage({message: "", borderColor: "", backgroundColor: ""})
+        setToastifyOpen(false)
+    }
 
   return (
     <div className={style.modalOverlay}>
         <div className={style.modalContainer} onClick={(e)=> e.stopPropagation()} >
-            {errorMessage && <div className={style.error} >{errorMessage}</div>}           
+            {toastifyOpen && <Toastify handleCloseToast={handleCloseToast} message={message} />}
             {/* Header */}
             <div className={style.modalHeader}>
                 Create Project
